@@ -1,0 +1,204 @@
+
+INSERT INTO `Nominados2019` (`CodNom`, `nombreN`, `aka`) VALUES
+
+--mejor pelicula
+
+(6, 'Black Panther', ''),
+(7, 'BlackkKlansman', ''),
+(8, 'Bohemian Rhapsody', ''),
+(9, 'A Star is Born', ''),
+(10, 'The Favourite', ''),
+(11, 'Green Book', ),
+(12, 'Roma', ''),
+(13, 'Vice', ''),
+(14, '000aaa', NULL),
+
+--mejor pelicula de habla no inglesa
+
+(16, 'Capernaum (Libano)', NULL),
+(17, 'Cold War (Polonia)', NULL),
+(18, 'Never Look Away (Alemania)', NULL),
+(19, 'Roma (Mejico)', NULL),
+(20, 'Shoplifters (Japon)', 'NULL'),
+
+--mejor director
+
+(21, 'Spike Lee, BlackkKlansman', NULL),
+(22, 'Pavel Pawlikowski, Cold War', NULL),
+(23, 'Adam McKay, Vice', NULL),
+(24, 'Yorgos Lanthimos, The Favourite', NULL),
+(25, 'Alfonso Cuaron, Roma', NULL),
+(99, '""000aaa', ''),
+
+--mejor actor
+
+(100, 'Christian Bale, Vice', NULL),
+(101, 'Bradley Cooper, A Star is Born', NULL),
+(102, 'Willem Dafoe, At Eternity’s Gate', NULL),
+(103, 'Rami Malek, Bohemian Rhapsody', NULL),
+(104, 'Viggo Mortensen, Green Book', NULL),
+
+--mejor actriz
+
+(105, 'Cate Blanchett por Carol', NULL),
+(106, 'Brie Larson por Room', NULL),
+(107, 'Jennifer Lawrence por Joy', NULL),
+(108, 'Charlotte Rampling por 45 Years', NULL),
+(109, 'Saoirse Ronan por Brooklyn', NULL),
+
+--mejor actor de reparto
+
+(110, 'Christian Bale por The Big Short', NULL),
+(111, 'Tom Hardy por The Revenant', NULL),
+(112, 'Mark Ruffalo por Spotlight', NULL),
+(113, 'Mark Rylance por Bridge of Spies', NULL),
+(114, 'Sylvester Stallone por Creed', NULL),
+
+--mejor actriz de reparto
+
+(115, 'Yalitza Aparicio, Roma', NULL),
+(116, 'Glenn Close, The Wife', NULL),
+(117, 'Olivia Colman, The Favourite', NULL),
+(118, 'Lady Gaga, A Star is Born', NULL),
+(119, 'Melissa McCarthy, Can You Ever Forgive Me?', NULL),
+
+--mejor guion
+
+(120, 'The Favourite (Deborah Davis and Tony McNamara)', NULL),
+(121, 'First Reformed (Paul Schrader)', NULL),
+(122, 'Green Book (Nick Vallelonga, Brian Currie and Peter FArrelly)', NULL),
+(123, 'Roma (Alfonso Cuaron)', NULL),
+(124, 'Vice (Adam McKay)', NULL),
+
+--mejor guion adaptado
+
+(125, 'The Ballad of Buster Scruggs (Joel and Ethan Coen)', NULL),
+(126, 'BlackkKlansman (Charlie Wachtel, DAvid Rabinowitz, Kevin Wilmott and Spike Lee)', NULL),
+(127, 'Can You Ever Forgive Me? (Nicole Holofcener and Jeff Whitty)', NULL),
+(128, 'If Beale Street Could Talk (Barry Jenkins)', NULL),
+(129, 'A Star is Born (Eric Roth, Bradley Cooper, Will Fetters)', NULL),
+
+--mejor pelicula de animacion
+
+(135, 'Incredibles 2', NULL),
+(136, 'Isle of Dogs', NULL),
+(137, 'Mirai', NULL),
+(138, 'Ralph Breaks the Internet', NULL),
+(139, 'Spider-Man: Into the Spider-verse', NULL),
+
+--mejor banda sonora original
+
+(140, 'Black Panther (Ludwig Goransson)', NULL),
+(141, 'BlackkKlansman (Terence Blanchard)', NULL),
+(142, 'If Beale Street Could Talk (Nicholas Britell)', NULL),
+(143, 'Isle of Dogs (Alexandre Desplat)', NULL),
+(144, 'Mary Poppins Returns (Marc Shaiman)', NULL),
+
+--mejor cancion
+
+(145, 'All the Stars, Black Panthe', NULL),
+(205, 'I’ll Fight, RBG', NULL),
+(206, 'The Place Where Lost Things Go, Mary Poppins Returns', NULL),
+(207, 'Shallow, A Star is Born', NULL);
+(146, 'When a Cowboy Trades His Spurs for Wings, The Ballad of Buster Scruggs', NULL),
+
+
+--mejor fotografia
+
+(147, 'Cold War (Lukasz Zal)', 'NULL'),
+(148, 'The Favourite (Robbie Ryan)', NULL),
+(149, 'Never Look Away (Caleb Deschanel)', NULL),
+(150, 'Roma (Alfonso Cuaron)', NULL),
+(151, 'A Star is Born (Matthew Libatique)', NULL),
+
+--mejor montaje
+
+(152, 'BlackkKlansman (Bary Alexander Brown)', NULL),
+(153, 'Bohemian Rhapsody (John Ottman)', NULL),
+(154, 'The Favourite (Yorgos Mavropsaridis)', NULL),
+(155, 'Green Book (Patrick J. Don Vito)', NULL),
+(156, 'Vice (Hank Corwin)', NULL),
+
+--mejor direccion artistica
+
+(157, 'Black Panther (Hannah Beachler and Jay Hart)', NULL),
+(158, 'The Favourite (Fiona Crombie and Alice Felton)', NULL),
+(159, 'First Man (Nathan Crowly and Kathy Lucas)', NULL),
+(160, 'Mary Poppins Returns (John Myhre and Gordon Sim)', NULL),
+(161, 'Roma (Eugenio Caballero and Barbara Enriquez)', NULL),
+
+--mejor vestuario
+
+(162, 'The Ballad of Buster Scruggs (Mary Zophres)', NULL),
+(163, 'Black Panther (Ruth Carter)', NULL),
+(164, 'The Favourite (Sandy Powell)', NULL),
+(165, 'Mary Poppins Returns (Sandy Powell)', NULL),
+(166, 'Mary Queen of Scots (Alexandra Byrne)', NULL),
+
+--mejor maquillaje
+
+(167, 'Border (Goran Lundstrom and Pamela Goldammer)', NULL),
+(168, 'Mary Queen of Scots (Jenny Shircore,  Marc Pilcher and Jessica Brooks)', NULL),
+(169, 'Vice (Greg Cannom, Kate Biscoe and Patricia DeHaney)', NULL),
+
+
+
+--mejores efectos visuales
+
+(170, 'Avengers: Infinity War (Dan DeLeeuw, Kelly Port, Russell Earl and Dan Sudick)', NULL),
+(171, 'Christopher Robin (Christopher Lawrence, Michael Eames, Theo Jones and Chris Corbould)', NULL),
+(172, 'First Man (Paul Lambert, Ian Hunter, Tristan Myles and J.D. Schwalm)', NULL),
+(173, 'Ready Player One (Roger Guyett, Grady Cofer, Matthew E. Butler and DAvid Shirk)', NULL),
+(174, 'Solo: A Star Wars Story (Rob Bredow, Patrick Tubach, Neal Scanlan and Dominic Tuohy)', NULL),
+
+--mejor sonido MIXING
+
+(175, 'Black Panther (Steve Boeddeker, Brandon Proctor and Peter Devlin)', NULL),
+(176, 'Bohemian Rhapsody (Paul Massey, Tim Cavagin and John Casali)', NULL),
+(177, 'First Man (Jon Taylor, Frank A. Montano, Ai-Ling Lee and Mary H. Ellis)', NULL),
+(178, 'Roma (Skip Lievsay, Craig Henighan and José Antonio Garcia)', NULL),
+(179, 'A Star Is Born (Tom Ozanich, Dean Zupancic,  Jason Ruder and Steve Morrow)', NULL),
+
+--mejores efectos sonoros EDITING
+
+(180, 'Black Panther (Benjamin A Burtt and Steve Boeddeker)', NULL),
+(181, 'Bohemian Rhapsody (Paul Massey, Tim Cavagin and John Casali)', NULL),
+(182, 'First Man (Jon Taylor, Frank A. Montano, Ai-Ling Lee and Mary H. Ellis)', NULL),
+(183, 'Roma (Skip Lievsay, Craig Henighan and José Antonio Garcia)', NULL),
+(184, 'A Quiet Place (Ethan Van der Ryn and Erik Aadahi)', NULL),
+
+--mejor documental
+
+(185, 'Free Solo', NULL),
+(186, 'Hale County This Morning, This Evening', NULL),
+(187, 'Minding the Gap', NULL),
+(188, 'Of Fathers and Sons', NULL),
+(189, 'RBG', NULL),
+
+--mejor cortometraje documental
+
+(190, 'Black Sheep', NULL),
+(191, 'End Game', NULL),
+(192, 'Lifeboat', NULL),
+(193, 'A Night at the Garden', NULL),
+(194, 'Period. End of Sentence.', NULL),
+
+--mejor cortometraje de animacion
+
+(195, 'Animal Behaviour', NULL),
+(196, 'Bao', NULL),
+(197, 'Late Afternoon', NULL),
+(198, 'One Small Step', NULL),
+(199, 'Weekends', NULL),
+
+--mejor cortometraje de accion en vivo
+
+(200, 'Detainment', NULL),
+(201, 'Fauve', NULL),
+(202, 'Marguerite', NULL),
+(203, 'Mother', NULL),
+(204, 'Skin', NULL),
+
+
+
+

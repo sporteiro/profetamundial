@@ -1,0 +1,80 @@
+Para cambiar oscar:
+
+
+Crear los archivos:
+
+oscarxxxx.php
+moscarxxxx.php
+verelegidosxxxx.php
+verelegidosdexxxx.php
+reglas_oscarxxxx.php
+imprimiroscarxxxx.php
+
+
+index.php
+empezar.php
+reglas.php
+
+Si se copia de años anteriores, buscar y cambiar año y fijarse en la variable $fueratiempo
+
+En la base de datos crear las tablas necesarias y poner los nominados necesarios en 
+
+nominadosxxxx
+
+(son 3 tablas mas la de torneos con el nuevo CodTor)
+
+
+
+
+--
+-- Estructura de tabla para la tabla `Nominados2019`
+--
+
+CREATE TABLE `Nominados2020` (
+  `CodNom` int(99) NOT NULL,
+  `nombreN` varchar(90) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `aka` varchar(90) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `PreNom2019`
+--
+
+CREATE TABLE `PreNom2020` (
+  `CodNom` int(99) DEFAULT NULL,
+  `CodPre` int(99) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuprenom2019`
+--
+
+CREATE TABLE `usuprenom2020` (
+  `CodUsu` varchar(200) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `CodPre` int(99) DEFAULT NULL,
+  `CodNom` varchar(200) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `Nominados2019`
+--
+ALTER TABLE `Nominados2020`
+  ADD PRIMARY KEY (`CodNom`);
+COMMIT;
+
+
+
+Se puede puntuar con:
+
+puntuarOscarxxxx.php
+
+
+

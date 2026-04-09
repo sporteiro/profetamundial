@@ -1,0 +1,179 @@
+
+INSERT INTO `Nominados2016` (`CodNom`, `nombreN`, `aka`) VALUES
+
+
+(6, 'The Big Short', 'La gran apuesta'),
+(7, 'Bridge of Spies', 'El puente de los espias'),
+(8, 'Spotlight', ''),
+(9, 'Mad Max: Fury Road', ''),
+(10, 'The Martian', 'Marte'),
+(11, 'Brooklyn', NULL),
+(12, 'The Revenant', 'El renacido'),
+(13, 'Room', 'La habitacion'),
+(14, '000aaa', NULL),
+
+
+(16, 'El abrazo de la serpiente (Colombia)', NULL),
+(17, 'Mustang (Francia)', NULL),
+(18, 'Son of Saul (Hungary)', NULL),
+(19, 'Theeb (Jordania)', NULL),
+(20, 'Krigen (Dinamarca)', 'A War'),
+
+
+(21, 'Adam McKay por The Big Short', NULL),
+(22, 'George Miller por Mad Max: Fury Road', NULL),
+(23, 'Alejandro G. Iñarritu por The Revenant', NULL),
+(24, 'Lenny Abrahamson por Room', NULL),
+(25, 'Tom McCarthy por Spotlight', NULL),
+(99, '""000aaa', ''),
+
+
+(100, 'Bryan Cranston por Trumbo', NULL),
+(101, 'Matt Damon por The Martian', NULL),
+(102, 'Leonardo DiCaprio por The Revenant', NULL),
+(103, 'Michael Fassbender por Steve Jobs', NULL),
+(104, 'Eddie Redmayne por The Danish Girl', NULL),
+
+
+(105, 'Cate Blanchett por Carol', NULL),
+(106, 'Brie Larson por Room', NULL),
+(107, 'Jennifer Lawrence por Joy', NULL),
+(108, 'Charlotte Rampling por 45 Years', NULL),
+(109, 'Saoirse Ronan por Brooklyn', NULL),
+
+
+(110, 'Christian Bale por The Big Short', NULL),
+(111, 'Tom Hardy por The Revenant', NULL),
+(112, 'Mark Ruffalo por Spotlight', NULL),
+(113, 'Mark Rylance por Bridge of Spies', NULL),
+(114, 'Sylvester Stallone por Creed', NULL),
+
+
+(115, 'Jennifer Jason Leigh por The Hateful Eight', NULL),
+(116, 'Rooney Mara por Carol', NULL),
+(117, 'Rachel McAdams por Spotlight', NULL),
+(118, 'Alicia Vikander por The Danish Girl', NULL),
+(119, 'Kate Winslet por Steve Jobs', NULL),
+
+(120, 'Bridge of Spies', NULL),
+(121, 'Ex Machina', NULL),
+(122, 'Inside Out', NULL),
+(123, 'Spotlight', NULL),
+(124, 'Straight Outta Compton', NULL),
+
+
+(125, 'The Big Short', NULL),
+(126, 'Brooklyn', NULL),
+(127, 'Carol', NULL),
+(128, 'The Martian', NULL),
+(129, 'Room', NULL),
+
+
+(135, 'Anomalisa', NULL),
+(136, 'Boy and the World', NULL),
+(137, 'Inside Out', NULL),
+(138, 'Shaun the Sheep Movie', NULL),
+(139, 'When Marnie Was There', NULL),
+
+
+(140, 'Bridge of Spies', NULL),
+(141, 'Carol', NULL),
+(142, 'The Hateful Eight', NULL),
+(143, 'Sicario', NULL),
+(144, 'Star Wars: The Force Awakens', NULL),
+
+
+(145, 'Earned It de Fifty Shades of Grey', NULL),
+(205, 'Manta Ray de Racing Extinction', NULL),
+(206, 'Simple Song #3 de Youth', NULL),
+(207, 'Til It Happens To You de The Hunting Ground', NULL),
+(146, 'Writing`s On The Wall de Spectre', NULL),
+
+
+
+(147, 'Carol', 'Birdman or (The Unexpected Virtue of Ignorance)'),
+(148, 'The Hateful Eight', NULL),
+(149, 'Mad Max: Fury Road', NULL),
+(150, 'The Revenant', NULL),
+(151, 'Sicario', NULL),
+
+
+(152, 'The Big Short', NULL),
+(153, 'Mad Max: Fury Road', NULL),
+(154, 'The Revenant', NULL),
+(155, 'Spotlight', NULL),
+(156, 'Star Wars: The Force Awakens', NULL),
+
+
+(157, 'Bridge of Spies', NULL),
+(158, 'The Danish Girl', NULL),
+(159, 'Mad Max: Fury Road', NULL),
+(160, 'The Martian', NULL),
+(161, 'The Revenant', NULL),
+
+
+(162, 'Carol', NULL),
+(163, 'Cinderella', NULL),
+(164, 'The Danish Girl', NULL),
+(165, 'Mad Max: Fury Road', NULL),
+(166, 'The Revenant', NULL),
+
+
+(167, 'Mad Max: Fury Road', NULL),
+(168, 'The 100-Year-Old Man Who Climbed out the Window and Disappeared', NULL),
+(169, 'The Revenant', NULL),
+
+
+
+
+(170, 'Ex Machina', NULL),
+(171, 'Mad Max: Fury Road', NULL),
+(172, 'The Martian', NULL),
+(173, 'The Revenant', NULL),
+(174, 'Star Wars: The Force Awakens', NULL),
+
+
+(175, 'Bridge of Spies', NULL),
+(176, 'Mad Max: Fury Road', NULL),
+(177, 'The Martian', NULL),
+(178, 'Sicario', NULL),
+(179, 'Star Wars: The Force Awakens', NULL),
+
+
+(180, 'American Sniper', NULL),
+(181, 'Mad Max: Fury Road', NULL),
+(182, 'The Martian', NULL),
+(183, 'The Revenant', NULL),
+(184, 'Star Wars: The Force Awakens', NULL),
+
+
+(185, 'Amy', NULL),
+(186, 'Cartel Land', NULL),
+(187, 'The Look of Silence', NULL),
+(188, 'What Happened, Miss Simone?', NULL),
+(189, 'Winter on Fire: Ukraine’s Fight for Freedom', NULL),
+
+
+(190, 'Body Team 12', NULL),
+(191, 'Chau, beyond the Lines', NULL),
+(192, 'Claude Lanzmann: Spectres of the Shoah', NULL),
+(193, 'A Girl in the River: The Price of Forgiveness', NULL),
+(194, 'Last Day of Freedom', NULL),
+
+
+(195, 'Bear Story', NULL),
+(196, 'Prologue', NULL),
+(197, 'Sanjay’s Super Team', NULL),
+(198, 'We Can’t Live without Cosmos', NULL),
+(199, 'A Single Life', NULL),
+
+
+(200, 'Ave Maria', NULL),
+(201, 'Day One', NULL),
+(202, 'Everything Will Be Okay (Alles Wird Gut)', NULL),
+(203, 'Shok', NULL),
+(204, 'Stutterer', NULL);
+
+
+
+

@@ -1,0 +1,212 @@
+
+INSERT INTO `Nominados2022` (`CodNom`, `nombreN`, `aka`) VALUES
+
+--mejor pelicula FALTAN 2, las pongo como 4 y 5
+--ME QUEDO ACA 2022 02 08 https://www.bbc.com/news/entertainment-arts-60290065
+(4, 'Drive My Car', ''),
+(5, 'Nightmare Alley', ''),
+
+(6, 'The Power of the Dog', ''),
+(7, 'West Side Story', ''),
+(8, 'Belfast', ''),
+(9, 'Dune', ''),
+(10, 'Licorice Pizza', ''),
+(11, 'King Richard', ),
+(12, 'CODA', ''),
+(13, 'Don't Look Up', ''),
+(14, '000aaa', NULL),
+
+--mejor pelicula de habla no inglesa
+
+(16, 'Drive My Car (Japan)', NULL),
+(17, 'The Worst Person in the World (Norway)', NULL),
+(18, 'Flee (Denmark)', NULL),
+(19, 'The Hand of God (Italy)', NULL),
+(20, 'Lunana: A Yak in the Classroom (Bhutan)', 'NULL'),
+
+--mejor director
+
+(21, 'Jane Campion, The Power of the Dog', NULL),
+(22, 'Paul Thomas Anderson, Licorice Pizza', NULL),
+(23, 'Steven Spielberg, West Side Story', NULL),
+(24, 'Sir Kenneth Branagh, Belfast', NULL),
+(25, 'Ryusuke Hamaguchi, Drive My Car', NULL),
+(99, '""000aaa', ''),
+
+--mejor actor
+
+(100, 'Will Smith, King Richard', NULL),
+(101, 'Benedict Cumberbatch, The Power of the Dog', NULL),
+(102, 'Andrew Garfield, Tick, Tick... Boom!', NULL),
+(103, 'Denzel Washington, The Tragedy of Macbeth', NULL),
+(104, 'Javier Bardem, Being the Ricardos', NULL),
+
+--mejor actriz
+
+(105, 'Olivia Colman, The Lost Daughter', NULL),
+(106, 'Nicole Kidman, Being the Ricardos', NULL),
+(107, 'Jessica Chastain, The Eyes of Tammy Faye', NULL),
+(108, 'Kristen Stewart, Spencer', NULL),
+(109, 'Penelope Cruz, Parallel Mothers', NULL),
+
+--mejor actor de reparto
+
+(110, 'Kodi Smit-McPhee, The Power of the Dog', NULL),
+(111, 'Ciarán Hinds, Belfast', NULL),
+(112, 'Troy Kotsur, Coda', NULL),
+(113, 'Jesse Plemons, The Power of the Dog', NULL),
+(114, 'JK Simmons, Being the Ricardos', NULL),
+
+--mejor actriz de reparto
+
+(115, 'Ariana DeBose, West Side Story', NULL),
+(116, 'Kirsten Dunst,The Power of the Dog', NULL),
+(117, 'Aunjanue Ellis, King Richard', NULL),
+(118, 'Dame Judi Dench, Belfast', NULL),
+(119, 'Jessie Buckley, The Lost Daughter', NULL),
+
+--mejor guion
+
+(120, 'Licorice Pizza, Paul Thomas Anderson', NULL),
+(121, 'Belfast, Sir Kenneth Branagh', NULL),
+(122, 'King Richard, Zach Baylin)', NULL),
+(123, 'Don't Look Up, Adam McKay (story by McKay and David Sirota)', NULL),
+(124, 'The Worst Person in the World, Joachim Trier and Eskil Vogt', NULL),
+
+--mejor guion adaptado
+
+(125, 'The Power of the Dog, Jane Campion', NULL),
+(126, 'The Lost Daughter, Maggie Gyllenhaal', NULL),
+(127, 'CODA, Sian Heder', NULL),
+(128, 'Dune, Jon Spaihts, Denis Villeneuve and Eric Roth', NULL),
+(129, 'Drive My Car, Ryusuke Hamaguchi and Takamasa Oe', NULL),
+
+--mejor pelicula de animacion
+
+(135, 'Encanto', NULL),
+(136, 'Luca', NULL),
+(137, 'The Mitchells vs the Machines', NULL),
+(138, 'Flee', NULL),
+(139, 'Raya and the Last Dragon', NULL),
+
+--mejor banda sonora original
+
+(140, 'The Power of the Dog, Jonny Greenwood', NULL),
+(141, 'Dune, Hans Zimmer', NULL),
+(142, 'Don't Look Up, Nicholas Britell', NULL),
+(143, 'Encanto, Germaine Franco', NULL),
+(144, 'Parallel Mothers, Alberto Iglesias', NULL),
+
+--mejor cancion
+
+(145, 'No Time to Die, No Time to Die (Billie Eilish and Finneas O'Connell)', NULL),
+(205, 'Dos Oruguitas, Encanto (Lin-Manuel Miranda)', NULL),
+(206, 'Be Alive, King Richard (Beyoncé Knowles-Carter and Dixson)', NULL),
+(207, 'Belfast, Down to Joy (Van Morrison)', NULL);
+(146, 'Somehow You Do, Four Good Days (Diane Warren)', NULL),
+
+
+--mejor fotografia
+
+(147, 'Dune, Greig Fraser', 'NULL'),
+(148, 'The Power of the Dog, Ari Wegner', NULL),
+(149, 'The Tragedy of Macbeth, Bruno Delbonnel', NULL),
+(150, 'Nightmare Alley, Dan Laustsen', NULL),
+(151, 'West Side Story, Janusz Kaminski', NULL),
+
+--mejor montaje
+
+(152, 'Dune, Joe Walker', NULL),
+(153, 'The Power of the Dog, Peter Sciberras‎', NULL),
+(154, 'Don't Look Up, Hank Corwin', NULL),
+(155, 'King Richard, Pamela Martin', NULL),
+(156, 'Tick, Tick... Boom!, Myron Kerstein and Andrew Weisblum', NULL),
+
+--mejor direccion artistica
+
+(157, 'Dune, Patrice Vermette and Zsuzsanna Sipos', NULL),
+(158, 'Nightmare Alley, Tamara Deverell and Shane Vieau', NULL),
+(159, 'West Side Story, Adam Stockhausen and Rena DeAngelo', NULL),
+(160, 'The Tragedy of Macbeth, Stefan Dechant and Nancy Haigh', NULL),
+(161, 'The Power of the Dog, Grant Major and Amber Richards', NULL),
+
+--mejor vestuario
+
+(162, 'Cruella, Jenny Beavan', NULL),
+(163, 'Dune, Jacqueline West and Bob Morgan', NULL),
+(164, 'West Side Story, Paul Tazewell', NULL),
+(165, 'Nightmare Alley, Luis Sequeira', NULL),
+(166, 'Cyrano, Massimo Cantini Parrini and Jacqueline Durran', NULL),
+
+--mejor maquillaje FALTAN 2, las pongo como 401 y 402
+
+--ME QUEDO ACA 2022 02 09 https://www.bbc.com/news/entertainment-arts-60290065 
+
+(167, 'The Eyes of Tammy Faye, Linda Dowds, Stephanie Ingram and Justin Raleigh', NULL),
+(168, 'Dune, Donald Mowat, Love Larson and Eva von Bahr', NULL),
+(169, 'Cruella, Nadia Stacey, Naomi Donne and Julia Vernon', NULL),
+(401, 'Coming 2 America, Mike Marino, Stacey Morris and Carla Farmer', NULL),
+(402, 'House of Gucci, Goran Lundstrom, Anna Carin Lock and Frederic Aspiras', NULL),
+
+
+--mejores efectos visuales
+
+(170, 'Dune, Paul Lambert, Tristan Myles, Brian Connor, Gerd Nefzer', NULL),
+(171, 'Free Guy, Swen Gillberg, Bryan Grill, Nikos Kalaitzidis, Dan Sudick', NULL),
+(172, 'Spider-Man: No Way Home, Kelly Port, Chris Waegner, Scott Edelstein and Dan Sudick', NULL),
+(173, 'Shang-Chi and the Legend of the Ten Rings, Christopher Townsend, Joe Farrell, Sean Noel Walker and Dan Oliver', NULL),
+(174, 'No Time to Die, Charlie Noble, Joel Green, Jonathan Fawkner, Chris Corbould', NULL),
+
+--AHORA SOLO EXISTE 1 categoria Best sound
+--ME QUEDO ACA 2022 02 09 https://www.bbc.com/news/entertainment-arts-60290065
+--mejor sonido MIXING
+
+(175, 'Dune, Mac Ruth, Mark Mangini, Theo Green, Doug Hemphill and Ron Bartlett', NULL),
+(176, 'West Side Story, Tod A Maitland, Gary Rydstrom, Brian Chumney, Andy Nelson and Shawn Murphy', NULL),
+(177, 'No Time to Die, Simon Hayes, Oliver Tarney, James Harrison, Paul Massey and Mark Taylor', NULL),
+(178, 'Belfast, Denise Yarde, Simon Chase, James Mather and Niv Adiri', NULL),
+(179, 'The Power of the Dog, Richard Flynn, Robert Mackenzie and Tara Webb', NULL),
+
+--mejores efectos sonoros EDITING
+
+(180, 'Dune - Mac Ruth, Mark Mangini, Theo Green, Doug Hemphill and Ron Bartlett', NULL),
+(181, 'West Side Story - Tod A Maitland, Gary Rydstrom, Brian Chumney, Andy Nelson and Shawn Murphy', NULL),
+(182, 'No Time to Die - Simon Hayes, Oliver Tarney, James Harrison, Paul Massey and Mark Taylor', NULL),
+(183, 'Belfast - Denise Yarde, Simon Chase, James Mather and Niv Adiri', NULL),
+(184, 'The Power of the Dog - Richard Flynn, Robert Mackenzie and Tara Webb', NULL),
+
+--mejor documental
+
+(185, 'Summer of Soul', NULL),
+(186, 'Flee', NULL),
+(187, 'Ascension', NULL),
+(188, 'Attica', NULL),
+(189, 'Writing with Fire', NULL),
+
+--mejor cortometraje documental
+
+(190, 'Audible', NULL),
+(191, 'Lead Me Home', NULL),
+(192, 'The Queen of Basketball', NULL),
+(193, 'Three Songs for Benazir', NULL),
+(194, 'When We Were Bullies', NULL),
+
+--mejor cortometraje de animacion
+
+(195, 'Affairs of the Art', NULL),
+(196, 'Bestia', NULL),
+(197, 'Boxballet', NULL),
+(198, 'Robin Robin', NULL),
+(199, 'The Windshield Wiper', NULL),
+
+--mejor cortometraje de accion en vivo
+
+(200, 'Ala Kachuu - Take and Run', NULL),
+(201, 'The Dress', NULL),
+(202, 'The Long Goodbye', NULL),
+(203, 'On My Mind', NULL),
+(204, 'Please Hold', NULL),
+
+
+
+
