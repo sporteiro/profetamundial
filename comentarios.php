@@ -7,7 +7,8 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  global $conexion;
+  $theValue = mysqli_real_escape_string($conexion, $theValue);
 
   switch ($theType) {
     case "text":
@@ -31,11 +32,10 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 
-mysql_select_db($database_conexion, $conexion);
 $query_comentarios = "SELECT * FROM comentarios ORDER BY id DESC";
-$comentarios = mysql_query($query_comentarios, $conexion) or die(mysql_error());
-$row_comentarios = mysql_fetch_assoc($comentarios);
-$totalRows_comentarios = mysql_num_rows($comentarios);
+$comentarios = mysqli_query($conexion, $query_comentarios) or die(mysqli_error($conexion));
+$row_comentarios = mysqli_fetch_assoc($comentarios);
+$totalRows_comentarios = mysqli_num_rows($comentarios);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -55,7 +55,7 @@ $totalRows_comentarios = mysql_num_rows($comentarios);
         <p class="letraschicas"><?php echo $row_comentarios['usuario']; ?>  Dice: <?php echo $row_comentarios['comentario']; ?></p>
 </div>
       <br />
-      <?php } while ($row_comentarios = mysql_fetch_assoc($comentarios)); ?>
+      <?php } while ($row_comentarios = mysqli_fetch_assoc($comentarios)); ?>
   <a href="empezar.php" class="botones">Volver a mi cuenta</a><br /> 
       <br />
 </div>
@@ -63,5 +63,5 @@ $totalRows_comentarios = mysql_num_rows($comentarios);
 </body>
 </html>
 <?php
-mysql_free_result($comentarios);
+mysqli_free_result($comentarios);
 ?>

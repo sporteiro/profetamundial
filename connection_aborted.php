@@ -1,8 +1,7 @@
 <?php
-$user=$_GET['username'];
+$user = isset($_GET['username']) ? $_GET['username'] : '';
 require_once('Connections/conexion.php'); 
-mysql_select_db($database_conexion, $conexion);
-mysql_query("UPDATE usuarios SET enlinea='no' WHERE usuario='".$user."'") or die(mysql_error());
+mysqli_query($conexion, "UPDATE usuarios SET enlinea='no' WHERE usuario='".mysqli_real_escape_string($conexion, $user)."'") or die(mysqli_error($conexion));
 
 //print_r(scandir(session_save_path()));
 //Sebastian 2018 detectar que usuario se desconecta

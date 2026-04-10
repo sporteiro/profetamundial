@@ -16,7 +16,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = mysqli_real_escape_string($conexion, $theValue);
 
   switch ($theType) {
     case "text":
@@ -58,8 +58,8 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
 				if ($GL==$GV) { $resultadoP1=0;}
   
   $updateSQL = "UPDATE partidos_mundial2022 SET glocal='".$GL."', gvisitante='".$GV."', resultado='".$resultadoP1."' WHERE CodUsu='".$_SESSION['MM_Username']."' AND CodPar='".$n."'";
-  mysql_select_db($database_conexion, $conexion);
-  $Result1 = mysql_query($updateSQL, $conexion) or die(mysql_error());
+  
+  $Result1 = mysqli_query($conexion, $updateSQL) or die(mysqli_error($conexion));
 				}
 				
 //ELIJO QUIEN PASA LA ELIMINATORIA
@@ -142,8 +142,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
 					
 			function actualizarPartidosCel($nomEqu, $numPar,$locOvis,$c,$d)		{
 				$updateSQL="UPDATE partidos_mundial2022 SET ".$locOvis."='".$nomEqu."' WHERE CodUsu='".$_SESSION['MM_Username']."' AND CodPar='".$numPar."'";
-				mysql_select_db($d,$c);
-				$Result = mysql_query($updateSQL, $c) or die(mysql_error());
+				$Result = mysqli_query($c, $updateSQL) or die(mysqli_error($conexion));
 			}
 			actualizarPartidosCel($cuartista1,57,'local',$c,$d);
 			actualizarPartidosCel($cuartista2,57,'visitante',$c,$d);
@@ -180,10 +179,9 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
 }
 }
 function consultaEquipoCel($partido,$c,$d,$consulta)	{
-	mysql_select_db($d,$c);
 	$consulta_partido="SELECT * FROM partidos_mundial2022 WHERE CodPar='".$partido."' AND CodUsu='".$_SESSION['MM_Username']."'";
-	$resultado_partido=mysql_query($consulta_partido, $c);
-	$equipos_partido=mysql_fetch_assoc($resultado_partido);
+	$resultado_partido=mysqli_query($c, $consulta_partido);
+	$equipos_partido=mysqli_fetch_assoc($resultado_partido);
 	switch ($consulta)	{
 		case 'local':
 			$resConsulta=$equipos_partido['local'];
@@ -203,9 +201,9 @@ function consultaEquipoCel($partido,$c,$d,$consulta)	{
 
 
 
-mysql_select_db($database_conexion,$conexion);
+
 $consulta_equipos_ol="SELECT nombre FROM equipos_mundial2022";
-$resultado_equipos_ol=mysql_query($consulta_equipos_ol, $conexion);
+$resultado_equipos_ol=mysqli_query($conexion, $consulta_equipos_ol);
 ?>
 <html>
 <head>
@@ -481,7 +479,7 @@ function actualizar_fase2_cel()	{
                     		<option value="<?=consultaEquipoCel($n,$c,$d,'visitante');?>" selected="selected"><?=consultaEquipoCel($n,$c,$d,'visitante');?>
                             </option>
                             
-                            <?php while ($equipos_ol=mysql_fetch_assoc($resultado_equipos_ol)) { ?>
+                            <?php while ($equipos_ol=mysqli_fetch_assoc($resultado_equipos_ol)) { ?>
                             	<option value="<?php echo $equipos_ol['nombre'];?>"><?php echo $equipos_ol['nombre'];?></option>
 							<?php } ?>
                             

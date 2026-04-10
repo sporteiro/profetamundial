@@ -13,8 +13,7 @@ if ((isset($_SERVER['QUERY_STRING'])) && ($_SERVER['QUERY_STRING'] != "")){
 
 if ((isset($_GET['doLogout'])) &&($_GET['doLogout']=="true")){
   //to fully log out a visitor we need to clear the session varialbles
-  mysql_select_db($database_conexion, $conexion);
-  mysql_query("UPDATE usuarios SET enlinea='no' WHERE usuario='".$_SESSION['MM_Username']."'")or die(mysql_error());
+  mysqli_query($conexion, "UPDATE usuarios SET enlinea='no' WHERE usuario='".mysqli_real_escape_string($conexion, $_SESSION['MM_Username'])."'") or die(mysqli_error($conexion));
   $_SESSION['MM_Username'] = NULL;
   $_SESSION['MM_UserGroup'] = NULL;
   $_SESSION['PrevUrl'] = NULL;
@@ -82,7 +81,8 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  global $conexion;
+  $theValue = mysqli_real_escape_string($conexion, $theValue);
 
   switch ($theType) {
     case "text":
@@ -119,8 +119,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "form1")) {
                        GetSQLValueString($_POST['ocultoip'], "text"),
                        GetSQLValueString($_POST['ocultusuario'], "text"));
 
-  mysql_select_db($database_conexion, $conexion);
-  $Result1 = mysql_query($updateSQL, $conexion) or die(mysql_error());
+  $Result1 = mysqli_query($conexion, $updateSQL) or die(mysqli_error($conexion));
 
 
 //SUBIR IMAGEN
@@ -134,8 +133,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "form1")) {
 		$updateSQL = sprintf("UPDATE usuarios SET avatar=%s WHERE usuario=%s",
 		GetSQLValueString($_FILES['imagen']['name'], "text"),
 		GetSQLValueString($_POST['ocultusuario'], "text"));
-		mysql_select_db($database_conexion, $conexion);
-		$Result1 = mysql_query($updateSQL, $conexion) or die(mysql_error());
+		$Result1 = mysqli_query($conexion, $updateSQL) or die(mysqli_error($conexion));
 		}
 		else if (($tipo_imagen != "image/jpeg")or($tipo_imagen != "image/png")or($tipo_imagen != "image/gif") or ($_FILES["imagen"]["size"] > 250000))  {
 			header('Location: modificar.php?error=1');		
@@ -155,17 +153,15 @@ $colname_recordusuarios = "-1";
 if (isset($_SESSION['MM_Username'])) {
   $colname_recordusuarios = $_SESSION['MM_Username'];
 }
-mysql_select_db($database_conexion, $conexion);
 $query_recordusuarios = sprintf("SELECT * FROM usuarios WHERE usuario = %s", GetSQLValueString($colname_recordusuarios, "text"));
-$recordusuarios = mysql_query($query_recordusuarios, $conexion) or die(mysql_error());
-$row_recordusuarios = mysql_fetch_assoc($recordusuarios);
-$totalRows_recordusuarios = mysql_num_rows($recordusuarios);
+$recordusuarios = mysqli_query($conexion, $query_recordusuarios) or die(mysqli_error($conexion));
+$row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
+$totalRows_recordusuarios = mysqli_num_rows($recordusuarios);
 
-mysql_select_db($database_conexion, $conexion);
-$query_usutorneo = "SELECT * FROM Torneos WHERE inscriptos = '".$_SESSION['MM_Username']."'";
-$usutorneo = mysql_query($query_usutorneo, $conexion) or die(mysql_error());
-$row_usutorneo = mysql_fetch_assoc($usutorneo);
-$totalRows_usutorneo = mysql_num_rows($usutorneo);
+$query_usutorneo = "SELECT * FROM Torneos WHERE inscriptos = '".mysqli_real_escape_string($conexion, $_SESSION['MM_Username'])."'";
+$usutorneo = mysqli_query($conexion, $query_usutorneo) or die(mysqli_error($conexion));
+$row_usutorneo = mysqli_fetch_assoc($usutorneo);
+$totalRows_usutorneo = mysqli_num_rows($usutorneo);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -304,7 +300,7 @@ return $GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'];
             <p>
     		<a href="<?php echo $row_usutorneo['nombreT']; ?>.php" class="botoneschicos"><?php echo $row_usutorneo['descripcion']; ?></a>
         	</p>
-            <?php } while ($row_usutorneo = mysql_fetch_assoc($usutorneo)); ?>
+            <?php } while ($row_usutorneo = mysqli_fetch_assoc($usutorneo)); ?>
       		<p>&nbsp;</p>
 		<p><b>Mis Trofeos</b></p>
 			<b><?php echo $row_recordusuarios['trofeos']; ?></b>
@@ -339,5 +335,5 @@ var sprytextfield3 = new Spry.Widget.ValidationTextField("sprytextfield3", "none
 </body>
 </html>
 <?php
-mysql_free_result($recordusuarios);
+mysqli_free_result($recordusuarios);
 ?>

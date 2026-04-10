@@ -52,7 +52,8 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  global $conexion;
+  $theValue = mysqli_real_escape_string($conexion, $theValue);
 
   switch ($theType) {
     case "text":
@@ -80,11 +81,10 @@ $colname_recordusuarios = "-1";
 if (isset($_SESSION['MM_Username'])) {
   $colname_recordusuarios = $_SESSION['MM_Username'];
 }
-mysql_select_db($database_conexion, $conexion);
 $query_recordusuarios = sprintf("SELECT * FROM usuarios WHERE usuario = %s", GetSQLValueString($colname_recordusuarios, "text"));
-$recordusuarios = mysql_query($query_recordusuarios, $conexion) or die(mysql_error());
-$row_recordusuarios = mysql_fetch_assoc($recordusuarios);
-$totalRows_recordusuarios = mysql_num_rows($recordusuarios);
+$recordusuarios = mysqli_query($conexion, $query_recordusuarios) or die(mysqli_error($conexion));
+$row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
+$totalRows_recordusuarios = mysqli_num_rows($recordusuarios);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -145,5 +145,5 @@ var sprytextarea1 = new Spry.Widget.ValidationTextarea("sprytextarea1");
 </body>
 </html>
 <?php
-mysql_free_result($recordusuarios);
+mysqli_free_result($recordusuarios);
 ?>

@@ -40,15 +40,14 @@ require_once('Connections/conexion.php');
 $aleatorio=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',105)),6,6);
 echo $aleatorio;
 
-   mysql_select_db($database_conexion, $conexion);
-$LoginRS__query="SELECT usuario, email FROM usuarios WHERE (usuario='".mysql_real_escape_string($usuario)."' AND email='".mysql_real_escape_string($email)."') AND activo='si'"; 
+   $LoginRS__query="SELECT usuario, email FROM usuarios WHERE (usuario='".mysqli_real_escape_string($conexion, $usuario)."' AND email='".mysqli_real_escape_string($conexion, $email)."') AND activo='si'"; 
    
-  $LoginRS = mysql_query($LoginRS__query, $conexion) or die(mysql_error());
-  $filas=mysql_fetch_assoc($LoginRS);
-  $loginFoundUser = mysql_num_rows($LoginRS);
+  $LoginRS = mysqli_query($conexion, $LoginRS__query) or die(mysqli_error($conexion));
+  $filas=mysqli_fetch_assoc($LoginRS);
+  $loginFoundUser = mysqli_num_rows($LoginRS);
 	if ($loginFoundUser>0)	{
-		$update="UPDATE usuarios set contrasena='".sha1($aleatorio)."' WHERE usuario='".mysql_real_escape_string($usuario)."' AND email='".mysql_real_escape_string($email)."' ";
-		 $uptadesi = mysql_query($update, $conexion) or die(mysql_error());
+		$update="UPDATE usuarios set contrasena='".sha1($aleatorio)."' WHERE usuario='".mysqli_real_escape_string($conexion, $usuario)."' AND email='".mysqli_real_escape_string($conexion, $email)."' ";
+		 $uptadesi = mysqli_query($conexion, $update) or die(mysqli_error($conexion));
 
 $message = "
 <div style='background-color: #9c6; text-align:center'><p><a href='http://www.profetamundial.com'><img src='http://www.profetamundial.com/imagenes/profetamundial.png'  width='' height='57' alt='Profeta Mundial'></a></p>
