@@ -8,7 +8,8 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  global $conexion;
+  $theValue = mysqli_real_escape_string($conexion, $theValue);
 
   switch ($theType) {
     case "text":
@@ -47,140 +48,118 @@ $colname_recordusuarios = "-1";
 if (isset($_SESSION['MM_Username'])) {
   $colname_recordusuarios = $_SESSION['MM_Username'];
 }
-mysql_select_db($database_conexion, $conexion);
 $query_recordusuarios = sprintf("SELECT * FROM usuarios WHERE usuario = %s", GetSQLValueString($colname_recordusuarios, "text"));
 $query_limit_recordusuarios = sprintf("%s LIMIT %d, %d", $query_recordusuarios, $startRow_recordusuarios, $maxRows_recordusuarios);
-$recordusuarios = mysql_query($query_limit_recordusuarios, $conexion) or die(mysql_error());
-$row_recordusuarios = mysql_fetch_assoc($recordusuarios);
+$recordusuarios = mysqli_query($conexion, $query_limit_recordusuarios) or die(mysqli_error($conexion));
+$row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
 
 
-mysql_select_db($database_conexion,$conexion);
 $consulta="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 1 AND 6 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultado=mysql_query($consulta, $conexion);
+$resultado=mysqli_query($conexion, $consulta);
 
 $consulta_tabla_A="SELECT * FROM equipos_mundial2022 WHERE grupo='A' AND CodUsu='".$_GET['verlode']."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre";
-$resultado_tabla_A=mysql_query($consulta_tabla_A, $conexion);
+$resultado_tabla_A=mysqli_query($conexion, $consulta_tabla_A);
 
 
 
-mysql_select_db($database_conexion,$conexion);
 $consultaB="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 7 AND 12 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadoB=mysql_query($consultaB, $conexion);
+$resultadoB=mysqli_query($conexion, $consultaB);
 
 $consulta_tabla_B="SELECT * FROM equipos_mundial2022 WHERE grupo='B' AND CodUsu='".$_GET['verlode']."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre DESC";
-$resultado_tabla_B=mysql_query($consulta_tabla_B, $conexion);
+$resultado_tabla_B=mysqli_query($conexion, $consulta_tabla_B);
 
 
-mysql_select_db($database_conexion,$conexion);
 $consultaC="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 13 AND 18 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadoC=mysql_query($consultaC, $conexion);
+$resultadoC=mysqli_query($conexion, $consultaC);
 
 $consulta_tabla_C="SELECT * FROM equipos_mundial2022 WHERE grupo='C' AND CodUsu='".$_GET['verlode']."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre DESC";
-$resultado_tabla_C=mysql_query($consulta_tabla_C, $conexion);
+$resultado_tabla_C=mysqli_query($conexion, $consulta_tabla_C);
 
-mysql_select_db($database_conexion,$conexion);
 $consultaD="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 19 AND 24 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadoD=mysql_query($consultaD, $conexion);
+$resultadoD=mysqli_query($conexion, $consultaD);
 
 $consulta_tabla_D="SELECT * FROM equipos_mundial2022 WHERE grupo='D' AND CodUsu='".$_GET['verlode']."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre DESC";
-$resultado_tabla_D=mysql_query($consulta_tabla_D, $conexion);
+$resultado_tabla_D=mysqli_query($conexion, $consulta_tabla_D);
 
-mysql_select_db($database_conexion,$conexion);
 $consultacuartos="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 25 AND 28 AND CodUsu='".$_GET['verlode']."'";
-$resultadocuartos=mysql_query($consultacuartos, $conexion);
+$resultadocuartos=mysqli_query($conexion, $consultacuartos);
 
-mysql_select_db($database_conexion,$conexion);
 $consultaE="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 25 AND 30 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadoE=mysql_query($consultaE, $conexion);
+$resultadoE=mysqli_query($conexion, $consultaE);
 
 $consulta_tabla_E="SELECT * FROM equipos_mundial2022 WHERE grupo='E' AND CodUsu='".$_GET['verlode']."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre DESC";
-$resultado_tabla_E=mysql_query($consulta_tabla_E, $conexion);
+$resultado_tabla_E=mysqli_query($conexion, $consulta_tabla_E);
 
-mysql_select_db($database_conexion,$conexion);
 $consultaF="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 31 AND 36 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadoF=mysql_query($consultaF, $conexion);
+$resultadoF=mysqli_query($conexion, $consultaF);
 
 $consulta_tabla_F="SELECT * FROM equipos_mundial2022 WHERE grupo='F' AND CodUsu='".$_GET['verlode']."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre DESC";
-$resultado_tabla_F=mysql_query($consulta_tabla_F, $conexion);
+$resultado_tabla_F=mysqli_query($conexion, $consulta_tabla_F);
 
-mysql_select_db($database_conexion,$conexion);
 $consultaG="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 37 AND 42 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadoG=mysql_query($consultaG, $conexion);
+$resultadoG=mysqli_query($conexion, $consultaG);
 
 $consulta_tabla_G="SELECT * FROM equipos_mundial2022 WHERE grupo='G' AND CodUsu='".$_GET['verlode']."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre DESC";
-$resultado_tabla_G=mysql_query($consulta_tabla_G, $conexion);
+$resultado_tabla_G=mysqli_query($conexion, $consulta_tabla_G);
 
-mysql_select_db($database_conexion,$conexion);
 $consultaH="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 43 AND 48 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadoH=mysql_query($consultaH, $conexion);
+$resultadoH=mysqli_query($conexion, $consultaH);
 
 $consulta_tabla_H="SELECT * FROM equipos_mundial2022 WHERE grupo='H' AND CodUsu='".$_GET['verlode']."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre DESC";
-$resultado_tabla_H=mysql_query($consulta_tabla_H, $conexion);
+$resultado_tabla_H=mysqli_query($conexion, $consulta_tabla_H);
 
-mysql_select_db($database_conexion,$conexion);
 $consultaoctavos="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 49 AND 56 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadooctavos=mysql_query($consultaoctavos, $conexion);
+$resultadooctavos=mysqli_query($conexion, $consultaoctavos);
 
-mysql_select_db($database_conexion,$conexion);
 $consultacuartos="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 57 AND 60 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadocuartos=mysql_query($consultacuartos, $conexion);
+$resultadocuartos=mysqli_query($conexion, $consultacuartos);
 
-mysql_select_db($database_conexion,$conexion);
 $consultasemis="SELECT * FROM partidos_mundial2022 WHERE CodPar BETWEEN 61 AND 62 AND CodUsu='".$_GET['verlode']."' ORDER BY CodPar";
-$resultadosemis=mysql_query($consultasemis, $conexion);
+$resultadosemis=mysqli_query($conexion, $consultasemis);
 
-mysql_select_db($database_conexion,$conexion);
 $consultafinal="SELECT * FROM partidos_mundial2022 WHERE CodPar=63 AND CodUsu='".$_GET['verlode']."'";
-$resultadofinal=mysql_query($consultafinal, $conexion);
-$filasresultadofinal=mysql_fetch_assoc($resultadofinal);
+$resultadofinal=mysqli_query($conexion, $consultafinal);
+$filasresultadofinal=mysqli_fetch_assoc($resultadofinal);
 
-mysql_select_db($database_conexion,$conexion);
 $consultatercer="SELECT * FROM partidos_mundial2022 WHERE CodPar=64 AND CodUsu='".$_GET['verlode']."'";
-$resultadotercer=mysql_query($consultatercer, $conexion);
-$filasresultadotercer=mysql_fetch_assoc($resultadotercer);
+$resultadotercer=mysqli_query($conexion, $consultatercer);
+$filasresultadotercer=mysqli_fetch_assoc($resultadotercer);
 
 
-mysql_select_db($database_conexion,$conexion);
 $consultagoleador="SELECT * FROM partidos_mundial2022 WHERE CodPar=66 AND CodUsu='".$_GET['verlode']."'";
-$resultadogoleador=mysql_query($consultagoleador, $conexion);
-$filasresultadogoleador=mysql_fetch_assoc($resultadogoleador);
+$resultadogoleador=mysqli_query($conexion, $consultagoleador);
+$filasresultadogoleador=mysqli_fetch_assoc($resultadogoleador);
 										
-mysql_select_db($database_conexion,$conexion);
 $consultacampeon="SELECT * FROM partidos_mundial2022 WHERE CodPar=65  AND CodUsu='".$_GET['verlode']."'";
-$resultadocampeon=mysql_query($consultacampeon, $conexion);
-$filasresultadocampeon=mysql_fetch_assoc($resultadocampeon);
+$resultadocampeon=mysqli_query($conexion, $consultacampeon);
+$filasresultadocampeon=mysqli_fetch_assoc($resultadocampeon);
 
 
 ///////////CONSULTAR PUNTUACIONES/////////////////////////7
 
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49 and pp.glocal!=99; ";
-$resultado_puntos_resultados=mysql_query($consulta_puntos_resultados, $conexion);
-$filas_puntos_resultados = mysql_fetch_assoc($resultado_puntos_resultados);
+$consulta_puntos_resultados="SELECT count(*) as puntos FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49 and pp.glocal!=99; ";
+$resultado_puntos_resultados=mysqli_query($conexion, $consulta_puntos_resultados);
+$filas_puntos_resultados = mysqli_fetch_assoc($resultado_puntos_resultados);
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados2="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE (ps.CodUsu='".$_GET['verlode']."' AND pp.CodUsu='profetamundial') AND pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64) AND pp.local=ps.local AND pp.visitante=ps.visitante AND pp.glocal!=99; ";
-$resultado_puntos_resultados2=mysql_query($consulta_puntos_resultados2, $conexion);
-$filas_puntos_resultados2 = mysql_fetch_assoc($resultado_puntos_resultados2);
+$consulta_puntos_resultados2="SELECT count(*) as puntos FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE (ps.CodUsu='".$_GET['verlode']."' AND pp.CodUsu='profetamundial') AND pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64) AND pp.local=ps.local AND pp.visitante=ps.visitante AND pp.glocal!=99; ";
+$resultado_puntos_resultados2=mysqli_query($conexion, $consulta_puntos_resultados2);
+$filas_puntos_resultados2 = mysqli_fetch_assoc($resultado_puntos_resultados2);
 
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
-$resultado_puntos_exactos=mysql_query($consulta_puntos_exactos, $conexion);
-$filas_puntos_exactos = mysql_fetch_assoc($resultado_puntos_exactos);
+$consulta_puntos_exactos="SELECT count(*) as puntos FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
+$resultado_puntos_exactos=mysqli_query($conexion, $consulta_puntos_exactos);
+$filas_puntos_exactos = mysqli_fetch_assoc($resultado_puntos_exactos);
 
 
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos2="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64)  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante AND pp.local=ps.local AND pp.visitante=ps.visitante and pp.glocal!=99; ";
-$resultado_puntos_exactos2=mysql_query($consulta_puntos_exactos2, $conexion);
-$filas_puntos_exactos2 = mysql_fetch_assoc($resultado_puntos_exactos2);
+$consulta_puntos_exactos2="SELECT count(*) as puntos FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64)  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante AND pp.local=ps.local AND pp.visitante=ps.visitante and pp.glocal!=99; ";
+$resultado_puntos_exactos2=mysqli_query($conexion, $consulta_puntos_exactos2);
+$filas_puntos_exactos2 = mysqli_fetch_assoc($resultado_puntos_exactos2);
 
 ////OCTAVOS////////////////////////
 
 ////CAMBIO EL GLOCAL POR EL GVISITANTE PARA que se puntue al pasar pero no el resultado del partido
-mysql_select_db($database_conexion,$conexion);
 $consulta_octavos="
 (
 SELECT local as octavos FROM partidos_mundial2022
@@ -206,13 +185,12 @@ OR visitante in
 AND CodPar BETWEEN 49 AND 56
 )
 ";
-$resultado_octavos=mysql_query($consulta_octavos, $conexion);
-$filas_octavos= mysql_num_rows($resultado_octavos);
+$resultado_octavos=mysqli_query($conexion, $consulta_octavos);
+$filas_octavos= mysqli_num_rows($resultado_octavos);
 
 
 
 ////CUARTOS////////////////////////
-mysql_select_db($database_conexion,$conexion);
 $consulta_cuartos="
 (
 SELECT local as cuartos FROM partidos_mundial2022
@@ -238,12 +216,11 @@ OR visitante in
 AND CodPar BETWEEN 57 AND 60
 )
 ";
-$resultado_cuartos=mysql_query($consulta_cuartos, $conexion);
-$filas_cuartos= mysql_num_rows($resultado_cuartos);
+$resultado_cuartos=mysqli_query($conexion, $consulta_cuartos);
+$filas_cuartos= mysqli_num_rows($resultado_cuartos);
 
 
 ////SEMIS
-mysql_select_db($database_conexion,$conexion);
 $consulta_semis="(
 SELECT local as cuartos FROM partidos_mundial2022
 WHERE CodUsu = '".$_GET['verlode']."'
@@ -267,13 +244,12 @@ OR visitante in
 )
 AND CodPar BETWEEN 61 AND 62
 )";
-$resultado_semis=mysql_query($consulta_semis, $conexion);
-$filas_semis= mysql_num_rows($resultado_semis);
+$resultado_semis=mysqli_query($conexion, $consulta_semis);
+$filas_semis= mysqli_num_rows($resultado_semis);
 
 
 ///FINAL
 
-mysql_select_db($database_conexion,$conexion);
 $consulta_final="(
 SELECT local as cuartos FROM partidos_mundial2022
 WHERE CodUsu ='".$_GET['verlode']."'
@@ -297,11 +273,10 @@ OR visitante in
 )
 AND CodPar=63
 )";
-$resultado_final=mysql_query($consulta_final, $conexion);
-$filas_final= mysql_num_rows($resultado_final);
+$resultado_final=mysqli_query($conexion, $consulta_final);
+$filas_final= mysqli_num_rows($resultado_final);
 
 /////////TERCER PUESTO PUNTUAR/////
-mysql_select_db($database_conexion,$conexion);
 $consulta_tercer="(
 SELECT local as cuartos FROM partidos_mundial2022
 WHERE CodUsu = '".$_GET['verlode']."'
@@ -325,35 +300,31 @@ OR visitante in
 )
 AND CodPar=64
 )";
-$resultado_tercer=mysql_query($consulta_tercer, $conexion);
-$filas_tercer= mysql_num_rows($resultado_tercer);
+$resultado_tercer=mysqli_query($conexion, $consulta_tercer);
+$filas_tercer= mysqli_num_rows($resultado_tercer);
 
 /////////GOLEADOR/////
 
-mysql_select_db($database_conexion,$conexion);
 $consulta_goleador="SELECT count(*) as puntos from partidos_mundial2022 where 
 CodPar=66 and 
 local like (select local from partidos_mundial2022 where CodPar=66 and CodUsu='profetamundial')
 and visitante=(select visitante from partidos_mundial2022 where CodPar=66 and CodUsu='profetamundial')
 AND CodUsu='".$_GET['verlode']."'";
-$resultado_goleador=mysql_query($consulta_goleador, $conexion);
-$filas_goleador= mysql_fetch_assoc($resultado_goleador);
+$resultado_goleador=mysqli_query($conexion, $consulta_goleador);
+$filas_goleador= mysqli_fetch_assoc($resultado_goleador);
 
 
-mysql_select_db($database_conexion,$conexion);
 $consulta_campeon="SELECT count(*) as puntos from partidos_mundial2022 where CodPar=65 and local=(select local from partidos_mundial2022 where CodPar=65 and CodUsu='profetamundial') AND CodUsu='".$_GET['verlode']."'";
-$resultado_campeon=mysql_query($consulta_campeon, $conexion);
-$filas_campeon= mysql_fetch_assoc($resultado_campeon);
+$resultado_campeon=mysqli_query($conexion, $consulta_campeon);
+$filas_campeon= mysqli_fetch_assoc($resultado_campeon);
 
-mysql_select_db($database_conexion,$conexion);
 $consulta_tercero="SELECT count(*) as puntos from partidos_mundial2022 where CodPar=65 and visitante=(select visitante from partidos_mundial2022 where CodPar=65 and CodUsu='ProfetaMundial') AND CodUsu='".$_GET['verlode']."'";
-$resultado_tercero=mysql_query($consulta_tercero, $conexion);
-$filas_tercero= mysql_fetch_assoc($resultado_tercero);
+$resultado_tercero=mysqli_query($conexion, $consulta_tercero);
+$filas_tercero= mysqli_fetch_assoc($resultado_tercero);
 
 
 if (isset($_POST['puntuar']))	{
-mysql_select_db($database_conexion,$conexion);
-mysql_query("UPDATE usuarios SET puntos='".$_POST['puntos']."' WHERE usuario='".$_POST['usuario']."'");
+mysqli_query($conexion, "UPDATE usuarios SET puntos='".$_POST['puntos']."' WHERE usuario='".$_POST['usuario']."'");
 
 }
 ?>
@@ -454,7 +425,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 	<div class="contenedora_2018">
 <br /><b>GRUPO A</b>
 <br />
-	<?php while ($filasresultado=mysql_fetch_assoc($resultado)) { ?>
+	<?php while ($filasresultado=mysqli_fetch_assoc($resultado)) { ?>
 			<div class="comentarios">
 			<?php echo $filasresultado['local']; ?>  <b><?php echo $filasresultado['glocal']; ?></b>  - <b><?php echo $filasresultado['gvisitante']; ?></b> <?php echo $filasresultado['visitante']; ?> 
 			</div>
@@ -468,7 +439,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 					<td>GC</td>
 					<td>Dif gol</td>
 				</tr>
-			<?php while ($filasresultado_tabla_A=mysql_fetch_assoc($resultado_tabla_A)) { ?>
+			<?php while ($filasresultado_tabla_A=mysqli_fetch_assoc($resultado_tabla_A)) { ?>
 				<tr>
 					<td><?php echo $filasresultado_tabla_A['nombre']; ?></td>
 					<td><?php echo $filasresultado_tabla_A['puntos']; ?></td>
@@ -481,7 +452,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 <hr />
 <br /><b>GRUPO B</b>
 <br />
-<?php while ($filasresultadoB=mysql_fetch_assoc($resultadoB)) { ?>
+<?php while ($filasresultadoB=mysqli_fetch_assoc($resultadoB)) { ?>
 			<div class="comentarios">
 			<?php echo $filasresultadoB['local']; ?> <b><?php echo $filasresultadoB['glocal']; ?></b> - <b><?php echo $filasresultadoB['gvisitante']; ?></b> <?php echo $filasresultadoB['visitante']; ?> 
 			</div>
@@ -496,7 +467,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 					<td>GC</td>
 					<td>Dif gol</td>
 				</tr>
-			<?php while ($filasresultado_tabla_B=mysql_fetch_assoc($resultado_tabla_B)) { ?>
+			<?php while ($filasresultado_tabla_B=mysqli_fetch_assoc($resultado_tabla_B)) { ?>
 				<tr>
 					<td><?php echo $filasresultado_tabla_B['nombre']; ?></td>
 					<td><?php echo $filasresultado_tabla_B['puntos']; ?></td>
@@ -510,7 +481,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 
 <br /><b>GRUPO C</b>
 <br />
-<?php while ($filasresultadoC=mysql_fetch_assoc($resultadoC)) { ?>
+<?php while ($filasresultadoC=mysqli_fetch_assoc($resultadoC)) { ?>
 			<div class="comentarios">
 			<?php echo $filasresultadoC['local']; ?> <b><?php echo $filasresultadoC['glocal']; ?></b> - <b><?php echo $filasresultadoC['gvisitante']; ?></b> <?php echo $filasresultadoC['visitante']; ?> 
 			</div>
@@ -525,7 +496,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 					<td>GC</td>
 					<td>Dif gol</td>
 				</tr>
-			<?php while ($filasresultado_tabla_C=mysql_fetch_assoc($resultado_tabla_C)) { ?>
+			<?php while ($filasresultado_tabla_C=mysqli_fetch_assoc($resultado_tabla_C)) { ?>
 				<tr>
 					<td><?php echo $filasresultado_tabla_C['nombre']; ?></td>
 					<td><?php echo $filasresultado_tabla_C['puntos']; ?></td>
@@ -538,7 +509,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 <hr />
 <br /><b>GRUPO D</b>
 <br />
-<?php while ($filasresultadoD=mysql_fetch_assoc($resultadoD)) { ?>
+<?php while ($filasresultadoD=mysqli_fetch_assoc($resultadoD)) { ?>
 			<div class="comentarios">
 			<?php echo $filasresultadoD['local']; ?> <b><?php echo $filasresultadoD['glocal']; ?></b> - <b><?php echo $filasresultadoD['gvisitante']; ?></b> <?php echo $filasresultadoD['visitante']; ?> 
 			</div>
@@ -553,7 +524,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 					<td>GC</td>
 					<td>Dif gol</td>
 				</tr>
-			<?php while ($filasresultado_tabla_D=mysql_fetch_assoc($resultado_tabla_D)) { ?>
+			<?php while ($filasresultado_tabla_D=mysqli_fetch_assoc($resultado_tabla_D)) { ?>
 				<tr>
 					<td><?php echo $filasresultado_tabla_D['nombre']; ?></td>
 					<td><?php echo $filasresultado_tabla_D['puntos']; ?></td>
@@ -566,7 +537,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 <hr />
 <br /><b>GRUPO E</b>
 <br />
-<?php while ($filasresultadoE=mysql_fetch_assoc($resultadoE)) { ?>
+<?php while ($filasresultadoE=mysqli_fetch_assoc($resultadoE)) { ?>
 			<div class="comentarios">
 			<?php echo $filasresultadoE['local']; ?> <b><?php echo $filasresultadoE['glocal']; ?></b> - <b><?php echo $filasresultadoE['gvisitante']; ?></b> <?php echo $filasresultadoE['visitante']; ?> 
 			</div>
@@ -581,7 +552,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 					<td>GC</td>
 					<td>Dif gol</td>
 				</tr>
-			<?php while ($filasresultado_tabla_E=mysql_fetch_assoc($resultado_tabla_E)) { ?>
+			<?php while ($filasresultado_tabla_E=mysqli_fetch_assoc($resultado_tabla_E)) { ?>
 				<tr>
 					<td><?php echo $filasresultado_tabla_E['nombre']; ?></td>
 					<td><?php echo $filasresultado_tabla_E['puntos']; ?></td>
@@ -594,7 +565,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 <hr />
 <br /><b>GRUPO F</b>
 <br />
-<?php while ($filasresultadoF=mysql_fetch_assoc($resultadoF)) { ?>
+<?php while ($filasresultadoF=mysqli_fetch_assoc($resultadoF)) { ?>
 			<div class="comentarios">
 			<?php echo $filasresultadoF['local']; ?> <b><?php echo $filasresultadoF['glocal']; ?></b> - <b><?php echo $filasresultadoF['gvisitante']; ?></b> <?php echo $filasresultadoF['visitante']; ?> 
 			</div>
@@ -609,7 +580,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 					<td>GC</td>
 					<td>Dif gol</td>
 				</tr>
-			<?php while ($filasresultado_tabla_F=mysql_fetch_assoc($resultado_tabla_F)) { ?>
+			<?php while ($filasresultado_tabla_F=mysqli_fetch_assoc($resultado_tabla_F)) { ?>
 				<tr>
 					<td><?php echo $filasresultado_tabla_F['nombre']; ?></td>
 					<td><?php echo $filasresultado_tabla_F['puntos']; ?></td>
@@ -622,7 +593,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 <hr />
 <br /><b>GRUPO G</b>
 <br />
-<?php while ($filasresultadoG=mysql_fetch_assoc($resultadoG)) { ?>
+<?php while ($filasresultadoG=mysqli_fetch_assoc($resultadoG)) { ?>
 			<div class="comentarios">
 			<?php echo $filasresultadoG['local']; ?> <b><?php echo $filasresultadoG['glocal']; ?></b> - <b><?php echo $filasresultadoG['gvisitante']; ?></b> <?php echo $filasresultadoG['visitante']; ?> 
 			</div>
@@ -637,7 +608,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 					<td>GC</td>
 					<td>Dif gol</td>
 				</tr>
-			<?php while ($filasresultado_tabla_G=mysql_fetch_assoc($resultado_tabla_G)) { ?>
+			<?php while ($filasresultado_tabla_G=mysqli_fetch_assoc($resultado_tabla_G)) { ?>
 				<tr>
 					<td><?php echo $filasresultado_tabla_G['nombre']; ?></td>
 					<td><?php echo $filasresultado_tabla_G['puntos']; ?></td>
@@ -650,7 +621,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 <hr />
 <br /><b>GRUPO H</b>
 <br />
-<?php while ($filasresultadoH=mysql_fetch_assoc($resultadoH)) { ?>
+<?php while ($filasresultadoH=mysqli_fetch_assoc($resultadoH)) { ?>
 			<div class="comentarios">
 			<?php echo $filasresultadoH['local']; ?> <b><?php echo $filasresultadoH['glocal']; ?></b> - <b><?php echo $filasresultadoH['gvisitante']; ?></b> <?php echo $filasresultadoH['visitante']; ?> 
 			</div>
@@ -665,7 +636,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 					<td>GC</td>
 					<td>Dif gol</td>
 				</tr>
-			<?php while ($filasresultado_tabla_H=mysql_fetch_assoc($resultado_tabla_H)) { ?>
+			<?php while ($filasresultado_tabla_H=mysqli_fetch_assoc($resultado_tabla_H)) { ?>
 				<tr>
 					<td><?php echo $filasresultado_tabla_H['nombre']; ?></td>
 					<td><?php echo $filasresultado_tabla_H['puntos']; ?></td>
@@ -680,7 +651,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 <br />
     
 <p><b>Octavos</b></p>
-<?php while ($filasresultadooctavos=mysql_fetch_assoc($resultadooctavos)) { ?>
+<?php while ($filasresultadooctavos=mysqli_fetch_assoc($resultadooctavos)) { ?>
 			<div class="comentarios">
 		<?php echo $filasresultadooctavos['local']; ?> <b><?php echo $filasresultadooctavos['glocal']; ?></b>  -  <b><?php echo $filasresultadooctavos['gvisitante']; ?></b>  <?php echo $filasresultadooctavos['visitante']; ?>  
 			</div>
@@ -688,7 +659,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 
 
 <p><b>Cuartos</b></p>
-<?php while ($filasresultadocuartos=mysql_fetch_assoc($resultadocuartos)) { ?>
+<?php while ($filasresultadocuartos=mysqli_fetch_assoc($resultadocuartos)) { ?>
 			<div class="comentarios">
 		<?php echo $filasresultadocuartos['local']; ?> <b><?php echo $filasresultadocuartos['glocal']; ?></b>  -  <b><?php echo $filasresultadocuartos['gvisitante']; ?></b>  <?php echo $filasresultadocuartos['visitante']; ?>  
 			</div>
@@ -696,7 +667,7 @@ $total=$pexactos+$partidoGrupos+$puntospartidos_olegunda+$octavos+$cuartos+$semi
 
 
 <p><b>Semifinales</b></p>
-<?php while ($filasresultadosemis=mysql_fetch_assoc($resultadosemis)) { ?>
+<?php while ($filasresultadosemis=mysqli_fetch_assoc($resultadosemis)) { ?>
 			<div class="comentarios">
 		<?php echo $filasresultadosemis['local']; ?> <b><?php echo $filasresultadosemis['glocal']; ?></b>  -  <b><?php echo $filasresultadosemis['gvisitante']; ?></b>  <?php echo $filasresultadosemis['visitante']; ?>  
 			</div>

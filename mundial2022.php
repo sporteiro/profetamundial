@@ -8,7 +8,8 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  global $conexion;
+  $theValue = mysqli_real_escape_string($conexion, $theValue);
 
   switch ($theType) {
     case "text":
@@ -47,41 +48,35 @@ $colname_recordusuarios = "-1";
 if (isset($_SESSION['MM_Username'])) {
   $colname_recordusuarios = $_SESSION['MM_Username'];
 }
-mysql_select_db($database_conexion, $conexion);
 $query_recordusuarios = sprintf("SELECT * FROM usuarios WHERE usuario = %s", GetSQLValueString($colname_recordusuarios, "text"));
 $query_limit_recordusuarios = sprintf("%s LIMIT %d, %d", $query_recordusuarios, $startRow_recordusuarios, $maxRows_recordusuarios);
-$recordusuarios = mysql_query($query_limit_recordusuarios, $conexion) or die(mysql_error());
-$row_recordusuarios = mysql_fetch_assoc($recordusuarios);
+$recordusuarios = mysqli_query($conexion, $query_limit_recordusuarios) or die(mysqli_error($conexion));
+$row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
 
 ///////////CONSULTAR PUNTUACIONES/////////////////////////7
 
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49 and pp.glocal!=99; ";
-$resultado_puntos_resultados=mysql_query($consulta_puntos_resultados, $conexion);
-$filas_puntos_resultados = mysql_fetch_assoc($resultado_puntos_resultados);
+$consulta_puntos_resultados="SELECT count(*) as puntos FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49 and pp.glocal!=99; ";
+$resultado_puntos_resultados=mysqli_query($conexion, $consulta_puntos_resultados);
+$filas_puntos_resultados = mysqli_fetch_assoc($resultado_puntos_resultados);
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados2="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE (ps.CodUsu='".$_SESSION['MM_Username']."' AND pp.CodUsu='profetamundial') AND pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64) AND pp.local=ps.local AND pp.visitante=ps.visitante AND pp.glocal!=99; ";
-$resultado_puntos_resultados2=mysql_query($consulta_puntos_resultados2, $conexion);
-$filas_puntos_resultados2 = mysql_fetch_assoc($resultado_puntos_resultados2);
+$consulta_puntos_resultados2="SELECT count(*) as puntos FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE (ps.CodUsu='".$_SESSION['MM_Username']."' AND pp.CodUsu='profetamundial') AND pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64) AND pp.local=ps.local AND pp.visitante=ps.visitante AND pp.glocal!=99; ";
+$resultado_puntos_resultados2=mysqli_query($conexion, $consulta_puntos_resultados2);
+$filas_puntos_resultados2 = mysqli_fetch_assoc($resultado_puntos_resultados2);
 
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
-$resultado_puntos_exactos=mysql_query($consulta_puntos_exactos, $conexion);
-$filas_puntos_exactos = mysql_fetch_assoc($resultado_puntos_exactos);
+$consulta_puntos_exactos="SELECT count(*) as puntos FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
+$resultado_puntos_exactos=mysqli_query($conexion, $consulta_puntos_exactos);
+$filas_puntos_exactos = mysqli_fetch_assoc($resultado_puntos_exactos);
 
 
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos2="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64)  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante AND pp.local=ps.local AND pp.visitante=ps.visitante and pp.glocal!=99; ";
-$resultado_puntos_exactos2=mysql_query($consulta_puntos_exactos2, $conexion);
-$filas_puntos_exactos2 = mysql_fetch_assoc($resultado_puntos_exactos2);
+$consulta_puntos_exactos2="SELECT count(*) as puntos FROM partidos_mundial2022 pp join partidos_mundial2022 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64)  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante AND pp.local=ps.local AND pp.visitante=ps.visitante and pp.glocal!=99; ";
+$resultado_puntos_exactos2=mysqli_query($conexion, $consulta_puntos_exactos2);
+$filas_puntos_exactos2 = mysqli_fetch_assoc($resultado_puntos_exactos2);
 
 ////OCTAVOS////////////////////////
 ////CAMBIO EL GLOCAL POR EL GVISITANTE PARA que se puntue al pasar pero no el resultado del partido
-mysql_select_db($database_conexion,$conexion);
 $consulta_octavos="
 (
 SELECT local as octavos FROM partidos_mundial2022
@@ -107,13 +102,12 @@ OR visitante in
 AND CodPar BETWEEN 49 AND 56
 )
 ";
-$resultado_octavos=mysql_query($consulta_octavos, $conexion);
-$filas_octavos= mysql_num_rows($resultado_octavos);
+$resultado_octavos=mysqli_query($conexion, $consulta_octavos);
+$filas_octavos= mysqli_num_rows($resultado_octavos);
 
 
 
 ////CUARTOS////////////////////////
-mysql_select_db($database_conexion,$conexion);
 $consulta_cuartos="
 (
 SELECT local as cuartos FROM partidos_mundial2022
@@ -139,12 +133,11 @@ OR visitante in
 AND CodPar BETWEEN 57 AND 60
 )
 ";
-$resultado_cuartos=mysql_query($consulta_cuartos, $conexion);
-$filas_cuartos= mysql_num_rows($resultado_cuartos);
+$resultado_cuartos=mysqli_query($conexion, $consulta_cuartos);
+$filas_cuartos= mysqli_num_rows($resultado_cuartos);
 
 
 ////SEMIS
-mysql_select_db($database_conexion,$conexion);
 $consulta_semis="(
 SELECT local as cuartos FROM partidos_mundial2022
 WHERE CodUsu = '".$_SESSION['MM_Username']."'
@@ -168,13 +161,12 @@ OR visitante in
 )
 AND CodPar BETWEEN 61 AND 62
 )";
-$resultado_semis=mysql_query($consulta_semis, $conexion);
-$filas_semis= mysql_num_rows($resultado_semis);
+$resultado_semis=mysqli_query($conexion, $consulta_semis);
+$filas_semis= mysqli_num_rows($resultado_semis);
 
 
 ///FINAL
 
-mysql_select_db($database_conexion,$conexion);
 $consulta_final="(
 SELECT local as cuartos FROM partidos_mundial2022
 WHERE CodUsu ='".$_SESSION['MM_Username']."'
@@ -198,11 +190,10 @@ OR visitante in
 )
 AND CodPar=63
 )";
-$resultado_final=mysql_query($consulta_final, $conexion);
-$filas_final= mysql_num_rows($resultado_final);
+$resultado_final=mysqli_query($conexion, $consulta_final);
+$filas_final= mysqli_num_rows($resultado_final);
 
 /////////TERCER PUESTO PUNTUAR/////
-mysql_select_db($database_conexion,$conexion);
 $consulta_tercer="(
 SELECT local as cuartos FROM partidos_mundial2022
 WHERE CodUsu = '".$_SESSION['MM_Username']."'
@@ -226,35 +217,31 @@ OR visitante in
 )
 AND CodPar=64
 )";
-$resultado_tercer=mysql_query($consulta_tercer, $conexion);
-$filas_tercer= mysql_num_rows($resultado_tercer);
+$resultado_tercer=mysqli_query($conexion, $consulta_tercer);
+$filas_tercer= mysqli_num_rows($resultado_tercer);
 
 /////////GOLEADOR/////
 
-mysql_select_db($database_conexion,$conexion);
 $consulta_goleador="SELECT count(*) as puntos from partidos_mundial2022 where 
 CodPar=66 and 
 local like (select local from partidos_mundial2022 where CodPar=66 and CodUsu='profetamundial')
 and visitante=(select visitante from partidos_mundial2022 where CodPar=66 and CodUsu='profetamundial')
 AND CodUsu='".$_SESSION['MM_Username']."'";
-$resultado_goleador=mysql_query($consulta_goleador, $conexion);
-$filas_goleador= mysql_fetch_assoc($resultado_goleador);
+$resultado_goleador=mysqli_query($conexion, $consulta_goleador);
+$filas_goleador= mysqli_fetch_assoc($resultado_goleador);
 
 
-mysql_select_db($database_conexion,$conexion);
 $consulta_campeon="SELECT count(*) as puntos from partidos_mundial2022 where CodPar=65 and local=(select local from partidos_mundial2022 where CodPar=65 and CodUsu='profetamundial') AND CodUsu='".$_SESSION['MM_Username']."'";
-$resultado_campeon=mysql_query($consulta_campeon, $conexion);
-$filas_campeon= mysql_fetch_assoc($resultado_campeon);
+$resultado_campeon=mysqli_query($conexion, $consulta_campeon);
+$filas_campeon= mysqli_fetch_assoc($resultado_campeon);
 
-mysql_select_db($database_conexion,$conexion);
 $consulta_tercero="SELECT count(*) as puntos from partidos_mundial2022 where CodPar=65 and visitante=(select visitante from partidos_mundial2022 where CodPar=65 and CodUsu='ProfetaMundial') AND CodUsu='".$_SESSION['MM_Username']."'";
-$resultado_tercero=mysql_query($consulta_tercero, $conexion);
-$filas_tercero= mysql_fetch_assoc($resultado_tercero);
+$resultado_tercero=mysqli_query($conexion, $consulta_tercero);
+$filas_tercero= mysqli_fetch_assoc($resultado_tercero);
 
 
 if (isset($_POST['puntuar']))	{
-mysql_select_db($database_conexion,$conexion);
-mysql_query("UPDATE usuarios SET puntos='".$_POST['puntos']."' WHERE usuario='".$_POST['usuario']."'");
+mysqli_query($conexion, "UPDATE usuarios SET puntos='".$_POST['puntos']."' WHERE usuario='".$_POST['usuario']."'");
 
 }
 ?>

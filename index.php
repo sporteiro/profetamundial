@@ -4,11 +4,18 @@
 if (!function_exists("GetSQLValueString")) {
 function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
 {
+  // Usamos la conexión mysqli definida en conexion.php
+  global $conexion;
+
   if (PHP_VERSION < 6) {
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  if (function_exists("mysqli_real_escape_string") && $conexion) {
+    $theValue = mysqli_real_escape_string($conexion, $theValue);
+  } else {
+    $theValue = addslashes($theValue);
+  }
 
   switch ($theType) {
     case "text":
@@ -32,30 +39,31 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 
-mysql_select_db($database_conexion, $conexion);
+// Ya seleccionamos la base de datos en conexion.php (mysqli_connect incluye el nombre de la DB)
 $query_todoslosusuarios = "SELECT * FROM usuarios ORDER BY puntos DESC";
-$todoslosusuarios = mysql_query($query_todoslosusuarios, $conexion) or die(mysql_error());
-$row_todoslosusuarios = mysql_fetch_assoc($todoslosusuarios);
-$totalRows_todoslosusuarios = mysql_num_rows($todoslosusuarios);
+$todoslosusuarios = mysqli_query($conexion, $query_todoslosusuarios) or die(mysqli_error($conexion));
+$row_todoslosusuarios = mysqli_fetch_assoc($todoslosusuarios);
+$totalRows_todoslosusuarios = mysqli_num_rows($todoslosusuarios);
 
-mysql_select_db($database_conexion, $conexion);
 $query_Recordcomentarios = "SELECT * FROM comentarios natural join usuarios ORDER BY id DESC";
-$Recordcomentarios = mysql_query($query_Recordcomentarios, $conexion) or die(mysql_error());
-$row_Recordcomentarios = mysql_fetch_assoc($Recordcomentarios);
-$totalRows_Recordcomentarios = mysql_num_rows($Recordcomentarios);
+$Recordcomentarios = mysqli_query($conexion, $query_Recordcomentarios) or die(mysqli_error($conexion));
+$row_Recordcomentarios = mysqli_fetch_assoc($Recordcomentarios);
+$totalRows_Recordcomentarios = mysqli_num_rows($Recordcomentarios);
 
 
+$query_todomundial2026 = "SELECT T.*, U.* FROM Torneos as T join usuarios as U on T.inscriptos=U.usuario WHERE CodTor='20' AND U.usuario!='ProfetaMundial' order by U.puntos DESC";
+$todomundial2026= mysqli_query($conexion, $query_todomundial2026) or die(mysqli_error($conexion));
+$row_todomundial2026 = mysqli_fetch_assoc($todomundial2026);
+$totalRows_todomundial2026= mysqli_num_rows($todomundial2026);
 
-mysql_select_db($database_conexion, $conexion);
-$query_todooscar = "SELECT T.*, U.* FROM Torneos as T join usuarios as U on T.inscriptos=U.usuario WHERE CodTor='19' AND U.usuario!='ProfetaMundial' order by U.puntos DESC";
-$todooscar= mysql_query($query_todooscar, $conexion) or die(mysql_error());
-$row_todooscar = mysql_fetch_assoc($todooscar);
-$totalRows_todooscar= mysql_num_rows($todooscar);
+$query_todomundial2022 = "SELECT T.*, U.* FROM Torneos as T join usuarios as U on T.inscriptos=U.usuario WHERE CodTor='19' AND U.usuario!='ProfetaMundial' order by U.puntos DESC";
+$todomundial2022= mysqli_query($conexion, $query_todomundial2022) or die(mysqli_error($conexion));
+$row_todomundial2022 = mysqli_fetch_assoc($todomundial2022);
+$totalRows_todomundial2022= mysqli_num_rows($todomundial2022);
 
-mysql_select_db($database_conexion, $conexion);
 $query_hoy_usu= "SELECT * FROM partidos_mundial2022 WHERE CodPar in(select CodPar from partidos_mundial2022 where fecha=curdate()) and CodUsu !='ProfetaMundial' AND  local in (select local from partidos_mundial2022 where fecha=curdate() and CodUsu='ProfetaMundial') AND  visitante in (select visitante from partidos_mundial2022 where fecha=curdate() and CodUsu='ProfetaMundial') ORDER BY CodPar, resultado,Glocal,Gvisitante,CodUsu ;";
-$hoy_usu= mysql_query($query_hoy_usu, $conexion) or die(mysql_error());
-$totalRows_hoy_usu= mysql_num_rows($hoy_usu);
+$hoy_usu= mysqli_query($conexion, $query_hoy_usu) or die(mysqli_error($conexion));
+$totalRows_hoy_usu= mysqli_num_rows($hoy_usu);
 ?>
 <!DOCTYPE html>
 <html>
@@ -135,7 +143,7 @@ var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2");
         	
            <div class="tablaresultados">
         	<div class="comentarios" style="text-align:center;">
-   		 <p><strong>¡Disponible el pronostico para el Mundial Qatar 2022!</strong></p>
+   		 <p><strong>¡Disponible el pronostico para el Mundial 2026!</strong></p>
   		<span><a href="noingrese.php" class="botoneschicos" target="_blank">Entr&aacute; para participar</a></span>
   		<p></p>
    		 <br />
@@ -162,7 +170,7 @@ var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2");
 		$con='a';	
 		$d=0;
 		if ($totalRows_hoy_usu>0) {
-		while ($row_usu = mysql_fetch_assoc($hoy_usu)) {
+		while ($row_usu = mysqli_fetch_assoc($hoy_usu)) {
 			if ($con!=$row_usu['CodPar'])	{
 				if ($d>0) echo "</div>";
 				echo "<div style='float:left; padding-left:26px; padding-top:5px;text-align:left;'>";
@@ -196,21 +204,38 @@ var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2");
 </div>
 <br />
           <br />
-<strong>Participantes Mundial Qatar 2022</strong>
-     <?php do { ?>
+<strong>Participantes Mundial 2026</strong>
+     <?php if ($totalRows_todomundial2026 > 0) { do { ?>
   <div class="tablaresultados">
         	<div class="comentarios" style="text-align:center; vertical-align:text-bottom;">
-   			<img src="imagenes/avatares/<?php echo $row_todooscar['avatar'];?>" height="32" width="32" alt="" class="comentarios_avatar"/> 
-			<span class="comentarios_usuario"> <?php echo $row_todooscar['inscriptos']; ?> </span> 
+   			<img src="imagenes/avatares/<?php echo $row_todomundial2026['avatar'];?>" height="32" width="32" alt="" class="comentarios_avatar"/> 
+			<span class="comentarios_usuario"> <?php echo $row_todomundial2026['inscriptos']; ?> </span> 
 			<div class="puntos">
-				<span class="puntos_numero"><?php echo $row_todooscar['puntos']; ?></span><br />
+				<span class="puntos_numero"><?php echo $row_todomundial2026['puntos']; ?></span><br />
 				<span class="puntos_texto">PUNTOS</span>
 				<div class="clear"></div>
 			</div>
 			<div class="clear"></div>
          	</div>
   </div>
-	  <?php } while ($row_todooscar = mysql_fetch_assoc($todooscar)); ?>
+	  <?php } while ($row_todomundial2026 = mysqli_fetch_assoc($todomundial2026)); } ?>
+          <br />
+
+<strong>Participantes Mundial Qatar 2022</strong>
+     <?php if ($totalRows_todomundial2022 > 0) { do { ?>
+  <div class="tablaresultados">
+        	<div class="comentarios" style="text-align:center; vertical-align:text-bottom;">
+   			<img src="imagenes/avatares/<?php echo $row_todomundial2022['avatar'];?>" height="32" width="32" alt="" class="comentarios_avatar"/> 
+			<span class="comentarios_usuario"> <?php echo $row_todomundial2022['inscriptos']; ?> </span> 
+			<div class="puntos">
+				<span class="puntos_numero"><?php echo $row_todomundial2022['puntos']; ?></span><br />
+				<span class="puntos_texto">PUNTOS</span>
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+         	</div>
+  </div>
+	  <?php } while ($row_todomundial2022 = mysqli_fetch_assoc($todomundial2022)); } ?>
           <br />
 
 

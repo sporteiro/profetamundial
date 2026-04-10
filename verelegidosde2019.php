@@ -13,8 +13,7 @@ if ((isset($_SERVER['QUERY_STRING'])) && ($_SERVER['QUERY_STRING'] != "")){
 
 if ((isset($_GET['doLogout'])) &&($_GET['doLogout']=="true")){
   //to fully log out a visitor we need to clear the session varialbles
-  mysql_select_db($database_conexion, $conexion);
-  mysql_query("UPDATE usuarios SET enlinea='no' WHERE usuario='".$_SESSION['MM_Username']."'")or die(mysql_error());
+  mysqli_query($conexion, "UPDATE usuarios SET enlinea='no' WHERE usuario='".$_SESSION['MM_Username']."'")or die(mysqli_error($conexion));
   $_SESSION['MM_Username'] = NULL;
   $_SESSION['MM_UserGroup'] = NULL;
   $_SESSION['PrevUrl'] = NULL;
@@ -76,13 +75,13 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
 ?>
 <?php
 if (!function_exists("GetSQLValueString")) {
-function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
-{
+function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") {
+  global $conexion;
   if (PHP_VERSION < 6) {
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+    $theValue = mysqli_real_escape_string($conexion, $theValue);
 
   switch ($theType) {
     case "text":
@@ -105,27 +104,24 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
   return $theValue;
 }
 }
-mysql_select_db($database_conexion, $conexion);
 $query_usuprenom2019= "SELECT CodUsu, CodNom, nombreR FROM usuprenom2019, Premios WHERE CodUsu LIKE '".$_GET['usuario']."' AND usuprenom2019.CodPre LIKE Premios.CodPre;";
-$usuprenom2019= mysql_query($query_usuprenom2019, $conexion) or die(mysql_error());
-$row_usuprenom2019= mysql_fetch_assoc($usuprenom2019);
-$totalRows_usuprenom2019= mysql_num_rows($usuprenom2019);
+$usuprenom2019= mysqli_query($conexion, $query_usuprenom2019) or die(mysqli_error($conexion));
+$row_usuprenom2019= mysqli_fetch_assoc($usuprenom2019);
+$totalRows_usuprenom2019= mysqli_num_rows($usuprenom2019);
 
 $colname_recordusuarios = "-1";
 if (isset($_SESSION['MM_Username'])) {
   $colname_recordusuarios = $_SESSION['MM_Username'];
 }
-mysql_select_db($database_conexion, $conexion);
 $query_recordusuarios = sprintf("SELECT * FROM usuarios WHERE usuario = %s", GetSQLValueString($colname_recordusuarios, "text"));
-$recordusuarios = mysql_query($query_recordusuarios, $conexion) or die(mysql_error());
-$row_recordusuarios = mysql_fetch_assoc($recordusuarios);
-$totalRows_recordusuarios = mysql_num_rows($recordusuarios);
+$recordusuarios = mysqli_query($conexion, $query_recordusuarios) or die(mysqli_error($conexion));
+$row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
+$totalRows_recordusuarios = mysqli_num_rows($recordusuarios);
 
 //VER PUNTOS
-mysql_select_db($database_conexion, $conexion);
-$query_puntaje = "SELECT pp.*, pu.*, count(*) as puntos FROM usuprenom2019 pp JOIN usuprenom2019 pu ON pp.CodPre=pu.CodPre WHERE pp.CodUsu='".$_GET['usuario']."' AND pu.CodUsu='ProfetaMundial' AND pp.CodNom=pu.CodNom";
-$record_puntaje = mysql_query($query_puntaje, $conexion) or die(mysql_error());
-$row_puntaje = mysql_fetch_assoc($record_puntaje);
+$query_puntaje = "SELECT count(*) as puntos FROM usuprenom2019 pp JOIN usuprenom2019 pu ON pp.CodPre=pu.CodPre WHERE pp.CodUsu='".$_GET['usuario']."' AND pu.CodUsu='ProfetaMundial' AND pp.CodNom=pu.CodNom";
+$record_puntaje = mysqli_query($conexion, $query_puntaje) or die(mysqli_error($conexion));
+$row_puntaje = mysqli_fetch_assoc($record_puntaje);
 
 ?>
 <!DOCTYPE html>
@@ -171,7 +167,7 @@ $row_puntaje = mysql_fetch_assoc($record_puntaje);
 	<p>
 	<b><?php echo $row_usuprenom2019['nombreR'];?></b>:&nbsp;<?php echo $row_usuprenom2019['CodNom'];?>:&nbsp;<span class="letraschicas"><a href="http://www.imdb.com/find?s=all&q=<?php echo $row_usuprenom2019['CodNom'];?>" target="_blank">+info IMDb</a></span><br />
     </p>
-<?php } while ($row_usuprenom2019= mysql_fetch_assoc($usuprenom2019))?>
+<?php } while ($row_usuprenom2019= mysqli_fetch_assoc($usuprenom2019))?>
 </div>
 <!-- Fin del pronostico-->
 	<div>
