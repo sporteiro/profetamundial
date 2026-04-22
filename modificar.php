@@ -136,8 +136,8 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "form1")) {
 		$Result1 = mysqli_query($conexion, $updateSQL) or die(mysqli_error($conexion));
 		}
 		else if (($tipo_imagen != "image/jpeg")or($tipo_imagen != "image/png")or($tipo_imagen != "image/gif") or ($_FILES["imagen"]["size"] > 250000))  {
-			header('Location: modificar.php?error=1');		
-			break;
+			header('Location: modificar.php?error=1');
+			exit;
 		}
 	}
 //
@@ -270,7 +270,7 @@ return $GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'];
       	</p>
 	<p>
 	Avatar: <br />
-	<?if (isset($_GET['error']) && ($_GET['error']==1)) {
+	<?php if (isset($_GET['error']) && ($_GET['error']==1)) {
 		echo "<span class='letrasgrandesnaranjas'>Hubo un problema al subir tu imagen. Aseguráte de que cumple los siguientes requisitos:</span><br />";
 	}?>
 	<span class="letraschicas">Pod&eacute;s subir cualquier imagen jpg, png o gif que ocupe <b>250Kb</b> como maximo</span>

@@ -155,25 +155,25 @@ $filasresultadocampeon=mysql_fetch_assoc($resultadocampeon);
 
 
 mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2014 pp join partidos_mundial2014 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49 and pp.glocal!=99; ";
+$consulta_puntos_resultados="SELECT COUNT(*) AS puntos FROM partidos_mundial2014 pp join partidos_mundial2014 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49 and pp.glocal!=99; ";
 $resultado_puntos_resultados=mysql_query($consulta_puntos_resultados, $conexion);
 $filas_puntos_resultados = mysql_fetch_assoc($resultado_puntos_resultados);
 
 mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados2="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2014 pp join partidos_mundial2014 ps  ON  pp.CodPar=ps.CodPar WHERE (ps.CodUsu='".$_GET['verlode']."' AND pp.CodUsu='profetamundial') AND pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64) AND pp.local=ps.local AND pp.visitante=ps.visitante AND pp.glocal!=99; ";
+$consulta_puntos_resultados2="SELECT COUNT(*) AS puntos FROM partidos_mundial2014 pp join partidos_mundial2014 ps  ON  pp.CodPar=ps.CodPar WHERE (ps.CodUsu='".$_GET['verlode']."' AND pp.CodUsu='profetamundial') AND pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64) AND pp.local=ps.local AND pp.visitante=ps.visitante AND pp.glocal!=99; ";
 $resultado_puntos_resultados2=mysql_query($consulta_puntos_resultados2, $conexion);
 $filas_puntos_resultados2 = mysql_fetch_assoc($resultado_puntos_resultados2);
 
 
 mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2014 pp join partidos_mundial2014 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
+$consulta_puntos_exactos="SELECT COUNT(*) AS puntos FROM partidos_mundial2014 pp join partidos_mundial2014 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado and pp.CodPar<49  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
 $resultado_puntos_exactos=mysql_query($consulta_puntos_exactos, $conexion);
 $filas_puntos_exactos = mysql_fetch_assoc($resultado_puntos_exactos);
 
 
 
 mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos2="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos_mundial2014 pp join partidos_mundial2014 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64)  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante AND pp.local=ps.local AND pp.visitante=ps.visitante and pp.glocal!=99; ";
+$consulta_puntos_exactos2="SELECT COUNT(*) AS puntos FROM partidos_mundial2014 pp join partidos_mundial2014 ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_GET['verlode']."' and pp.CodUsu='profetamundial' and pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 49 AND 64)  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante AND pp.local=ps.local AND pp.visitante=ps.visitante and pp.glocal!=99; ";
 $resultado_puntos_exactos2=mysql_query($consulta_puntos_exactos2, $conexion);
 $filas_puntos_exactos2 = mysql_fetch_assoc($resultado_puntos_exactos2);
 

@@ -36,6 +36,15 @@ $editFormAction = $_SERVER['PHP_SELF'];
 if (isset($_SERVER['QUERY_STRING'])) {
   $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
 }
+
+$today = date("YmdH");
+$limite = '2022111823';
+if ($limite <= $today) {
+  $fueraTiempo = 1;
+} else {
+  $fueraTiempo = 0;
+}
+
 //ACTUALIZAR LOS PARTIDOS
 if	( ($fueraTiempo==0) or ($_SESSION['MM_Username']=='ProfetaMundial'))	{ 
 
@@ -278,16 +287,6 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<?
-$today = date("YmdH"); 
-//el servidor tiene 1 horas menos que GMT 
-$limite='2022111823';
-if ($limite<=$today) {
-	$fueraTiempo=1;
-	}
-else $fueraTiempo=0;
-
-?>
 <div>
 	<div id="tablaypartidos_mundial2022">
 		<div id="partidos_grupo_mundial2022">
@@ -316,7 +315,7 @@ else $fueraTiempo=0;
 					<td class="alignright"><?php echo $filasresultado_tabla_H['golfav']; ?></td>
 					<td class="alignright"><?php echo $filasresultado_tabla_H['golcon']; ?></td>
 					<td class="alignright"><?php echo $filasresultado_tabla_H['difgol']; ?></td>
-					<?array_push($e,$n);
+					<?php array_push($e,$n);
 					  array_push($p,$pu);
 					?>
 				</tr>
@@ -327,11 +326,11 @@ else $fueraTiempo=0;
 
 <?php if	(($fueraTiempo==0) or ($_SESSION['MM_Username']=='ProfetaMundial') )	{ ?>
 		 <input type="submit" id="boton_grupoH" class="botones" value="Guardar cambios" />
-<? } ?>
+<?php } ?>
             <input type="hidden" name="MM_update" value="grupoH" />
 </form>
 
-<? 
+<?php 
 if ((($p[0]==$p[1]) or ($p[1]==$p[2])) && ( ($fueraTiempo==0) or ($_SESSION['MM_Username']=='ProfetaMundial'))	 ) {
 ?>
 <input type="button" class="botoneschicos" onclick="document.getElementById('alterar_GH_div').className='visible'" value="Alterar posiciones entre el primero y el segundo del grupo" title="Si no estas conforme con la clasificacion automatica de los 2 primeros del grupo, podes alterar quien es el primero y quien el segundo en pasar a Cuartos de Final. Tus cambios NO SE VERAN REFLEJADOS EN LA TABLA SUPERIOR, ademas, acordate de darle a la flecha de la Segunda Fase para actualizar quien juega los cuartos. Para mas informacion, leer las Reglas del Juego."/><br />
@@ -339,24 +338,24 @@ if ((($p[0]==$p[1]) or ($p[1]==$p[2])) && ( ($fueraTiempo==0) or ($_SESSION['MM_
 		<form name="alterar_GH" id="alterar_GH" method="post" action="GH_mundial2022.php">
 			1&ordm; <select name="primero" class="botoneschicos">
 			<option selected="selected"><?=$e[0]?></option>
-			<?foreach ($e as $eq) { ?>
-				<?if ($eq!=$e[0]){?>
+			<?php foreach ($e as $eq) { ?>
+				<?php if ($eq!=$e[0]){?>
 				<option><?=$eq?></option>
-				<?}?>			
-			<?  } ;?>
+				<?php }?>			
+			<?php  } ;?>
 			</select>
 			2&ordm; <select name="segundo" class="botoneschicos">
 			<option selected="selected"><?=$e[1]?></option>
-			<?foreach ($e as $eq) { ?>
-				<?if ($eq!=$e[1]){?>
+			<?php foreach ($e as $eq) { ?>
+				<?php if ($eq!=$e[1]){?>
 				<option><?=$eq?></option>
-				<?}?>			
-			<?  } ;?>
+				<?php }?>			
+			<?php  } ;?>
 			</select>
 			<input type="submit" value="Alterar" class="botoneschicos"/>
 		</form>
 </div>
-<? } ?>
+<?php } ?>
 
 </div>
 </div>

@@ -12,4 +12,6 @@ if (!$conexion) {
     die("Error de conexión: " . mysqli_connect_error() . " (Código: " . mysqli_connect_errno() . ")");
 }
 
+require_once __DIR__ . '/mysql_compat.php';
+
 ?>

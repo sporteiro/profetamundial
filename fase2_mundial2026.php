@@ -5,14 +5,15 @@ $today = date("YmdH");
 // Ajustar límite cuando se defina oficialmente
 $limite = '2026061123';
 $fueraTiempo = ($limite <= $today) ? 1 : 0;
+$mundial2026_uEsc = mysqli_real_escape_string($conexion, $_SESSION['MM_Username'] ?? '');
 
 function grupoPosicion($grupo, $pos) {
-  global $conexion;
+  global $conexion, $mundial2026_uEsc;
   $pos = intval($pos) - 1;
   if ($pos < 0) return null;
   $q = "SELECT nombre, puntos, difgol, golfav
         FROM equipos_mundial2026
-        WHERE CodUsu='".$_SESSION['MM_Username']."'
+        WHERE CodUsu='".$mundial2026_uEsc."'
           AND grupo='".mysqli_real_escape_string($conexion, $grupo)."'
         ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre
         LIMIT ".$pos.",1";
@@ -168,7 +169,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
     else { $res = 0; }
     $upd = "UPDATE partidos_mundial2026
             SET glocal='".$gl."', gvisitante='".$gv."', resultado='".$res."'
-            WHERE CodUsu='".$_SESSION['MM_Username']."' AND CodPar='".$n."'";
+            WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar='".$n."'";
     mysqli_query($conexion, $upd) or die(mysqli_error($conexion));
   }
 
@@ -176,7 +177,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
   if (isset($_POST['jugador']) && isset($_POST['pais'])) {
     $jug = mysqli_real_escape_string($conexion, $_POST['jugador']);
     $pais = mysqli_real_escape_string($conexion, $_POST['pais']);
-    mysqli_query($conexion, "UPDATE partidos_mundial2026 SET local='".$jug."', visitante='".$pais."' WHERE CodUsu='".$_SESSION['MM_Username']."' AND CodPar=106") or die(mysqli_error($conexion));
+    mysqli_query($conexion, "UPDATE partidos_mundial2026 SET local='".$jug."', visitante='".$pais."' WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar=106") or die(mysqli_error($conexion));
   }
 
   // Propagar ganadores: 89-96 (octavos), 97-100 (cuartos), 101-102 (semis), 103 (3°), 104 (final)
@@ -217,14 +218,14 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
   $campeon = ganadorDesdePost(104);
   $tercero = ganadorDesdePost(103);
   if ($campeon && $tercero) {
-    mysqli_query($conexion, "UPDATE partidos_mundial2026 SET local='".mysqli_real_escape_string($conexion, $campeon)."', visitante='".mysqli_real_escape_string($conexion, $tercero)."' WHERE CodUsu='".$_SESSION['MM_Username']."' AND CodPar=105") or die(mysqli_error($conexion));
+    mysqli_query($conexion, "UPDATE partidos_mundial2026 SET local='".mysqli_real_escape_string($conexion, $campeon)."', visitante='".mysqli_real_escape_string($conexion, $tercero)."' WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar=105") or die(mysqli_error($conexion));
   }
 }
 
 // Cargar todos los matches 73-106 para pintar el fixture
 $qAll = "SELECT CodPar, local, visitante, glocal, gvisitante
          FROM partidos_mundial2026
-         WHERE CodUsu='".$_SESSION['MM_Username']."'
+         WHERE CodUsu='".$mundial2026_uEsc."'
            AND CodPar BETWEEN 73 AND 106
          ORDER BY CodPar";
 $rsAll = mysqli_query($conexion, $qAll) or die(mysqli_error($conexion));
@@ -256,13 +257,6 @@ function renderMatch($n, $title) {
   echo "</div>";
 }
 ?>
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link href="estilo.css" rel="stylesheet" type="text/css" />
-  <script src="jquery.js" type="text/javascript"></script>
-</head>
-<body>
 <div id="tabla_fase2">
   <form id="fase2" name="fase2" method="post" action="#">
     <input type="hidden" name="MM_update" value="fase2" />
@@ -333,6 +327,4 @@ function renderMatch($n, $title) {
     <?php } ?>
   </form>
 </div>
-</body>
-</html>
 

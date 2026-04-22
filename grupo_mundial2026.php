@@ -32,6 +32,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 $codParInicio = intval($CODPAR_INICIO);
 $codParFin = $codParInicio + 5;
 $grupo = $GRUPO_LETRA;
+$uEsc = mysqli_real_escape_string($conexion, $_SESSION['MM_Username'] ?? '');
 
 // Guardar partidos del grupo (6 partidos)
 if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] === "grupo".$grupo)) {
@@ -45,14 +46,14 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] === "grupo".$grupo)) {
 
     $updateSQL = "UPDATE partidos_mundial2026
                   SET glocal='".$gl."', gvisitante='".$gv."', resultado='".$resultado."'
-                  WHERE CodUsu='".$_SESSION['MM_Username']."' AND CodPar='".$n."'";
+                  WHERE CodUsu='".$uEsc."' AND CodPar='".$n."'";
     mysqli_query($conexion, $updateSQL) or die(mysqli_error($conexion));
   }
 
   // Recalcular tabla del grupo desde los 6 partidos guardados
   $qPartidos = "SELECT local, visitante, glocal, gvisitante
                 FROM partidos_mundial2026
-                WHERE CodUsu='".$_SESSION['MM_Username']."'
+                WHERE CodUsu='".$uEsc."'
                   AND CodPar BETWEEN ".$codParInicio." AND ".$codParFin;
   $rsPartidos = mysqli_query($conexion, $qPartidos) or die(mysqli_error($conexion));
 
@@ -81,7 +82,7 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] === "grupo".$grupo)) {
                 golfav='".intval($s['gf'])."',
                 golcon='".intval($s['ga'])."',
                 difgol='".intval($dif)."'
-            WHERE CodUsu='".$_SESSION['MM_Username']."'
+            WHERE CodUsu='".$uEsc."'
               AND grupo='".$grupo."'
               AND nombre='".mysqli_real_escape_string($conexion, $team)."'";
     mysqli_query($conexion, $upd) or die(mysqli_error($conexion));
@@ -90,39 +91,49 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] === "grupo".$grupo)) {
 
 // Mostrar partidos y tabla
 $q = "SELECT * FROM partidos_mundial2026
-      WHERE CodUsu='".$_SESSION['MM_Username']."'
+      WHERE CodUsu='".$uEsc."'
         AND CodPar BETWEEN ".$codParInicio." AND ".$codParFin."
       ORDER BY CodPar";
 $resultado = mysqli_query($conexion, $q) or die(mysqli_error($conexion));
 
 $qTabla = "SELECT * FROM equipos_mundial2026
-           WHERE CodUsu='".$_SESSION['MM_Username']."'
+           WHERE CodUsu='".$uEsc."'
              AND grupo='".$grupo."'
            ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre";
 $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexion));
 ?>
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link href="estilo.css" rel="stylesheet" type="text/css" />
-  <script src="jquery.js" type="text/javascript"></script>
-</head>
-<body>
 <div>
   <div id="tablaypartidos_mundial2026_<?php echo $grupo; ?>">
     <div id="partidos_grupo_mundial2026_<?php echo $grupo; ?>">
       <form name="grupo<?php echo $grupo; ?>" id="grupo<?php echo $grupo; ?>" method="post" action="#">
         <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
           <div class="comentarios">
-            <?php echo $fila['local']; ?>
-            <input type="number" min="0" max="99" name="L<?php echo $fila['CodPar']; ?>" value="<?php echo $fila['glocal']; ?>" class="botoneschicos"/>
+            <?php
+            $fechaMostrar = '';
+            if (!empty($fila['fecha_partido'])) {
+              $fechaMostrar = $fila['fecha_partido'];
+            } elseif (!empty($fila['fecha'])) {
+              $fx = $fila['fecha'];
+              if ($fx !== '2099-12-31' && $fx !== '0000-00-00') {
+                $fechaMostrar = $fx;
+              }
+            }
+            if ($fechaMostrar !== '') { ?>
+              <span class="letraschicas"><?php echo htmlspecialchars($fechaMostrar, ENT_QUOTES, 'UTF-8'); ?></span><br />
+            <?php } ?>
+            <?php $local = $fila['local'] ?? ''; ?>
+            <img src="imagenes/banamerica/<?php echo rawurlencode($local); ?>.gif" width="20" height="10" alt="" />
+            <?php echo htmlspecialchars($local, ENT_QUOTES, 'UTF-8'); ?>
+            <input type="number" min="0" max="99" name="L<?php echo intval($fila['CodPar']); ?>" value="<?php echo intval($fila['glocal']); ?>" class="botoneschicos"/>
             -
-            <input type="number" min="0" max="99" name="V<?php echo $fila['CodPar']; ?>" value="<?php echo $fila['gvisitante']; ?>" class="botoneschicos"/>
-            <?php echo $fila['visitante']; ?>
+            <input type="number" min="0" max="99" name="V<?php echo intval($fila['CodPar']); ?>" value="<?php echo intval($fila['gvisitante']); ?>" class="botoneschicos"/>
+            <?php $visitante = $fila['visitante'] ?? ''; ?>
+            <?php echo htmlspecialchars($visitante, ENT_QUOTES, 'UTF-8'); ?>
+            <img src="imagenes/banamerica/<?php echo rawurlencode($visitante); ?>.gif" width="20" height="10" alt="" />
           </div>
         <?php } ?>
 
-        <div class="tabla_grupo_mundial2022" id="tabla_grupo_mundial2026_<?php echo $grupo; ?>">
+        <div class="tabla_grupo_mundial2026 tabla_grupo_mundial2022" id="tabla_grupo_mundial2026_<?php echo $grupo; ?>">
           <table>
             <tr class="comentarios">
               <td>Grupo <?php echo $grupo; ?></td>
@@ -133,7 +144,11 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
             </tr>
             <?php while ($t = mysqli_fetch_assoc($resultado_tabla)) { ?>
               <tr class="comentarios">
-                <td><?php echo $t['nombre']; ?></td>
+                <td class="equipo-nombre">
+                  <?php $nombreEquipo = $t['nombre'] ?? ''; ?>
+                  <img src="imagenes/banamerica/<?php echo rawurlencode($nombreEquipo); ?>.gif" width="30" height="20" alt="" />
+                  <?php echo htmlspecialchars($nombreEquipo, ENT_QUOTES, 'UTF-8'); ?>
+                </td>
                 <td class="alignright"><?php echo $t['puntos']; ?></td>
                 <td class="alignright"><?php echo $t['golfav']; ?></td>
                 <td class="alignright"><?php echo $t['golcon']; ?></td>
@@ -150,6 +165,4 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
     </div>
   </div>
 </div>
-</body>
-</html>
 
