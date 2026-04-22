@@ -55,14 +55,14 @@ $row_recordusuarios = mysql_fetch_assoc($recordusuarios);
 
 
 mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados="SELECT pp.*, ps.*, count(*) as 'puntos' FROM america_partidos pp join america_partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado and pp.CodPar<19 and pp.glocal!=99; ";
+$consulta_puntos_resultados="SELECT COUNT(*) AS puntos FROM america_partidos pp join america_partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado and pp.CodPar<19 and pp.glocal!=99; ";
 $resultado_puntos_resultados=mysql_query($consulta_puntos_resultados, $conexion);
 $filas_puntos_resultados = mysql_fetch_assoc($resultado_puntos_resultados);
 
 
 
 mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos="SELECT pp.*, ps.*, count(*) as 'puntos' FROM america_partidos pp join america_partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado and pp.CodPar<19  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
+$consulta_puntos_exactos="SELECT COUNT(*) AS puntos FROM america_partidos pp join america_partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$_SESSION['MM_Username']."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado and pp.CodPar<19  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
 $resultado_puntos_exactos=mysql_query($consulta_puntos_exactos, $conexion);
 $filas_puntos_exactos = mysql_fetch_assoc($resultado_puntos_exactos);
 

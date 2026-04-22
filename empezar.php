@@ -1,4 +1,5 @@
 <?php require_once('Connections/conexion.php'); ?>
+<?php require_once __DIR__ . '/includes/mundial2026_seed.php'; ?>
 <?php
 $colname_Recordtodoslosusuarios=0;
 //initialize the session
@@ -247,190 +248,102 @@ $insertSQLmundial2022partidos = "INSERT INTO `equipos_mundial2022` (`CodUsu`, `C
 }
 
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formmundial2026")) {
-  // Mundial 2026: 48 equipos, 12 grupos (A-L), Round of 32 (73-88) -> Final (104)
-  // Nota: los nombres de equipos se dejan como placeholders (A1..L4) para actualizar luego.
-  $insertSQLmundial2026 = "INSERT INTO partidos_mundial2026(`CodUsu`, `CodPar`, `local`, `visitante`, `glocal`, `gvisitante`, `resultado`) VALUES
+  // Mundial 2026: 48 equipos, 12 grupos (A-L), sorteo FIFA 2025 + fechas fase de grupos (includes/mundial2026_seed.php).
+  $uEsc = mysqli_real_escape_string($conexion, $_SESSION['MM_Username']);
+  $fechaCols = mundial2026_partidos_fecha_columns($conexion);
+  $useFechaLegacy = $fechaCols['fecha'];
+  $useFechaPartido = $fechaCols['fecha_partido'];
+  $fechasPorCodpar = mundial2026_fecha_por_codpar();
+  $fechaKoLegacyEsc = mysqli_real_escape_string($conexion, mundial2026_fecha_legacy_ko_placeholder());
 
-('".$_SESSION['MM_Username']."', 1, 'A1', 'A2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 2, 'A3', 'A4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 3, 'A1', 'A3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 4, 'A4', 'A2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 5, 'A4', 'A1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 6, 'A2', 'A3', 0, 0, 0),
+  $colsFecha = '';
+  if ($useFechaLegacy) {
+    $colsFecha .= ', `fecha`';
+  }
+  if ($useFechaPartido) {
+    $colsFecha .= ', `fecha_partido`';
+  }
 
-('".$_SESSION['MM_Username']."', 7, 'B1', 'B2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 8, 'B3', 'B4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 9, 'B1', 'B3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 10, 'B4', 'B2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 11, 'B4', 'B1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 12, 'B2', 'B3', 0, 0, 0),
+  $valsPartidos = [];
+  $codPar = 1;
+  $grupos = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+  foreach ($grupos as $g) {
+    foreach (mundial2026_partidos_grupo($g) as $par) {
+      $loc = mysqli_real_escape_string($conexion, $par[0]);
+      $vis = mysqli_real_escape_string($conexion, $par[1]);
+      $fd = mysqli_real_escape_string($conexion, $fechasPorCodpar[$codPar]);
+      $valFecha = '';
+      if ($useFechaLegacy) {
+        $valFecha .= ", '".$fd."'";
+      }
+      if ($useFechaPartido) {
+        $valFecha .= ", '".$fd."'";
+      }
+      $valsPartidos[] = "('".$uEsc."', ".$codPar.", '".$loc."', '".$vis."', 0, 0, 0".$valFecha.")";
+      $codPar++;
+    }
+  }
 
-('".$_SESSION['MM_Username']."', 13, 'C1', 'C2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 14, 'C3', 'C4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 15, 'C1', 'C3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 16, 'C4', 'C2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 17, 'C4', 'C1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 18, 'C2', 'C3', 0, 0, 0),
+  $koRows = [
+    [73, '2A', '2B'], [74, '1E', '3?'], [75, '1F', '2C'], [76, '1C', '2F'], [77, '1I', '3?'], [78, '2E', '2I'],
+    [79, '1A', '3?'], [80, '1L', '3?'], [81, '1D', '3?'], [82, '1G', '3?'], [83, '2K', '2L'], [84, '1H', '2J'],
+    [85, '1B', '3?'], [86, '1J', '2H'], [87, '1K', '3?'], [88, '2D', '2G'],
+    [89, 'Ganador 74', 'Ganador 77'], [90, 'Ganador 73', 'Ganador 75'], [91, 'Ganador 76', 'Ganador 78'], [92, 'Ganador 79', 'Ganador 80'],
+    [93, 'Ganador 83', 'Ganador 84'], [94, 'Ganador 81', 'Ganador 82'], [95, 'Ganador 86', 'Ganador 88'], [96, 'Ganador 85', 'Ganador 87'],
+    [97, 'Ganador 89', 'Ganador 90'], [98, 'Ganador 93', 'Ganador 94'], [99, 'Ganador 91', 'Ganador 92'], [100, 'Ganador 95', 'Ganador 96'],
+    [101, 'Ganador 97', 'Ganador 98'], [102, 'Ganador 99', 'Ganador 100'], [103, 'Perdedor 101', 'Perdedor 102'], [104, 'Ganador 101', 'Ganador 102'],
+    [105, 'Campeon', 'Tercero'], [106, 'Goleador', 'Pais'],
+  ];
+  foreach ($koRows as $kr) {
+    $cp = intval($kr[0]);
+    $loc = mysqli_real_escape_string($conexion, $kr[1]);
+    $vis = mysqli_real_escape_string($conexion, $kr[2]);
+    $valFecha = '';
+    if ($useFechaLegacy) {
+      $valFecha .= ", '".$fechaKoLegacyEsc."'";
+    }
+    if ($useFechaPartido) {
+      $valFecha .= ", NULL";
+    }
+    $valsPartidos[] = "('".$uEsc."', ".$cp.", '".$loc."', '".$vis."', 0, 0, 0".$valFecha.")";
+  }
 
-('".$_SESSION['MM_Username']."', 19, 'D1', 'D2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 20, 'D3', 'D4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 21, 'D1', 'D3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 22, 'D4', 'D2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 23, 'D4', 'D1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 24, 'D2', 'D3', 0, 0, 0),
+  $insertSQLmundial2026 = "INSERT INTO partidos_mundial2026(`CodUsu`, `CodPar`, `local`, `visitante`, `glocal`, `gvisitante`, `resultado`".$colsFecha.") VALUES\n"
+    . implode(",\n", $valsPartidos) . ";";
 
-('".$_SESSION['MM_Username']."', 25, 'E1', 'E2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 26, 'E3', 'E4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 27, 'E1', 'E3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 28, 'E4', 'E2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 29, 'E4', 'E1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 30, 'E2', 'E3', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 31, 'F1', 'F2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 32, 'F3', 'F4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 33, 'F1', 'F3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 34, 'F4', 'F2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 35, 'F4', 'F1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 36, 'F2', 'F3', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 37, 'G1', 'G2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 38, 'G3', 'G4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 39, 'G1', 'G3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 40, 'G4', 'G2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 41, 'G4', 'G1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 42, 'G2', 'G3', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 43, 'H1', 'H2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 44, 'H3', 'H4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 45, 'H1', 'H3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 46, 'H4', 'H2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 47, 'H4', 'H1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 48, 'H2', 'H3', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 49, 'I1', 'I2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 50, 'I3', 'I4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 51, 'I1', 'I3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 52, 'I4', 'I2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 53, 'I4', 'I1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 54, 'I2', 'I3', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 55, 'J1', 'J2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 56, 'J3', 'J4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 57, 'J1', 'J3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 58, 'J4', 'J2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 59, 'J4', 'J1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 60, 'J2', 'J3', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 61, 'K1', 'K2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 62, 'K3', 'K4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 63, 'K1', 'K3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 64, 'K4', 'K2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 65, 'K4', 'K1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 66, 'K2', 'K3', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 67, 'L1', 'L2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 68, 'L3', 'L4', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 69, 'L1', 'L3', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 70, 'L4', 'L2', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 71, 'L4', 'L1', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 72, 'L2', 'L3', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 73, '2A', '2B', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 74, '1E', '3?', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 75, '1F', '2C', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 76, '1C', '2F', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 77, '1I', '3?', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 78, '2E', '2I', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 79, '1A', '3?', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 80, '1L', '3?', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 81, '1D', '3?', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 82, '1G', '3?', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 83, '2K', '2L', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 84, '1H', '2J', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 85, '1B', '3?', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 86, '1J', '2H', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 87, '1K', '3?', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 88, '2D', '2G', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 89, 'Ganador 74', 'Ganador 77', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 90, 'Ganador 73', 'Ganador 75', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 91, 'Ganador 76', 'Ganador 78', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 92, 'Ganador 79', 'Ganador 80', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 93, 'Ganador 83', 'Ganador 84', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 94, 'Ganador 81', 'Ganador 82', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 95, 'Ganador 86', 'Ganador 88', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 96, 'Ganador 85', 'Ganador 87', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 97, 'Ganador 89', 'Ganador 90', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 98, 'Ganador 93', 'Ganador 94', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 99, 'Ganador 91', 'Ganador 92', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 100, 'Ganador 95', 'Ganador 96', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 101, 'Ganador 97', 'Ganador 98', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 102, 'Ganador 99', 'Ganador 100', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 103, 'Perdedor 101', 'Perdedor 102', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 104, 'Ganador 101', 'Ganador 102', 0, 0, 0),
-
-('".$_SESSION['MM_Username']."', 105, 'Campeon', 'Tercero', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 106, 'Goleador', 'Pais', 0, 0, 0);";
-
-  $Resultmundial2026 = mysqli_query($conexion, $insertSQLmundial2026) or die(mysqli_error($conexion));
-
-  $insertSQLequipos2026 = "INSERT INTO `equipos_mundial2026` (`CodUsu`, `CodEqu`, `nombre`, `grupo`, `puntos`, `golfav`, `golcon`, `difgol`) VALUES
-('".$_SESSION['MM_Username']."', 1, 'A1', 'A', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 2, 'A2', 'A', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 3, 'A3', 'A', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 4, 'A4', 'A', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 5, 'B1', 'B', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 6, 'B2', 'B', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 7, 'B3', 'B', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 8, 'B4', 'B', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 9, 'C1', 'C', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 10, 'C2', 'C', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 11, 'C3', 'C', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 12, 'C4', 'C', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 13, 'D1', 'D', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 14, 'D2', 'D', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 15, 'D3', 'D', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 16, 'D4', 'D', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 17, 'E1', 'E', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 18, 'E2', 'E', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 19, 'E3', 'E', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 20, 'E4', 'E', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 21, 'F1', 'F', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 22, 'F2', 'F', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 23, 'F3', 'F', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 24, 'F4', 'F', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 25, 'G1', 'G', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 26, 'G2', 'G', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 27, 'G3', 'G', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 28, 'G4', 'G', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 29, 'H1', 'H', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 30, 'H2', 'H', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 31, 'H3', 'H', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 32, 'H4', 'H', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 33, 'I1', 'I', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 34, 'I2', 'I', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 35, 'I3', 'I', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 36, 'I4', 'I', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 37, 'J1', 'J', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 38, 'J2', 'J', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 39, 'J3', 'J', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 40, 'J4', 'J', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 41, 'K1', 'K', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 42, 'K2', 'K', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 43, 'K3', 'K', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 44, 'K4', 'K', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 45, 'L1', 'L', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 46, 'L2', 'L', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 47, 'L3', 'L', 0, 0, 0, 0),
-('".$_SESSION['MM_Username']."', 48, 'L4', 'L', 0, 0, 0, 0);";
-
-  $Resultmundial2026 = mysqli_query($conexion, $insertSQLequipos2026) or die(mysqli_error($conexion));
+  $valsEquipos = [];
+  $codEqu = 1;
+  $eqPorGrupo = mundial2026_equipos_por_grupo();
+  foreach ($grupos as $g) {
+    foreach ($eqPorGrupo[$g] as $nombre) {
+      $nomEsc = mysqli_real_escape_string($conexion, $nombre);
+      $valsEquipos[] = "('".$uEsc."', ".$codEqu.", '".$nomEsc."', '".$g."', 0, 0, 0, 0)";
+      $codEqu++;
+    }
+  }
+  $insertSQLequipos2026 = "INSERT INTO `equipos_mundial2026` (`CodUsu`, `CodEqu`, `nombre`, `grupo`, `puntos`, `golfav`, `golcon`, `difgol`) VALUES\n"
+    . implode(",\n", $valsEquipos) . ";";
 
   $insertSQLmundial2026torneos = "INSERT INTO Torneos (CodTor,nombreT,inscriptos,descripcion) VALUES
-(20,'mundial2026','".$_SESSION['MM_Username']."', 'Mundial 2026')";
-  $Resultmundial2026 = mysqli_query($conexion, $insertSQLmundial2026torneos) or die(mysqli_error($conexion));
+(20,'mundial2026','".$uEsc."', 'Mundial 2026')";
+
+  // Sin transacción, si falla el 2.º o 3.º INSERT quedan partidos sin equipos / sin Torneos (mysqli puede lanzar excepción antes del or die).
+  mysqli_begin_transaction($conexion);
+  try {
+    if (!mysqli_query($conexion, $insertSQLmundial2026)) {
+      throw new RuntimeException(mysqli_error($conexion));
+    }
+    if (!mysqli_query($conexion, $insertSQLequipos2026)) {
+      throw new RuntimeException(mysqli_error($conexion));
+    }
+    if (!mysqli_query($conexion, $insertSQLmundial2026torneos)) {
+      throw new RuntimeException(mysqli_error($conexion));
+    }
+    mysqli_commit($conexion);
+  } catch (Throwable $e) {
+    mysqli_rollback($conexion);
+    die('Error al inscribir el Mundial 2026: ' . $e->getMessage());
+  }
 
   $insertGoTo = "mundial2026.php";
   if (isset($_SERVER['QUERY_STRING'])) {
@@ -533,20 +446,10 @@ $usutor18= mysqli_query($conexion, $query_usutor18) or die(mysqli_error($conexio
 $row_usutor18= mysqli_fetch_assoc($usutor18);
 $totalRows_usutor18= mysqli_num_rows($usutor18);
 
-$query_usutor19= "SELECT * FROM Torneos WHERE inscriptos LIKE '".mysqli_real_escape_string($conexion, $_SESSION['MM_Username'])."' AND CodTor='19';";
-$usutor19= mysqli_query($conexion, $query_usutor19) or die(mysqli_error($conexion));
-$row_usutor19= mysqli_fetch_assoc($usutor19);
-$totalRows_usutor19= mysqli_num_rows($usutor19);
-
 $query_usutor20= "SELECT * FROM Torneos WHERE inscriptos LIKE '".mysqli_real_escape_string($conexion, $_SESSION['MM_Username'])."' AND CodTor='20';";
 $usutor20= mysqli_query($conexion, $query_usutor20) or die(mysqli_error($conexion));
 $row_usutor20= mysqli_fetch_assoc($usutor20);
 $totalRows_usutor20= mysqli_num_rows($usutor20);
-
-$query_otrousuario_mundial = "SELECT T.*, U.* FROM Torneos as T JOIN usuarios as U ON T.inscriptos=U.usuario WHERE CodTor='19' AND inscriptos !='ProfetaMundial' ORDER BY U.puntos DESC";
-$otrousuario_mundial = mysqli_query($conexion, $query_otrousuario_mundial) or die(mysqli_error($conexion));
-$row_otrousuario_mundial = mysqli_fetch_assoc($otrousuario_mundial);
-$totalRows_otrousuario_mundial = mysqli_num_rows($otrousuario_mundial);
 
 $query_otrousuario_mundial2026 = "SELECT T.*, U.* FROM Torneos as T JOIN usuarios as U ON T.inscriptos=U.usuario WHERE CodTor='20' AND inscriptos !='ProfetaMundial' ORDER BY U.puntos DESC";
 $otrousuario_mundial2026 = mysqli_query($conexion, $query_otrousuario_mundial2026) or die(mysqli_error($conexion));
@@ -566,8 +469,12 @@ $enlinea= mysqli_query($conexion, $query_enlinea) or die(mysqli_error($conexion)
 $totalRows_enlinea= mysqli_num_rows($enlinea);
 
 
-$query_hoy_usu= "SELECT * FROM partidos_mundial2022 WHERE CodPar in(select CodPar from partidos_mundial2022 where fecha=curdate()) and CodUsu !='ProfetaMundial' AND  local in (select local from partidos_mundial2022 where fecha=curdate() and CodUsu='ProfetaMundial') AND  visitante in (select visitante from partidos_mundial2022 where fecha=curdate() and CodUsu='ProfetaMundial') ORDER BY CodPar, resultado,Glocal,Gvisitante,CodUsu;";
-$hoy_usu= mysqli_query($conexion, $query_hoy_usu) or die(mysqli_error($conexion));
+if (mundial2026_partidos_tiene_columna_fecha($conexion)) {
+  $query_hoy_usu = "SELECT * FROM partidos_mundial2026 WHERE CodPar IN (SELECT CodPar FROM partidos_mundial2026 WHERE fecha_partido = CURDATE()) AND CodUsu != 'ProfetaMundial' AND local IN (SELECT local FROM partidos_mundial2026 WHERE fecha_partido = CURDATE() AND CodUsu = 'ProfetaMundial') AND visitante IN (SELECT visitante FROM partidos_mundial2026 WHERE fecha_partido = CURDATE() AND CodUsu = 'ProfetaMundial') ORDER BY CodPar, resultado, glocal, gvisitante, CodUsu";
+} else {
+  $query_hoy_usu = "SELECT * FROM partidos_mundial2026 WHERE 1 = 0";
+}
+$hoy_usu = mysqli_query($conexion, $query_hoy_usu) or die(mysqli_error($conexion));
 $totalRows_hoy_usu= mysqli_num_rows($hoy_usu);
 ?>
 <!DOCTYPE html>
@@ -610,15 +517,12 @@ function recargar()	{
 </head>
 <body>
 <?php
-$today = date("YmdH"); 
-//el servidor tiene 5 horas menos que GMT 
-$limite='2022111823';
-if ($limite<=$today) {
-	$fueraTiempo=1;
-	}
-else $fueraTiempo=0;
-if ($_SESSION['MM_Username']=='ProfetaMundial')	{
-	echo "La hora del servidor es: ".$today;
+$today = date("YmdH");
+// Cierre de inscripción pronóstico Mundial 2026 (ajustar si cambia el reglamento).
+$limiteMundial2026 = '2026061123';
+$fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
+if ($_SESSION['MM_Username'] == 'ProfetaMundial') {
+  echo "La hora del servidor es: " . $today;
 }
 ?>
 <!-- inicio de la cabecera -->
@@ -642,15 +546,15 @@ if ($_SESSION['MM_Username']=='ProfetaMundial')	{
 	<div class="tablaIzquierda">
     	<b>Mis pronosticos:</b>
     	<div class="comentarios" style="text-align:center;">
-         	<p<strong>¿Quién ganará la Copa Mundial 2026?</strong>	</p>
-  			<?php if (!$row_usutor20['nombreT']) { ?>
-		        <?php if ( ($fueraTiempo==0) or ($_SESSION['MM_Username']=='ProfetaMundial') ) { ?>
+         	<p><strong>¿Quién ganará la Copa Mundial 2026?</strong></p>
+  			<?php if (!$totalRows_usutor20 || empty($row_usutor20['nombreT'])) { ?>
+		        <?php if (($fueraTiempo2026 == 0) || ($_SESSION['MM_Username'] == 'ProfetaMundial')) { ?>
                 	<form id="formmundial2026" name="formmundial2026" method="post" action="<?php echo $editFormAction; ?>">
-                    	<input type="submit" class="botoneschicosrojos" value="¡Pronosticar ahora!" />
+                    	<input type="submit" class="botoneschicosrojos" value="Participar en el Mundial 2026" />
                         <input type="hidden" name="MM_insert" value="formmundial2026" />
                     </form>
 		        <?php } ?>
-			<? } 
+			<?php }
 			else { ?>
 			    <a href="mundial2026.php" class="botoneschicos"> Ver o modificar mi pronostico</a>
 			<?php } ?>
@@ -658,7 +562,7 @@ if ($_SESSION['MM_Username']=='ProfetaMundial')	{
    		 	<hr />
 
 			<div class="comentarios" style="text-align:center;">
-                    	<?php echo $row_otrousuario_mundial2026['descripcion'];?>&nbsp;(participantes: &nbsp;<?php echo $totalRows_otrousuario_mundial2026?>)
+                    	<?php echo is_array($row_otrousuario_mundial2026) ? htmlspecialchars($row_otrousuario_mundial2026['descripcion'], ENT_QUOTES, 'UTF-8') : 'Mundial 2026'; ?>&nbsp;(participantes: &nbsp;<?php echo (int)$totalRows_otrousuario_mundial2026; ?>)
      		   <?php if ($totalRows_otrousuario_mundial2026 > 0) { do { ?>
                 	<p>
     			   		<a class="botoneschicos" href="vermundial2026.php?verlode=<?php echo $row_otrousuario_mundial2026['inscriptos'];?>"> <?php echo $row_otrousuario_mundial2026['inscriptos'];?>  <b><?php echo $row_otrousuario_mundial2026['puntos'];?></b> puntos)</a>
@@ -667,33 +571,6 @@ if ($_SESSION['MM_Username']=='ProfetaMundial')	{
             </div>
 			<br />
    		 	<hr />
-
-         	<p<strong>¿Quién ganará la Copa Mundial 2022?</strong>	</p>
-  			<?php if (!$row_usutor19['nombreT']) { ?>
-		        <?php if ( ($fueraTiempo==0) or ($_SESSION['MM_Username']=='ProfetaMundial') ) { ?>
-                	<form id="formmundial2022" name="formmundial2022" method="post" action="<?php echo $editFormAction; ?>">
-                    	<input type="submit" class="botoneschicosrojos" value="¡Pronosticar ahora!" />
-                        <input type="hidden" name="MM_insert" value="formmundial2022" />
-                    </form>
-		        <?php } ?>
-			<? } 
-			else { ?>
-			    <a href="mundial2022.php" class="botoneschicos"> Ver o modificar mi pronostico</a>
-			<?php } ?>
-			<br />
-   		 	<hr /> 
-		
-
-			<div class="comentarios" style="text-align:center;">
-                    	<?php echo $row_otrousuario_mundial['descripcion'];?>&nbsp;(participantes: &nbsp;<?php echo $totalRows_otrousuario_mundial?>)
-     		   <?php do { ?>
-                	<p>
-    			   		<a class="botoneschicos" href="vermundial2022.php?verlode=<?php echo $row_otrousuario_mundial['inscriptos'];?>"> <?php echo $row_otrousuario_mundial['inscriptos'];?>  <b><?php echo $row_otrousuario_mundial['puntos'];?></b> puntos)</a>
-					</p>
-      		  <?php } while ($row_otrousuario_mundial = mysqli_fetch_assoc($otrousuario_mundial)); ?>
-            </div>
-			<br />
-   		 	<hr /> 
 <!--
 		<div class="comentarios" style="text-align:center;">
 			<p>

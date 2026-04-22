@@ -1,4 +1,5 @@
 <?php require_once('Connections/conexion.php'); ?>
+<?php require_once __DIR__ . '/includes/mundial2026_seed.php'; ?>
 <?php require_once('ingresar.php'); ?>
 <?php
 if (!function_exists("GetSQLValueString")) {
@@ -56,13 +57,12 @@ $todomundial2026= mysqli_query($conexion, $query_todomundial2026) or die(mysqli_
 $row_todomundial2026 = mysqli_fetch_assoc($todomundial2026);
 $totalRows_todomundial2026= mysqli_num_rows($todomundial2026);
 
-$query_todomundial2022 = "SELECT T.*, U.* FROM Torneos as T join usuarios as U on T.inscriptos=U.usuario WHERE CodTor='19' AND U.usuario!='ProfetaMundial' order by U.puntos DESC";
-$todomundial2022= mysqli_query($conexion, $query_todomundial2022) or die(mysqli_error($conexion));
-$row_todomundial2022 = mysqli_fetch_assoc($todomundial2022);
-$totalRows_todomundial2022= mysqli_num_rows($todomundial2022);
-
-$query_hoy_usu= "SELECT * FROM partidos_mundial2022 WHERE CodPar in(select CodPar from partidos_mundial2022 where fecha=curdate()) and CodUsu !='ProfetaMundial' AND  local in (select local from partidos_mundial2022 where fecha=curdate() and CodUsu='ProfetaMundial') AND  visitante in (select visitante from partidos_mundial2022 where fecha=curdate() and CodUsu='ProfetaMundial') ORDER BY CodPar, resultado,Glocal,Gvisitante,CodUsu ;";
-$hoy_usu= mysqli_query($conexion, $query_hoy_usu) or die(mysqli_error($conexion));
+if (mundial2026_partidos_tiene_columna_fecha($conexion)) {
+  $query_hoy_usu = "SELECT * FROM partidos_mundial2026 WHERE CodPar IN (SELECT CodPar FROM partidos_mundial2026 WHERE fecha_partido = CURDATE()) AND CodUsu != 'ProfetaMundial' AND local IN (SELECT local FROM partidos_mundial2026 WHERE fecha_partido = CURDATE() AND CodUsu = 'ProfetaMundial') AND visitante IN (SELECT visitante FROM partidos_mundial2026 WHERE fecha_partido = CURDATE() AND CodUsu = 'ProfetaMundial') ORDER BY CodPar, resultado, glocal, gvisitante, CodUsu";
+} else {
+  $query_hoy_usu = "SELECT * FROM partidos_mundial2026 WHERE 1 = 0";
+}
+$hoy_usu = mysqli_query($conexion, $query_hoy_usu) or die(mysqli_error($conexion));
 $totalRows_hoy_usu= mysqli_num_rows($hoy_usu);
 ?>
 <!DOCTYPE html>
@@ -143,8 +143,8 @@ var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2");
         	
            <div class="tablaresultados">
         	<div class="comentarios" style="text-align:center;">
-   		 <p><strong>¡Disponible el pronostico para el Mundial 2026!</strong></p>
-  		<span><a href="noingrese.php" class="botoneschicos" target="_blank">Entr&aacute; para participar</a></span>
+   		 <p><strong>¡Disponible el pron&oacute;stico para el Mundial 2026!</strong></p>
+  		<span><a href="noingrese.php" class="botoneschicos" target="_blank">Participar en el Mundial 2026</a></span>
   		<p></p>
    		 <br />
          	</div>
@@ -163,7 +163,7 @@ var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2");
          
 
 <br />
-<?if ($totalRows_hoy_usu>0)	{?>
+<?php if ($totalRows_hoy_usu > 0) { ?>
 <p><strong>Pronosticos para los partidos de hoy:</strong></p>
 		<div class="comentarios" style="text-align:center;">		
 		<?php 
@@ -188,7 +188,7 @@ var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2");
 		?>
 		<div style="clear:both;"></div>
 		</div>
-<? } ?>
+<?php } ?>
 </div>
 <!-- fin Izquierda -->
 
@@ -220,24 +220,6 @@ var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2");
   </div>
 	  <?php } while ($row_todomundial2026 = mysqli_fetch_assoc($todomundial2026)); } ?>
           <br />
-
-<strong>Participantes Mundial Qatar 2022</strong>
-     <?php if ($totalRows_todomundial2022 > 0) { do { ?>
-  <div class="tablaresultados">
-        	<div class="comentarios" style="text-align:center; vertical-align:text-bottom;">
-   			<img src="imagenes/avatares/<?php echo $row_todomundial2022['avatar'];?>" height="32" width="32" alt="" class="comentarios_avatar"/> 
-			<span class="comentarios_usuario"> <?php echo $row_todomundial2022['inscriptos']; ?> </span> 
-			<div class="puntos">
-				<span class="puntos_numero"><?php echo $row_todomundial2022['puntos']; ?></span><br />
-				<span class="puntos_texto">PUNTOS</span>
-				<div class="clear"></div>
-			</div>
-			<div class="clear"></div>
-         	</div>
-  </div>
-	  <?php } while ($row_todomundial2022 = mysqli_fetch_assoc($todomundial2022)); } ?>
-          <br />
-
 
 </div>
 <!-- Fin derecha -->

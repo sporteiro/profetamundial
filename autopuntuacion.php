@@ -48,34 +48,43 @@ if (isset($_SESSION['MM_Username'])) {
   $colname_recordusuarios = $_SESSION['MM_Username'];
 }
 
+$query_recordusuarios = sprintf("SELECT * FROM usuarios WHERE usuario = %s", GetSQLValueString($colname_recordusuarios, "text"));
+$query_limit_recordusuarios = sprintf("%s LIMIT %d, %d", $query_recordusuarios, $startRow_recordusuarios, $maxRows_recordusuarios);
+$recordusuarios = mysql_query($query_limit_recordusuarios, $conexion);
+$row_recordusuarios = $recordusuarios ? mysql_fetch_assoc($recordusuarios) : array('usuario' => '');
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 $puntusuario=array('seblash','pablo','marcelo');
 
 /////////PUNTUACIONES
+$puntos_por_usuario = array();
 foreach ($puntusuario as $U)	{
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados.$U="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos pp join partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$U."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado and pp.CodPar<24 and pp.glocal!=99; ";
-$resultado_puntos_resultados.$U=mysql_query($consulta_puntos_resultados.$U, $conexion);
-$filas_puntos_resultados.$U = mysql_fetch_assoc($resultado_puntos_resultados.$U);
+$consulta_puntos_resultados="SELECT COUNT(*) AS puntos FROM partidos pp join partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$U."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado and pp.CodPar<24 and pp.glocal!=99; ";
+$resultado_puntos_resultados=mysql_query($consulta_puntos_resultados, $conexion);
+$filas_puntos_resultados = mysql_fetch_assoc($resultado_puntos_resultados);
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_resultados2.$U="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos pp join partidos ps  ON  pp.CodPar=ps.CodPar WHERE (ps.CodUsu='".$U."' AND pp.CodUsu='ProfetaMundial') AND pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 25 AND 31) AND pp.glocal!=99; ";
-$resultado_puntos_resultados2.$U=mysql_query($consulta_puntos_resultados2.$U, $conexion);
-$filas_puntos_resultados2.$U = mysql_fetch_assoc($resultado_puntos_resultados2.$U);
+$consulta_puntos_resultados2="SELECT COUNT(*) AS puntos FROM partidos pp join partidos ps  ON  pp.CodPar=ps.CodPar WHERE (ps.CodUsu='".$U."' AND pp.CodUsu='ProfetaMundial') AND pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 25 AND 31) AND pp.glocal!=99; ";
+$resultado_puntos_resultados2=mysql_query($consulta_puntos_resultados2, $conexion);
+$filas_puntos_resultados2 = mysql_fetch_assoc($resultado_puntos_resultados2);
 
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos.$U="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos pp join partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$U."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado and pp.CodPar<24  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
-$resultado_puntos_exactos.$U=mysql_query($consulta_puntos_exactos.$U, $conexion);
-$filas_puntos_exactos.$U = mysql_fetch_assoc($resultado_puntos_exactos.$U);
+$consulta_puntos_exactos="SELECT COUNT(*) AS puntos FROM partidos pp join partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$U."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado and pp.CodPar<24  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante and pp.glocal!=99; ";
+$resultado_puntos_exactos=mysql_query($consulta_puntos_exactos, $conexion);
+$filas_puntos_exactos = mysql_fetch_assoc($resultado_puntos_exactos);
 
 
 
-mysql_select_db($database_conexion,$conexion);
-$consulta_puntos_exactos2.$U="SELECT pp.*, ps.*, count(*) as 'puntos' FROM partidos pp join partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$U."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 25 AND 31)  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante AND pp.local=ps.local AND pp.visitante=ps.visitante and pp.glocal!=99; ";
-$resultado_puntos_exactos2.$U=mysql_query($consulta_puntos_exactos2.$U, $conexion);
-$filas_puntos_exactos2.$U = mysql_fetch_assoc($resultado_puntos_exactos2.$U);
+$consulta_puntos_exactos2="SELECT COUNT(*) AS puntos FROM partidos pp join partidos ps  ON  pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$U."' and pp.CodUsu='ProfetaMundial' and pp.resultado=ps.resultado AND (pp.CodPar BETWEEN 25 AND 31)  and pp.glocal=ps.glocal and pp.gvisitante=ps.gvisitante AND pp.local=ps.local AND pp.visitante=ps.visitante and pp.glocal!=99; ";
+$resultado_puntos_exactos2=mysql_query($consulta_puntos_exactos2, $conexion);
+$filas_puntos_exactos2 = mysql_fetch_assoc($resultado_puntos_exactos2);
+
+$puntos_por_usuario[$U] = array(
+  'fr' => $filas_puntos_resultados,
+  'fr2' => $filas_puntos_resultados2,
+  'fe' => $filas_puntos_exactos,
+  'fe2' => $filas_puntos_exactos2,
+);
 
 }
 ?>
@@ -109,13 +118,14 @@ $filas_puntos_exactos2.$U = mysql_fetch_assoc($resultado_puntos_exactos2.$U);
 <div id="contenedora" class="contenedora">
 <p class="letrasmasgrandes">Euro 2012 Polonia-Ucrania</p>
 <? foreach ($puntusuario as $U)	{ 
+$pu = $puntos_por_usuario[$U];
 //Puntuaciones:
-$exactos=$filas_puntos_exactos.$U['puntos']+$filas_puntos_exactos2.$U['puntos'];
+$exactos=intval($pu['fe']['puntos'] ?? 0)+intval($pu['fe2']['puntos'] ?? 0);
 $pexactos=$exactos*5;
 
-$partidoGrupos=$filas_puntos_resultados.$U['puntos']-$filas_puntos_exactos.$U['puntos'];
+$partidoGrupos=intval($pu['fr']['puntos'] ?? 0)-intval($pu['fe']['puntos'] ?? 0);
 
-$partidoSegunda=$filas_puntos_resultados2.$U['puntos']-$filas_puntos_exactos2.$U['puntos'];
+$partidoSegunda=intval($pu['fr2']['puntos'] ?? 0)-intval($pu['fe2']['puntos'] ?? 0);
 $puntospartidoSegunda=$partidoSegunda*2;
 
 $total=$pexactos+$partidoGrupos+$puntospartidoSegunda;

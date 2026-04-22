@@ -47,13 +47,17 @@ $query_recordusuarios = sprintf("SELECT * FROM usuarios WHERE usuario = %s", Get
 $recordusuarios = mysqli_query($conexion, $query_recordusuarios) or die(mysqli_error($conexion));
 $row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
 
+$uEsc = mysqli_real_escape_string($conexion, $_SESSION['MM_Username'] ?? '');
+// Misma clave que empezar.php / Torneos (latin1_ci suele tolerar mezcla de mayúsculas; unificamos a ProfetaMundial).
+$codUsuPlantilla = 'ProfetaMundial';
+
 // Puntuaciones vs ProfetaMundial (placeholder: mantiene el esquema de 2022)
 $consulta_puntos_resultados_grupos =
   "SELECT count(*) as puntos
    FROM partidos_mundial2026 pp
    JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
-   WHERE ps.CodUsu='".$_SESSION['MM_Username']."'
-     AND pp.CodUsu='profetamundial'
+   WHERE ps.CodUsu='".$uEsc."'
+     AND pp.CodUsu='".$codUsuPlantilla."'
      AND pp.resultado=ps.resultado
      AND pp.CodPar BETWEEN 1 AND 72
      AND pp.glocal!=99;";
@@ -64,8 +68,8 @@ $consulta_puntos_exactos_grupos =
   "SELECT count(*) as puntos
    FROM partidos_mundial2026 pp
    JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
-   WHERE ps.CodUsu='".$_SESSION['MM_Username']."'
-     AND pp.CodUsu='profetamundial'
+   WHERE ps.CodUsu='".$uEsc."'
+     AND pp.CodUsu='".$codUsuPlantilla."'
      AND pp.resultado=ps.resultado
      AND pp.CodPar BETWEEN 1 AND 72
      AND pp.glocal=ps.glocal
@@ -79,8 +83,8 @@ $consulta_puntos_resultados_ko =
   "SELECT count(*) as puntos
    FROM partidos_mundial2026 pp
    JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
-   WHERE ps.CodUsu='".$_SESSION['MM_Username']."'
-     AND pp.CodUsu='profetamundial'
+   WHERE ps.CodUsu='".$uEsc."'
+     AND pp.CodUsu='".$codUsuPlantilla."'
      AND pp.resultado=ps.resultado
      AND pp.CodPar BETWEEN 73 AND 104
      AND pp.local=ps.local
@@ -93,8 +97,8 @@ $consulta_puntos_exactos_ko =
   "SELECT count(*) as puntos
    FROM partidos_mundial2026 pp
    JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
-   WHERE ps.CodUsu='".$_SESSION['MM_Username']."'
-     AND pp.CodUsu='profetamundial'
+   WHERE ps.CodUsu='".$uEsc."'
+     AND pp.CodUsu='".$codUsuPlantilla."'
      AND pp.resultado=ps.resultado
      AND pp.CodPar BETWEEN 73 AND 104
      AND pp.local=ps.local
@@ -122,6 +126,60 @@ $total = $pexactos + $partidos_grupos + $puntospartidos_ko;
   <link href="estilo.css" rel="stylesheet" type="text/css" />
   <link rel="shortcut icon" href="favicon.ico"/>
   <script src="jquery.js" type="text/javascript"></script>
+  <style type="text/css">
+    [id^="tablaypartidos_mundial2026_"] {
+      padding-top: 5px;
+      background-color: #10598c;
+      padding: 1%;
+    }
+    [id^="partidos_grupo_mundial2026_"] .comentarios {
+      text-align: center;
+    }
+    .tabla_grupo_mundial2026 table {
+      width: 100%;
+    }
+    .tabla_grupo_mundial2026 td {
+      padding: 5px;
+    }
+    .tabla_grupo_mundial2026 .equipo-nombre {
+      text-align: left;
+      white-space: nowrap;
+    }
+    .tabla_grupo_mundial2026 tr:nth-child(4),
+    .tabla_grupo_mundial2026 tr:nth-child(5) {
+      color: #aaa;
+    }
+    .tabla_grupo_mundial2026 tr:nth-child(1) {
+      font-size: 1em;
+      font-weight: bold;
+    }
+    .tabla_grupo_mundial2026 .comentarios {
+      font-size: 1em;
+    }
+    @media (max-width: 800px) {
+      [id^="partidos_grupo_mundial2026_"] {
+        width: 100%;
+      }
+      .tabla_grupo_mundial2026 {
+        width: 100%;
+      }
+    }
+    @media (min-width: 801px) {
+      [id^="partidos_grupo_mundial2026_"] {
+        width: 100%;
+        float: none;
+      }
+      .tabla_grupo_mundial2026 {
+        float: none;
+        width: 100%;
+        text-align: right;
+        font-size: 1.1em;
+      }
+      .tabla_grupo_mundial2026 .comentarios {
+        font-size: 1em;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -159,6 +217,9 @@ $total = $pexactos + $partidos_grupos + $puntospartidos_ko;
       <p>Resultados exactos Totales: <?=$exactos?> (<?=$pexactos?> puntos)</p>
       <hr />
       <p style="font-size:24px;">Total: <b><?=$total?></b> puntos</p>
+      <?php if (strcasecmp($_SESSION['MM_Username'] ?? '', 'ProfetaMundial') === 0) { ?>
+        <p><a href="puntuar_mundial2026.php" class="botoneschicos">Puntuar a todos (admin)</a></p>
+      <?php } ?>
     </div>
   </div>
 
@@ -194,9 +255,6 @@ $total = $pexactos + $partidos_grupos + $puntospartidos_ko;
     <div class="titulo_grupos">Fixture (Eliminatorias)</div>
     <div id="fase2_mundial2026">
       <?php require_once('fase2_mundial2026.php');?>
-    </div>
-    <div id="fase2_mundial2026_cel">
-      <?php require_once('fase2_mundial2026_cel.php');?>
     </div>
   </div>
 
