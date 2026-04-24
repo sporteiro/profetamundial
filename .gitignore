@@ -137,6 +137,9 @@ celerybeat.pid
 # Environments
 .env
 .envrc
+
+# Conexiones remotas (ignorar en git)
+conexion_remota.php
 .venv
 env/
 venv/
