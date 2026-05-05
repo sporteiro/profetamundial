@@ -78,8 +78,8 @@ body {
 	.tablaDerecha {
 		 padding-top:10px;
 		 width:49%; 
-		 float: right; o
-		 text-align:center;
+		 float: right; o;
+		 text-align: center;
 		 height: auto; 
 		 cellpadding: 2px; 
 		 cellspacing: 3px;
@@ -1049,7 +1049,7 @@ body.home-page {
     background: #1e293b;
     padding: 40px 30px;
     border-radius: 20px;
-    max-width: 500px;
+    max-width: 700px;
     width: 100%;
     text-align: center;
     border: 1px solid #334155;
@@ -1145,4 +1145,61 @@ body.home-page {
     .home-title {
         font-size: 1.3rem;
     }
+}
+/* Estilos para el checkbox de autoguardar (Mundial 2026) */
+.autosave-toggle {
+    text-align: right;
+    margin-bottom: 10px;
+    margin-top: -10px;
+}
+.autosave-toggle label {
+    background: #1e293b;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.autosave-toggle input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+}
+.autosave-toggle label.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+/* Tablas de grupos para Mundial 2026 – claro, legible */
+.tabla_grupo_mundial2026 {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    color: #0a0e17;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.tabla_grupo_mundial2026 th {
+    background-color: #e2e8f0;
+    color: #0f172a;
+    padding: 8px 6px;
+    font-weight: bold;
+}
+.tabla_grupo_mundial2026 td {
+    padding: 6px;
+    border-bottom: 1px solid #cbd5e1;
+}
+.tabla_grupo_mundial2026 tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+.tabla_grupo_mundial2026 .equipo-nombre {
+    text-align: left;
+    white-space: nowrap;
+}
+.tabla_grupo_mundial2026 .alignright {
+    text-align: right;
 }

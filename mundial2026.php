@@ -1,5 +1,28 @@
 <?php require_once('Connections/conexion.php'); ?>
 <?php require_once('codlog.php'); ?>
+
+<?php
+// =====================================================
+// MANEJAR PETICIONES AJAX PARA RECARGAR UN GRUPO ESPECÍFICO
+// =====================================================
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' && isset($_GET['ajax_grupo'])) {
+    $letra = strtoupper(trim($_GET['ajax_grupo']));
+    // Validar que la letra está entre A y L
+    if (preg_match('/^[A-L]$/', $letra)) {
+        $archivoGrupo = 'G' . $letra . '_mundial2026.php';
+        if (file_exists($archivoGrupo)) {
+            include($archivoGrupo);
+        } else {
+            echo "Error: Archivo de grupo no encontrado.";
+        }
+    } else {
+        echo "Error: Grupo inválido.";
+    }
+    exit;
+}
+// =====================================================
+?>
+
 <?php
 if (!function_exists("GetSQLValueString")) {
 function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "")
@@ -48,10 +71,9 @@ $recordusuarios = mysqli_query($conexion, $query_recordusuarios) or die(mysqli_e
 $row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
 
 $uEsc = mysqli_real_escape_string($conexion, $_SESSION['MM_Username'] ?? '');
-// Misma clave que empezar.php / Torneos (latin1_ci suele tolerar mezcla de mayúsculas; unificamos a ProfetaMundial).
 $codUsuPlantilla = 'ProfetaMundial';
 
-// Puntuaciones vs ProfetaMundial (placeholder: mantiene el esquema de 2022)
+// Puntuaciones vs ProfetaMundial
 $consulta_puntos_resultados_grupos =
   "SELECT count(*) as puntos
    FROM partidos_mundial2026 pp
@@ -78,7 +100,6 @@ $consulta_puntos_exactos_grupos =
 $resultado_puntos_exactos_grupos = mysqli_query($conexion, $consulta_puntos_exactos_grupos) or die(mysqli_error($conexion));
 $filas_puntos_exactos_grupos = mysqli_fetch_assoc($resultado_puntos_exactos_grupos);
 
-// Segunda fase: resultado correcto (sin exactos), requiere que el fixture coincida (local/visitante)
 $consulta_puntos_resultados_ko =
   "SELECT count(*) as puntos
    FROM partidos_mundial2026 pp
@@ -114,8 +135,11 @@ $pexactos = $exactos * 5;
 $partidos_grupos = intval($filas_puntos_resultados_grupos['puntos'] ?? 0) - intval($filas_puntos_exactos_grupos['puntos'] ?? 0);
 $partidos_ko = intval($filas_puntos_resultados_ko['puntos'] ?? 0) - intval($filas_puntos_exactos_ko['puntos'] ?? 0);
 $puntospartidos_ko = $partidos_ko * 2;
-
 $total = $pexactos + $partidos_grupos + $puntospartidos_ko;
+
+$today = date("YmdH");
+$limite = '2026060923';
+$fueraTiempo = ($limite <= $today) ? 1 : 0;
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -126,60 +150,6 @@ $total = $pexactos + $partidos_grupos + $puntospartidos_ko;
   <link href="estilo.css" rel="stylesheet" type="text/css" />
   <link rel="shortcut icon" href="favicon.ico"/>
   <script src="jquery.js" type="text/javascript"></script>
-  <style type="text/css">
-    [id^="tablaypartidos_mundial2026_"] {
-      padding-top: 5px;
-      background-color: #10598c;
-      padding: 1%;
-    }
-    [id^="partidos_grupo_mundial2026_"] .comentarios {
-      text-align: center;
-    }
-    .tabla_grupo_mundial2026 table {
-      width: 100%;
-    }
-    .tabla_grupo_mundial2026 td {
-      padding: 5px;
-    }
-    .tabla_grupo_mundial2026 .equipo-nombre {
-      text-align: left;
-      white-space: nowrap;
-    }
-    .tabla_grupo_mundial2026 tr:nth-child(4),
-    .tabla_grupo_mundial2026 tr:nth-child(5) {
-      color: #aaa;
-    }
-    .tabla_grupo_mundial2026 tr:nth-child(1) {
-      font-size: 1em;
-      font-weight: bold;
-    }
-    .tabla_grupo_mundial2026 .comentarios {
-      font-size: 1em;
-    }
-    @media (max-width: 800px) {
-      [id^="partidos_grupo_mundial2026_"] {
-        width: 100%;
-      }
-      .tabla_grupo_mundial2026 {
-        width: 100%;
-      }
-    }
-    @media (min-width: 801px) {
-      [id^="partidos_grupo_mundial2026_"] {
-        width: 100%;
-        float: none;
-      }
-      .tabla_grupo_mundial2026 {
-        float: none;
-        width: 100%;
-        text-align: right;
-        font-size: 1.1em;
-      }
-      .tabla_grupo_mundial2026 .comentarios {
-        font-size: 1em;
-      }
-    }
-  </style>
 </head>
 
 <body>
@@ -208,6 +178,17 @@ $total = $pexactos + $partidos_grupos + $puntospartidos_ko;
 <br />
 <div id="contenedora" class="contenedora">
   <p class="letrasmasgrandes">Mundial de Futbol 2026</p>
+
+  <!-- Checkbox de autoguardado -->
+  <?php
+  $autosaveDisabled = ($fueraTiempo == 1 && strcasecmp($_SESSION['MM_Username'] ?? '', 'ProfetaMundial') !== 0);
+  ?>
+  <div class="autosave-toggle">
+    <label <?php if ($autosaveDisabled) echo 'class="disabled" title="Autoguardado deshabilitado porque el torneo ya comenzó"'; ?>>
+      <input type="checkbox" id="autosaveToggle" <?php if ($autosaveDisabled) echo 'disabled'; ?> checked> 
+      Autoguardar pronósticos
+    </label>
+  </div>
 
   <div class="tablaclasificacion">
     <div class="comentarios">
@@ -276,6 +257,29 @@ $total = $pexactos + $partidos_grupos + $puntospartidos_ko;
   Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a>
   <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
 </div>
+
+<script>
+// Persistencia del estado del checkbox
+$(document).ready(function() {
+  var autosaveKey = 'autosaveMundial2026';
+  var $toggle = $('#autosaveToggle');
+  var saved = localStorage.getItem(autosaveKey);
+  if (saved !== null) {
+    $toggle.prop('checked', saved === 'true');
+  }
+  $toggle.change(function() {
+    localStorage.setItem(autosaveKey, $(this).is(':checked'));
+  });
+});
+
+// Función global para recargar la fase final por AJAX
+window.actualizarFase2 = function() {
+  $('#fase2_mundial2026').load('fase2_mundial2026.php', function() {
+    if (typeof fase2InitAutosave === 'function') {
+      fase2InitAutosave();
+    }
+  });
+};
+</script>
 </body>
 </html>
-
