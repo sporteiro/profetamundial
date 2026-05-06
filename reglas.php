@@ -115,7 +115,8 @@ $totalRows_recordusuarios = mysqli_num_rows($recordusuarios);
 <div id="contenedora" class="contenedora">
 	<p><b>Reglas del juego:</b></p>
 	<br />
-	<div sytle="">
+<div id="lista-reglas">
+  <a href="reglas-mundial2026.php" class="botoneschicos">Copa Mundial FIFA 2026</a>
 	<a href="reglas-mundial2022.php" class="botoneschicos">Copa Mundial FIFA 2022</a> <a href="reglas-mundial2018.php" class="botoneschicos">Copa Mundial FIFA 2018</a> <a href="reglas-america2015.php" class="botoneschicos">Copa America 2015</a> <a href="reglas-oscar2015.php" class="botoneschicos">Oscar 2015</a> <a href="reglas-oscar2014.php" class="botoneschicos">Oscar 2014</a> <a href="reglas-mundial2014.php" class="botoneschicos">Copa Mundial FIFA 2014</a> <a href="reglas-confederaciones.php" class="botoneschicos">Copa Confederaciones 2013</a> <a href="reglas-oscar2013.php" class="botoneschicos">Oscar 2013</a> <a href="reglas-olimpiadas2012.php" class="botoneschicos">Olimpiadas 2012</a> <br /><br /><br /><br /><a href="reglas-eurocopa.php" class="botoneschicos">Eurocopa</a>  <a href="reglas-america2011.php" class="botoneschicos">Copa America</a>  <a href="reglas-mundial2010.php" class="botoneschicos">Mundial 2010</a> <a href="reglas-oscar2016.php" class="botoneschicos">Oscar 2016</a> <a href="reglas-oscar2017.php" class="botoneschicos">Oscar 2017</a> <a href="reglas-oscar2019.php" class="botoneschicos">Oscar 2019</a> <a href="reglas-oscar2020.php" class="botoneschicos">Oscar 2020</a></p> <a href="reglas-oscar2022.php" class="botoneschicos">Oscar 2022</a></p>
 	<br /><br /><br /><br />
 	</div>

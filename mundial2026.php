@@ -1,28 +1,5 @@
 <?php require_once('Connections/conexion.php'); ?>
 <?php require_once('codlog.php'); ?>
-
-<?php
-// =====================================================
-// MANEJAR PETICIONES AJAX PARA RECARGAR UN GRUPO ESPECÍFICO
-// =====================================================
-if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' && isset($_GET['ajax_grupo'])) {
-    $letra = strtoupper(trim($_GET['ajax_grupo']));
-    // Validar que la letra está entre A y L
-    if (preg_match('/^[A-L]$/', $letra)) {
-        $archivoGrupo = 'G' . $letra . '_mundial2026.php';
-        if (file_exists($archivoGrupo)) {
-            include($archivoGrupo);
-        } else {
-            echo "Error: Archivo de grupo no encontrado.";
-        }
-    } else {
-        echo "Error: Grupo inválido.";
-    }
-    exit;
-}
-// =====================================================
-?>
-
 <?php
 if (!function_exists("GetSQLValueString")) {
 function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "")
@@ -73,69 +50,147 @@ $row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
 $uEsc = mysqli_real_escape_string($conexion, $_SESSION['MM_Username'] ?? '');
 $codUsuPlantilla = 'ProfetaMundial';
 
-// Puntuaciones vs ProfetaMundial
-$consulta_puntos_resultados_grupos =
-  "SELECT count(*) as puntos
-   FROM partidos_mundial2026 pp
-   JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
-   WHERE ps.CodUsu='".$uEsc."'
-     AND pp.CodUsu='".$codUsuPlantilla."'
-     AND pp.resultado=ps.resultado
-     AND pp.CodPar BETWEEN 1 AND 72
-     AND pp.glocal!=99;";
-$resultado_puntos_resultados_grupos = mysqli_query($conexion, $consulta_puntos_resultados_grupos) or die(mysqli_error($conexion));
-$filas_puntos_resultados_grupos = mysqli_fetch_assoc($resultado_puntos_resultados_grupos);
+// =====================================================
+// CÁLCULO DE PUNTOS (igual que en puntuar_mundial2026.php)
+// =====================================================
 
-$consulta_puntos_exactos_grupos =
-  "SELECT count(*) as puntos
-   FROM partidos_mundial2026 pp
-   JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
-   WHERE ps.CodUsu='".$uEsc."'
-     AND pp.CodUsu='".$codUsuPlantilla."'
-     AND pp.resultado=ps.resultado
-     AND pp.CodPar BETWEEN 1 AND 72
-     AND pp.glocal=ps.glocal
-     AND pp.gvisitante=ps.gvisitante
-     AND pp.glocal!=99;";
-$resultado_puntos_exactos_grupos = mysqli_query($conexion, $consulta_puntos_exactos_grupos) or die(mysqli_error($conexion));
-$filas_puntos_exactos_grupos = mysqli_fetch_assoc($resultado_puntos_exactos_grupos);
+// --- Partidos ---
+$qResGrupos = "SELECT COUNT(*) AS puntos
+               FROM partidos_mundial2026 pp
+               JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
+               WHERE ps.CodUsu='".$uEsc."'
+                 AND pp.CodUsu='".$codUsuPlantilla."'
+                 AND pp.resultado=ps.resultado
+                 AND pp.CodPar BETWEEN 1 AND 72
+                 AND pp.glocal!=99";
+$rResGrupos = mysqli_query($conexion, $qResGrupos) or die(mysqli_error($conexion));
+$fResGrupos = mysqli_fetch_assoc($rResGrupos);
 
-$consulta_puntos_resultados_ko =
-  "SELECT count(*) as puntos
-   FROM partidos_mundial2026 pp
-   JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
-   WHERE ps.CodUsu='".$uEsc."'
-     AND pp.CodUsu='".$codUsuPlantilla."'
-     AND pp.resultado=ps.resultado
-     AND pp.CodPar BETWEEN 73 AND 104
-     AND pp.local=ps.local
-     AND pp.visitante=ps.visitante
-     AND pp.glocal!=99;";
-$resultado_puntos_resultados_ko = mysqli_query($conexion, $consulta_puntos_resultados_ko) or die(mysqli_error($conexion));
-$filas_puntos_resultados_ko = mysqli_fetch_assoc($resultado_puntos_resultados_ko);
+$qExactGrupos = "SELECT COUNT(*) AS puntos
+                 FROM partidos_mundial2026 pp
+                 JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
+                 WHERE ps.CodUsu='".$uEsc."'
+                   AND pp.CodUsu='".$codUsuPlantilla."'
+                   AND pp.resultado=ps.resultado
+                   AND pp.CodPar BETWEEN 1 AND 72
+                   AND pp.glocal=ps.glocal
+                   AND pp.gvisitante=ps.gvisitante
+                   AND pp.glocal!=99";
+$rExactGrupos = mysqli_query($conexion, $qExactGrupos) or die(mysqli_error($conexion));
+$fExactGrupos = mysqli_fetch_assoc($rExactGrupos);
 
-$consulta_puntos_exactos_ko =
-  "SELECT count(*) as puntos
-   FROM partidos_mundial2026 pp
-   JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
-   WHERE ps.CodUsu='".$uEsc."'
-     AND pp.CodUsu='".$codUsuPlantilla."'
-     AND pp.resultado=ps.resultado
-     AND pp.CodPar BETWEEN 73 AND 104
-     AND pp.local=ps.local
-     AND pp.visitante=ps.visitante
-     AND pp.glocal=ps.glocal
-     AND pp.gvisitante=ps.gvisitante
-     AND pp.glocal!=99;";
-$resultado_puntos_exactos_ko = mysqli_query($conexion, $consulta_puntos_exactos_ko) or die(mysqli_error($conexion));
-$filas_puntos_exactos_ko = mysqli_fetch_assoc($resultado_puntos_exactos_ko);
+$qResKo = "SELECT COUNT(*) AS puntos
+           FROM partidos_mundial2026 pp
+           JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
+           WHERE ps.CodUsu='".$uEsc."'
+             AND pp.CodUsu='".$codUsuPlantilla."'
+             AND pp.resultado=ps.resultado
+             AND pp.CodPar BETWEEN 73 AND 104
+             AND pp.local=ps.local
+             AND pp.visitante=ps.visitante
+             AND pp.glocal!=99";
+$rResKo = mysqli_query($conexion, $qResKo) or die(mysqli_error($conexion));
+$fResKo = mysqli_fetch_assoc($rResKo);
 
-$exactos = intval($filas_puntos_exactos_grupos['puntos'] ?? 0) + intval($filas_puntos_exactos_ko['puntos'] ?? 0);
+$qExactKo = "SELECT COUNT(*) AS puntos
+             FROM partidos_mundial2026 pp
+             JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
+             WHERE ps.CodUsu='".$uEsc."'
+               AND pp.CodUsu='".$codUsuPlantilla."'
+               AND pp.resultado=ps.resultado
+               AND pp.CodPar BETWEEN 73 AND 104
+               AND pp.local=ps.local
+               AND pp.visitante=ps.visitante
+               AND pp.glocal=ps.glocal
+               AND pp.gvisitante=ps.gvisitante
+               AND pp.glocal!=99";
+$rExactKo = mysqli_query($conexion, $qExactKo) or die(mysqli_error($conexion));
+$fExactKo = mysqli_fetch_assoc($rExactKo);
+
+$exactos = intval($fExactGrupos['puntos'] ?? 0) + intval($fExactKo['puntos'] ?? 0);
 $pexactos = $exactos * 5;
-$partidos_grupos = intval($filas_puntos_resultados_grupos['puntos'] ?? 0) - intval($filas_puntos_exactos_grupos['puntos'] ?? 0);
-$partidos_ko = intval($filas_puntos_resultados_ko['puntos'] ?? 0) - intval($filas_puntos_exactos_ko['puntos'] ?? 0);
+$partidos_grupos = intval($fResGrupos['puntos'] ?? 0) - intval($fExactGrupos['puntos'] ?? 0);
+$partidos_ko = intval($fResKo['puntos'] ?? 0) - intval($fExactKo['puntos'] ?? 0);
 $puntospartidos_ko = $partidos_ko * 2;
-$total = $pexactos + $partidos_grupos + $puntospartidos_ko;
+$puntosPartidos = $pexactos + $partidos_grupos + $puntospartidos_ko;
+
+// --- Extras: equipos en cada fase ---
+function equiposEnRango($conexion, $usuario, $inicio, $fin) {
+  $u = mysqli_real_escape_string($conexion, $usuario);
+  $q = "SELECT local as equipo FROM partidos_mundial2026 WHERE CodUsu='$u' AND CodPar BETWEEN $inicio AND $fin
+        UNION
+        SELECT visitante FROM partidos_mundial2026 WHERE CodUsu='$u' AND CodPar BETWEEN $inicio AND $fin";
+  $r = mysqli_query($conexion, $q);
+  $equipos = [];
+  while ($row = mysqli_fetch_assoc($r)) {
+    $nom = $row['equipo'];
+    if (!empty($nom) && $nom != '3?' && strpos($nom, 'Ganador') === false && strpos($nom, 'Perdedor') === false) {
+      $equipos[] = $nom;
+    }
+  }
+  return array_unique($equipos);
+}
+
+$usr16 = equiposEnRango($conexion, $_SESSION['MM_Username'], 73, 88);
+$real16 = equiposEnRango($conexion, 'ProfetaMundial', 73, 88);
+$pts16 = count(array_intersect($usr16, $real16));
+
+$usrOct = equiposEnRango($conexion, $_SESSION['MM_Username'], 89, 96);
+$realOct = equiposEnRango($conexion, 'ProfetaMundial', 89, 96);
+$ptsOct = count(array_intersect($usrOct, $realOct));
+
+$usrCuartos = equiposEnRango($conexion, $_SESSION['MM_Username'], 97, 100);
+$realCuartos = equiposEnRango($conexion, 'ProfetaMundial', 97, 100);
+$ptsCuartos = count(array_intersect($usrCuartos, $realCuartos));
+
+$usrSemis = equiposEnRango($conexion, $_SESSION['MM_Username'], 101, 102);
+$realSemis = equiposEnRango($conexion, 'ProfetaMundial', 101, 102);
+$ptsSemis = count(array_intersect($usrSemis, $realSemis));
+
+$usrFinal = equiposEnRango($conexion, $_SESSION['MM_Username'], 104, 104);
+$realFinal = equiposEnRango($conexion, 'ProfetaMundial', 104, 104);
+$ptsFinal = count(array_intersect($usrFinal, $realFinal));
+
+$usrTercer = equiposEnRango($conexion, $_SESSION['MM_Username'], 103, 103);
+$realTercer = equiposEnRango($conexion, 'ProfetaMundial', 103, 103);
+$ptsTercer = count(array_intersect($usrTercer, $realTercer));
+
+$puntosFases = $pts16 + $ptsOct + $ptsCuartos + $ptsSemis + $ptsFinal + $ptsTercer;
+
+// --- Campeón, goleador, tercer puesto ---
+$qCampeonReal = "SELECT local FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar=105";
+$rCampeonReal = mysqli_query($conexion, $qCampeonReal);
+$campeonReal = mysqli_fetch_assoc($rCampeonReal)['local'] ?? '';
+
+$qTerceroReal = "SELECT visitante FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar=105";
+$rTerceroReal = mysqli_query($conexion, $qTerceroReal);
+$terceroReal = mysqli_fetch_assoc($rTerceroReal)['visitante'] ?? '';
+
+$qGoleadorReal = "SELECT local FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar=106";
+$rGoleadorReal = mysqli_query($conexion, $qGoleadorReal);
+$goleadorReal = mysqli_fetch_assoc($rGoleadorReal)['local'] ?? '';
+
+$qCampeonUsr = "SELECT local FROM partidos_mundial2026 WHERE CodUsu='$uEsc' AND CodPar=105";
+$rCampeonUsr = mysqli_query($conexion, $qCampeonUsr);
+$campeonUsr = mysqli_fetch_assoc($rCampeonUsr)['local'] ?? '';
+
+$qTerceroUsr = "SELECT visitante FROM partidos_mundial2026 WHERE CodUsu='$uEsc' AND CodPar=105";
+$rTerceroUsr = mysqli_query($conexion, $qTerceroUsr);
+$terceroUsr = mysqli_fetch_assoc($rTerceroUsr)['visitante'] ?? '';
+
+$qGoleadorUsr = "SELECT local FROM partidos_mundial2026 WHERE CodUsu='$uEsc' AND CodPar=106";
+$rGoleadorUsr = mysqli_query($conexion, $qGoleadorUsr);
+$goleadorUsr = mysqli_fetch_assoc($rGoleadorUsr)['local'] ?? '';
+
+$puntosCampeon = ($campeonUsr == $campeonReal && !empty($campeonReal)) ? 15 : 0;
+$puntosTercero = ($terceroUsr == $terceroReal && !empty($terceroReal)) ? 5 : 0;
+$puntosGoleador = ($goleadorUsr == $goleadorReal && !empty($goleadorReal)) ? 10 : 0;
+
+$total = $puntosPartidos + $puntosFases + $puntosCampeon + $puntosTercero + $puntosGoleador;
+
+// =====================================================
+// FIN CÁLCULO DE PUNTOS
+// =====================================================
 
 $today = date("YmdH");
 $limite = '2026060923';
@@ -196,6 +251,16 @@ $fueraTiempo = ($limite <= $today) ? 1 : 0;
       <p>Resultado del partido (Grupos): <?=$partidos_grupos?> (<?=$partidos_grupos?> puntos)</p>
       <p>Resultado del partido (Eliminatorias): <?=$partidos_ko?> (<?=$puntospartidos_ko?> puntos)</p>
       <p>Resultados exactos Totales: <?=$exactos?> (<?=$pexactos?> puntos)</p>
+      <p><b>Extras:</b></p>
+      <p>Equipos que estan en dieciseisavos: <?=$pts16?> (<?=$pts16?> puntos)</p>
+      <p>Equipos que estan en octavos: <?=$ptsOct?> (<?=$ptsOct?> puntos)</p>
+      <p>Equipos que estan en cuartos: <?=$ptsCuartos?> (<?=$ptsCuartos?> puntos)</p>
+      <p>Equipos que estan en semifinales: <?=$ptsSemis?> (<?=$ptsSemis?> puntos)</p>
+      <p>Equipos que estan en el partido por el tercer y cuarto puesto: <?=$ptsTercer?> (<?=$ptsTercer?> puntos)</p>
+      <p>Equipos que estan en la final: <?=$ptsFinal?> (<?=$ptsFinal?> puntos)</p>
+      <p>Tercero: <?=$puntosTercero?5:0?> (<?=$puntosTercero?> puntos)</p>
+      <p>Goleador: <?=$puntosGoleador?10:0?> (<?=$puntosGoleador?> puntos)</p>
+      <p>Campeon: <?=$puntosCampeon?15:0?> (<?=$puntosCampeon?> puntos)</p>
       <hr />
       <p style="font-size:24px;">Total: <b><?=$total?></b> puntos</p>
       <?php if (strcasecmp($_SESSION['MM_Username'] ?? '', 'ProfetaMundial') === 0) { ?>

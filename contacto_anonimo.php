@@ -1,5 +1,6 @@
 <?php
 // contacto_anonimo.php – Formulario para usuarios sin login
+require_once('recaptcha_config.php');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -10,15 +11,8 @@
     <link href="estilo.css" rel="stylesheet" type="text/css">
     <script src='https://www.google.com/recaptcha/api.js' async defer></script>
     <style>
-        /* Ajustes específicos para este formulario */
-        .contact-card textarea {
-            resize: vertical;
-        }
-        .g-recaptcha {
-            display: flex;
-            justify-content: center;
-            margin: 15px 0;
-        }
+        .contact-card textarea { resize: vertical; }
+        .g-recaptcha { display: flex; justify-content: center; margin: 15px 0; }
     </style>
 </head>
 <body class="login-body">
@@ -45,10 +39,10 @@
 
             <!-- reCAPTCHA -->
             <div class="form-group">
-                <div class="g-recaptcha" data-sitekey="6LfdcFYUAAAAACTMMh-3MOPFBM6WaKEJ0NI7Khcu"></div>
+                <div class="g-recaptcha" data-sitekey="<?php echo $recaptcha_site_key; ?>"></div>
             </div>
 
-            <!-- Campo honeypot anti-spam (opcional, invisible) -->
+            <!-- Campo honeypot -->
             <div style="display:none;">
                 <label for="website">Website</label>
                 <input type="text" name="website" id="website">

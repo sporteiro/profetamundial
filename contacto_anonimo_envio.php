@@ -1,11 +1,13 @@
 <?php
 // contacto_anonimo_envio.php – Procesa el formulario de contacto anónimo con reCAPTCHA
+require_once('recaptcha_config.php');
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: contacto_anonimo.php');
     exit;
 }
 
-// 1. Validar reCAPTCHA (mismo código que en registrarse.php)
+// Validar reCAPTCHA
 $recaptcha = $_POST["g-recaptcha-response"] ?? '';
 if (empty($recaptcha)) {
     die("Por favor, completa el captcha.");
@@ -13,7 +15,7 @@ if (empty($recaptcha)) {
 
 $url = 'https://www.google.com/recaptcha/api/siteverify';
 $data = [
-    'secret'   => '6LfdcFYUAAAAALRvVzEnzUccaJkyu7rjtoprB8Hh', // CLAVE SECRETA (misma que en registrarse)
+    'secret'   => $recaptcha_secret_key,
     'response' => $recaptcha,
     'remoteip' => $_SERVER['REMOTE_ADDR']
 ];
@@ -34,14 +36,14 @@ if (!$captcha_success->success) {
     die("Código de verificación incorrecto. Intenta de nuevo.");
 }
 
-// 2. Validación básica del formulario
+// Validación básica del formulario
 $nombre = trim($_POST['nombre'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $asunto = trim($_POST['asunto'] ?? '');
 $mensaje = trim($_POST['mensaje'] ?? '');
 $ip = $_SERVER['REMOTE_ADDR'];
 
-// Honeypot anti-spam (campo oculto)
+// Honeypot anti-spam
 if (!empty($_POST['website'])) {
     header('Location: index.php');
     exit;
@@ -52,7 +54,7 @@ if (empty($nombre) || empty($email) || empty($asunto) || empty($mensaje)) {
     exit;
 }
 
-// 3. Enviar correo al administrador
+// Enviar correo al administrador
 $destinatario = 'SEBLASH@GMAIL.COM';
 $subject = "Contacto anónimo - $asunto";
 $body = "Nombre: $nombre\n";

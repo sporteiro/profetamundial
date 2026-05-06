@@ -1,5 +1,6 @@
 <?php
 require_once('Connections/conexion.php');
+require_once('recaptcha_config.php'); // claves de reCAPTCHA
 
 if (!function_exists("GetSQLValueString")) {
     function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "")
@@ -37,7 +38,7 @@ if (isset($_POST["MM_insert"]) && $_POST["MM_insert"] == "formregistrarse") {
     } else {
         $url = 'https://www.google.com/recaptcha/api/siteverify';
         $data = [
-            'secret'   => '6LfdcFYUAAAAALRvVzEnzUccaJkyu7rjtoprB8Hh',
+            'secret'   => $recaptcha_secret_key,
             'response' => $recaptcha,
             'remoteip' => $_SERVER['REMOTE_ADDR']
         ];
@@ -143,15 +144,8 @@ if (isset($_POST["MM_insert"]) && $_POST["MM_insert"] == "formregistrarse") {
     <link href="estilo.css" rel="stylesheet" type="text/css">
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <style>
-        /* Pequeños ajustes adicionales para los mensajes de error de HTML5 */
-        input:invalid {
-            border-color: #f87171 !important;
-        }
-        .error-message {
-            color: #f87171;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
+        input:invalid { border-color: #f87171 !important; }
+        .error-message { color: #f87171; text-align: center; margin-bottom: 1rem; }
     </style>
 </head>
 <body class="register-body">
@@ -193,7 +187,7 @@ if (isset($_POST["MM_insert"]) && $_POST["MM_insert"] == "formregistrarse") {
             </div>
 
             <div class="form-group">
-                <div class="g-recaptcha" data-sitekey="6LfdcFYUAAAAACTMMh-3MOPFBM6WaKEJ0NI7Khcu"></div>
+                <div class="g-recaptcha" data-sitekey="<?php echo $recaptcha_site_key; ?>"></div>
             </div>
 
             <button type="submit" class="btn">Registrarse</button>
@@ -203,8 +197,6 @@ if (isset($_POST["MM_insert"]) && $_POST["MM_insert"] == "formregistrarse") {
             </div>
         </form>
     </div>
-
-    <!-- Validación simple de coincidencia de contraseñas (cliente) -->
     <script>
         document.querySelector('form').addEventListener('submit', function(e) {
             var pass1 = document.getElementById('contrasena');
