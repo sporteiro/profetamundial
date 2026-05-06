@@ -140,12 +140,12 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formamerica")) {
 ('".$_SESSION['MM_Username']."', 18,'Egipto','Bielorrusia', 0, 0, 0),
 
 
-('".$_SESSION['MM_Username']."', 19,'España','Japon', 0, 0, 0),
+('".$_SESSION['MM_Username']."', 19,'Espaï¿½a','Japon', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 20,'Honduras','Marruecos', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 21,'España','Honduras', 0, 0, 0),
+('".$_SESSION['MM_Username']."', 21,'Espaï¿½a','Honduras', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 22,'Japon','Marruecos', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 23,'Japon','Honduras', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 24,'España','Marruecos', 0, 0, 0),
+('".$_SESSION['MM_Username']."', 24,'Espaï¿½a','Marruecos', 0, 0, 0),
 
 ('".$_SESSION['MM_Username']."', 25,'Primero Grupo A','Segundo Grupo B', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 26,'Primero Grupo C','Segundo Grupo D', 0, 0, 0),
@@ -176,7 +176,7 @@ $insertSQLamerica2 = "INSERT INTO equipos_ol VALUES
 ('".$_SESSION['MM_Username']."', 10, 'Nueva Zelanda', 'C', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 11, 'Brasil', 'C', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 12, 'Egipto', 'C', '0', '0', '0', '0'),
-('".$_SESSION['MM_Username']."', 13, 'España', 'D', '0', '0', '0', '0'),
+('".$_SESSION['MM_Username']."', 13, 'Espaï¿½a', 'D', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 14, 'Japon', 'D', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 15, 'Honduras', 'D', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 16, 'Marruecos', 'D', '0', '0', '0', '0')";
@@ -369,12 +369,12 @@ function recargar()	{
     	<div class="comentarios" style="text-align:center;">
     		
            <p>
-		<strong>¿Quien ganara la medalla de Oro en Futbol Masculino?</strong>
+		<strong>ï¿½Quien ganara la medalla de Oro en Futbol Masculino?</strong>
         	</p>
   			<?php if (!$row_usutor4['nombreT']) { ?>
             	<form action="#" method="post">
 			<input type="hidden" name="MM_insert" value="formamerica"/>
-                	<input type="submit" class="botoneschicosrojos" value="¡Pronosticar Futbol Masculino en London 2012!" />
+                	<input type="submit" class="botoneschicosrojos" value="ï¿½Pronosticar Futbol Masculino en London 2012!" />
 	                   
                 </form>
 			<? } 
@@ -546,8 +546,7 @@ wmode="transparent">
   	<a href="contacto.php" class="botoneschicos">Soluci&oacute;n de Problemas</a>  |
   	<a href="terminos.php" class="botoneschicos">T&eacute;rminos y condiciones de uso</a>
     </p>
-	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com.ar/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com.ar/favicon.ico" /><br />
-	Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a>    
+	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
 </div>
 <!-- Final --> 
 <script type="text/javascript">

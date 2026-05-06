@@ -755,7 +755,7 @@ $totalRows_recordusuarios = mysql_num_rows($recordusuarios);
   </tr>
 </table>
 <p>USUARIO: <?php echo $row_recordusuarios['usuario']; ?> <a href="empezar.php">volver a mi cuenta</a></p>
-<p>www.profetamundial.com.ar
+<p>www.profetamundial.com
 </p>
 </div>
 </div>

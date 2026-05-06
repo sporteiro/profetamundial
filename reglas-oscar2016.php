@@ -101,7 +101,7 @@ $totalRows_recordusuarios = mysql_num_rows($recordusuarios);
 <div class="contenedora">
 <div style="padding:10px;">
   <p><strong>Reglas de los Oscar 2016:</strong></p>
-  <p class="letraschicas">Usted, <?php echo $row_recordusuarios['nombre']; ?>, usuario de nombre <?php echo $row_recordusuarios['usuario']; ?>, al ingresar como usuario en Profeta Mundial  (profetamundial.com.ar), admite haber le&iacute;do, entendido y aceptado sin ning&uacute;n  tipo de excepci&oacute;n, las siguientes Reglas del Juego (en adelante, Reglas), as&iacute;  como sus posibles futuras modificaciones en el mismo momento en que ellas se  produjeren, y se declara responsable en caso de cualquier problema que surgiese  debido a cualquier tipo de malentendido relacionado con las Reglas mencionadas.  </p>
+  <p class="letraschicas">Usted, <?php echo $row_recordusuarios['nombre']; ?>, usuario de nombre <?php echo $row_recordusuarios['usuario']; ?>, al ingresar como usuario en Profeta Mundial  (profetamundial.com), admite haber le&iacute;do, entendido y aceptado sin ning&uacute;n  tipo de excepci&oacute;n, las siguientes Reglas del Juego (en adelante, Reglas), as&iacute;  como sus posibles futuras modificaciones en el mismo momento en que ellas se  produjeren, y se declara responsable en caso de cualquier problema que surgiese  debido a cualquier tipo de malentendido relacionado con las Reglas mencionadas.  </p>
   <p class="letraschicas"><strong>GANADOR DEL JUEGO:</strong></p>
   <p class="letraschicas">El/la ganador/a o los/las ganadores/as del juego ser&aacute;n  aquellos usuarios que consigan mas puntos al termino de la entrega de los Oscar 2016. Para determinar los puntos de un usuario, se utilizaran  los criterios de puntuaci&oacute;n que se detallan en el Sistema de puntuaci&oacute;n.  </p>
   <p class="letraschicas"><strong>SISTEMA DE PUNTUACION:</strong></p>
@@ -117,7 +117,7 @@ $totalRows_recordusuarios = mysql_num_rows($recordusuarios);
 </div>
 <br />
 <div id="final" class="final">
-Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com.ar/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com.ar/favicon.ico"/><br />
+Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico"/><br />
 Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a></div>
 </body>
 </html>

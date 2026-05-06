@@ -217,7 +217,6 @@ while ($m = mysqli_fetch_assoc($rsAll)) {
 
 function mostrarEquipoConBandera($nombre) {
   if (empty($nombre)) return '';
-  // Si contiene texto genérico, no mostrar bandera
   if (strpos($nombre, 'Ganador') !== false || strpos($nombre, 'Perdedor') !== false || strpos($nombre, 'Semifinalista') !== false || strpos($nombre, '3?') !== false || strpos($nombre, '3º') !== false) {
     return htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8');
   }
@@ -232,6 +231,7 @@ function renderMatch($n, $title) {
   $visHtml = mostrarEquipoConBandera($m['visitante']);
   $gl = intval($m['glocal'] ?? 0);
   $gv = intval($m['gvisitante'] ?? 0);
+  $empate = ($gl == $gv);
   echo "<div class='comentarios' style='margin-bottom:6px;'>";
   echo "<b>".htmlspecialchars($title, ENT_QUOTES)."</b><br />";
   echo "<input type='hidden' name='local".$n."' value='".htmlspecialchars($m['local'], ENT_QUOTES)."' />";
@@ -240,10 +240,15 @@ function renderMatch($n, $title) {
   echo "<input type='number' min='0' max='99' name='L".$n."' value='".$gl."' class='botoneschicos' /> - ";
   echo "<input type='number' min='0' max='99' name='V".$n."' value='".$gv."' class='botoneschicos' /> ";
   echo $visHtml;
-  echo " &nbsp; <select name='elegir".$n."' class='botoneschicos'><option value=''>Si empatan, elegí</option>";
-  echo "<option value='".htmlspecialchars($m['local'], ENT_QUOTES)."'>".htmlspecialchars($m['local'], ENT_QUOTES)."</option>";
-  echo "<option value='".htmlspecialchars($m['visitante'], ENT_QUOTES)."'>".htmlspecialchars($m['visitante'], ENT_QUOTES)."</option>";
-  echo "</select>";
+  if ($empate) {
+    echo " &nbsp; <select name='elegir".$n."' class='botoneschicos'><option value=''>Si empatan, elegí</option>";
+    echo "<option value='".htmlspecialchars($m['local'], ENT_QUOTES)."'>".htmlspecialchars($m['local'], ENT_QUOTES)."</option>";
+    echo "<option value='".htmlspecialchars($m['visitante'], ENT_QUOTES)."'>".htmlspecialchars($m['visitante'], ENT_QUOTES)."</option>";
+    echo "</select>";
+  } else {
+    // Si no hay empate, forzamos un campo oculto para que el ganador se determine solo con los goles
+    echo "<input type='hidden' name='elegir".$n."' value='' />";
+  }
   echo "</div>";
 }
 ?>
@@ -297,11 +302,86 @@ function renderMatch($n, $title) {
       renderMatch(102, "102: Ganador 99 vs Ganador 100");
     ?>
 
-    <div class="titulo_grupos">Tercer y cuarto puesto & Final</div>
+    <div class="titulo_grupos">Tercer y cuarto puesto</div>
     <?php
       renderMatch(103, "103: Perdedor 101 vs Perdedor 102 (3º puesto)");
+    ?>
+
+    <div class="titulo_grupos">Final</div>
+    <?php
       renderMatch(104, "104: Ganador 101 vs Ganador 102 (Final)");
     ?>
+
+    <!-- Podio dinámico -->
+    <div style="margin-top: 30px;">
+      <div class="titulo_grupos">Podio</div>
+      <table class="tabla" style="width: 100%; border-collapse: collapse;">
+        <?php
+        // Obtener datos de la final (par 104), tercer puesto (103) y el especial (105)
+        $final = $matches[104] ?? null;
+        $tercero = $matches[103] ?? null;
+        $especial = $matches[105] ?? null;
+        $campeon = '';
+        $subcampeon = '';
+        $tercerPuesto = '';
+
+        if ($final) {
+          $golesLocal = intval($final['glocal'] ?? 0);
+          $golesVisit = intval($final['gvisitante'] ?? 0);
+          if ($golesLocal > $golesVisit) {
+            $campeon = $final['local'];
+            $subcampeon = $final['visitante'];
+          } elseif ($golesLocal < $golesVisit) {
+            $campeon = $final['visitante'];
+            $subcampeon = $final['local'];
+          } else {
+            // En caso de empate en la final, se debería haber usado el selector "elegir"
+            // Tomamos del campo elegir, pero ya está resuelto en BD.
+            // Alternativa: usar el partido 105 (Campeón vs Tercero) que ya tiene los nombres.
+            if ($especial) {
+              $campeon = $especial['local'];
+              $subcampeon = ''; // No tenemos subcampeón aquí
+            }
+          }
+        }
+        if ($tercero) {
+          $g3Local = intval($tercero['glocal'] ?? 0);
+          $g3Visit = intval($tercero['gvisitante'] ?? 0);
+          if ($g3Local > $g3Visit) {
+            $tercerPuesto = $tercero['local'];
+          } elseif ($g3Local < $g3Visit) {
+            $tercerPuesto = $tercero['visitante'];
+          } else {
+            // Empate, usar selector
+            // Podemos buscar en $matches[105] el visitante (tercero)
+            if ($especial) {
+              $tercerPuesto = $especial['visitante'];
+            }
+          }
+        }
+        // Si aún no tenemos datos, usar los de especial (105) que ya tiene campeón y tercero
+        if (!$campeon && $especial) {
+          $campeon = $especial['local'];
+          $tercerPuesto = $especial['visitante'];
+        }
+        ?>
+        <tr style="background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);">
+          <td style="padding: 15px; text-align: center; font-weight: bold; font-size: 1.2em;">
+            🏆 CAMPEÓN: <?php echo htmlspecialchars($campeon ?: '—', ENT_QUOTES); ?>
+          </td>
+        </tr>
+        <tr style="background: linear-gradient(135deg, #c0c0c0 0%, #a9a9a9 100%);">
+          <td style="padding: 12px; text-align: center; font-weight: bold;">
+            🥈 Subcampeón: <?php echo htmlspecialchars($subcampeon ?: '—', ENT_QUOTES); ?>
+          </td>
+        </tr>
+        <tr style="background: linear-gradient(135deg, #cd7f32 0%, #b86c2a 100%);">
+          <td style="padding: 12px; text-align: center; font-weight: bold;">
+            🥉 3º puesto: <?php echo htmlspecialchars($tercerPuesto ?: '—', ENT_QUOTES); ?>
+          </td>
+        </tr>
+      </table>
+    </div>
 
     <div class="titulo_grupos">Extras</div>
     <div class="comentarios">
@@ -319,19 +399,16 @@ function renderMatch($n, $title) {
 </div>
 
 <script>
-// Inicialización del autoguardado para la fase2
 function fase2InitAutosave() {
   $('#fase2 input[type="number"]').off('change.autosave').on('change.autosave', function() {
     var $toggle = $('#autosaveToggle');
     if ($toggle.length && $toggle.is(':checked')) {
-      // Enviar formulario de fase2 por AJAX
       var $form = $('#fase2');
       $.ajax({
         type: 'POST',
         url: window.location.href,
         data: $form.serialize(),
         success: function() {
-          // Recargar la propia fase2 después de guardar (para actualizar brackets)
           if (typeof window.actualizarFase2 === 'function') {
             window.actualizarFase2();
           } else {

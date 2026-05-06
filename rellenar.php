@@ -544,7 +544,7 @@
   </tr>
 </table>
 <p><a href="empezar.php">volver a mi cuenta</a></p>
-<p class="letraschicas">www.profetamundial.com.ar
+<p class="letraschicas">www.profetamundial.com
 </p>
 </div>
 </div>

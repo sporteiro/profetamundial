@@ -69,16 +69,16 @@ body {
 	.tablaclasificacion {
 		font-size:1em;
 		width:90%;
-		 height: auto; 
-		 margin: 0 auto;
-		 color:#FFF;
+		height: auto; 
+		margin: 0 auto;
+		color:#FFF;
 		text-align: right;
 		table-layout: fixed;
 	}
 	.tablaDerecha {
 		 padding-top:10px;
 		 width:49%; 
-		 float: right; o;
+		 float: right;
 		 text-align: center;
 		 height: auto; 
 		 cellpadding: 2px; 
@@ -239,7 +239,7 @@ body {
 		text-align: right;
 		table-layout: fixed;
 	}
-	}
+}
 	.tablaDerecha {
 		/*width:100%;*/
 		 text-align:center;
@@ -307,7 +307,6 @@ body {
 		border: thin solid #FFF;
 		border-radius:5px;
 	}
-}
 .loginiz input{
 	padding: 1%;
 	vertical-align: middle;
@@ -1202,4 +1201,149 @@ body.home-page {
 }
 .tabla_grupo_mundial2026 .alignright {
     text-align: right;
+}
+/* --- ESTILOS PODIO --- */
+.contenedor-podio {
+    margin-top: 30px;
+    background: #1e293b; /* Fondo oscuro */
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.titulo-podio {
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+/* ========== ESTILOS MODERNOS PARA REGISTRARSE (registrarse.php) ========== */
+body.register-body {
+    background: #0a0e17;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.register-card {
+    background: #1e293b;
+    padding: 40px 30px;
+    border-radius: 20px;
+    max-width: 550px;
+    width: 100%;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    text-align: center;
+}
+.register-card .logo {
+    width: 180px;
+    display: block;
+    margin: 0 auto 25px;
+}
+.register-card h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+.register-card .form-group {
+    margin-bottom: 1.2rem;
+    text-align: left;
+}
+.register-card .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+}
+.register-card .form-group input,
+.register-card .form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #fff;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+.register-card .form-group input:focus {
+    outline: none;
+    border-color: #22c55e;
+}
+.register-card .btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #22c55e;
+    color: #fff;
+}
+.register-card .btn:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+}
+.register-card .link-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+.register-card .link-footer a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+.register-card .link-footer a:hover {
+    text-decoration: underline;
+}
+.error-message {
+    color: #f87171;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+/* Ajuste para el captcha (se centra) */
+.g-recaptcha {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+}
+/* Ocultar los mensajes de error de Spry (los reemplazamos) */
+.register-card .textfieldRequiredMsg,
+.register-card .textfieldMinCharsMsg,
+.register-card .textfieldMaxCharsMsg,
+.register-card .confirmRequiredMsg,
+.register-card .confirmInvalidMsg {
+    font-size: 0.75rem;
+    color: #f87171;
+    display: block;
+    margin-top: 4px;
+}
+/* Forzar que los textarea de formularios modernos tengan el mismo estilo que los inputs */
+.login-card .form-group textarea,
+.register-card .form-group textarea,
+.contact-card textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #475569;
+    background: #0f172a !important;      /* fondo oscuro */
+    color: #ffffff !important;           /* letra blanca */
+    font-size: 1rem;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: inherit;
+}
+.login-card .form-group textarea:focus,
+.register-card .form-group textarea:focus,
+.contact-card textarea:focus {
+    outline: none;
+    border-color: #22c55e;
 }

@@ -144,7 +144,7 @@ Pronostico de <?php echo $row_usuprenom['CodUsu']; ?> para los oscar 2014
 
 
 <p>USUARIO: <?php echo $row_recordusuarios['usuario']; ?> <a href="empezar.php">volver a mi cuenta</a></p>
-<p>www.profetamundial.com.ar
+<p>www.profetamundial.com
 </p>
 
 </div>
