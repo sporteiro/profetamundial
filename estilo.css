@@ -1326,64 +1326,379 @@ body.register-body {
     display: block;
     margin-top: 4px;
 }
-/* Forzar que los textarea de formularios modernos tengan el mismo estilo que los inputs */
-.login-card .form-group textarea,
-.register-card .form-group textarea,
-.contact-card textarea {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #475569;
-    background: #0f172a !important;      /* fondo oscuro */
-    color: #ffffff !important;           /* letra blanca */
-    font-size: 1rem;
+/* ==================== empezar.php – diseño moderno (versión final) ==================== */
+/* Fondo general oscuro */
+body {
+    background: #0a0e17;
+    margin: 0;
+    padding: 0;
+}
+
+.main-container {
+    max-width: 1400px;
+    margin: 100px auto 30px;
+    padding: 0 20px;
     box-sizing: border-box;
+}
+
+/* Grid dos columnas */
+.grid-2cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+@media (max-width: 800px) {
+    .grid-2cols {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cabecera fija */
+.modern-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #0f172a;
+    border-bottom: 1px solid #334155;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+.modern-header .logo img {
+    height: 50px;
+    width: auto;
+}
+.modern-header .user-info {
+    text-align: right;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+}
+.modern-header .user-info a {
+    color: #22c55e;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.modern-header .user-info a:hover {
+    text-decoration: underline;
+}
+
+/* Tarjetas */
+.modern-card {
+    background: #1e293b;
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 25px;
+    border: 1px solid #334155;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.modern-card h3 {
+    color: #22c55e;
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+    border-left: 4px solid #22c55e;
+    padding-left: 12px;
+}
+.modern-card h2 {
+    color: white;
+    margin: 0;
+}
+.modern-card p {
+    color: #e2e8f0;
+}
+.welcome-card {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    text-align: center;
+}
+.welcome-card p {
+    color: #94a3b8;
+    margin: 8px 0 0;
+}
+
+/* Botones y enlaces – forzar color blanco en todos los estados */
+.btn-small:link,
+.btn-small:visited,
+.btn-small:hover,
+.btn-small:active {
+    background-color: #22c55e !important;
+    color: white !important;
+    text-decoration: none;
+}
+.btn-small {
+    background: #22c55e;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 40px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    display: inline-block;
+}
+.btn-small:hover {
+    background: #16a34a;
+}
+
+.participante-link:link,
+.participante-link:visited,
+.participante-link:hover,
+.participante-link:active {
+    background-color: #334155 !important;
+    color: white !important;
+    text-decoration: none;
+}
+.participante-link {
+    background: #334155;
+    padding: 5px 12px;
+    border-radius: 30px;
+    display: inline-block;
+    margin: 4px;
+    color: white;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+.participante-link:hover {
+    background: #22c55e !important;
+}
+
+/* Línea divisoria */
+.modern-hr {
+    border: 0;
+    height: 1px;
+    background: #334155;
+    margin: 24px 0;
+    clear: both;
+}
+
+/* Comentarios – fondo alterno */
+.comentarios-scroll {
+    max-height: 350px;
+    overflow-y: auto;
+    background: #0f172a;
+    border-radius: 20px;
+    padding: 8px;
+}
+.comentario-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    color: #e2e8f0;
+}
+.comentario-item:nth-child(odd) {
+    background: #0f172a;
+}
+.comentario-item:nth-child(even) {
+    background: #1e293b;
+}
+.comentario-item strong {
+    color: #22c55e;
+}
+.comentario-item img {
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* Textarea */
+.modern-textarea {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 10px;
+    color: white;
     resize: vertical;
     font-family: inherit;
+    box-sizing: border-box;
 }
-.login-card .form-group textarea:focus,
-.register-card .form-group textarea:focus,
-.contact-card textarea:focus {
+.modern-textarea:focus {
     outline: none;
     border-color: #22c55e;
 }
-/* Estilos para la página de listado de reglas (reglas.php) */
+
+/* Trofeos – fondo alterno */
+.trofeos-wrapper {
+    background: #0f172a;
+    border-radius: 20px;
+    padding: 8px;
+}
+.trofeos-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.trofeo-item {
+    padding: 12px;
+    border-radius: 16px;
+}
+.trofeo-item:nth-child(odd) {
+    background: #0f172a;
+}
+.trofeo-item:nth-child(even) {
+    background: #1e293b;
+}
+.trofeo-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: #fbbf24;
+    font-weight: bold;
+}
+.trofeo-lista {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+.trofeo-lista img {
+    width: 24px;
+    height: auto;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+/* Chat */
+.chat-area {
+    background: #0f172a;
+    border-radius: 20px;
+    padding: 16px;
+    min-height: 120px;
+    color: #cbd5e1;
+}
+
+/* Pie de página */
+.footer-modern {
+    text-align: center;
+    padding: 20px;
+    background: #0f172a;
+    border-radius: 24px;
+    margin-top: 30px;
+    color: #94a3b8;
+}
+.footer-modern a {
+    color: #64748b;
+    text-decoration: none;
+}
+.footer-modern a:hover {
+    text-decoration: underline;
+}
+/* ==================== Página de reglas (listado de torneos) ==================== */
+/* Fondo general oscuro (similar a index.php) */
+body {
+    background: #0a0e17;
+}
+
+/* Contenedor principal (donde está #lista-reglas) */
 #lista-reglas {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    margin: 20px auto;
-    max-width: 900px;
-    padding: 10px;
-}
-#lista-reglas .botoneschicos {
-    display: block;
-    text-align: center;
-    background-color: #1e293b;
-    color: #cbd5e1;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #1e293b;
+    border-radius: 24px;
     border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 12px 8px;
-    font-weight: normal;
-    transition: all 0.2s;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
-#lista-reglas .botoneschicos:hover {
-    background-color: #22c55e;
-    color: white;
-    border-color: #22c55e;
-    transform: translateY(-2px);
-}
-
-/* Móvil: 2 columnas */
-@media (max-width: 768px) {
+@media (max-width: 800px) {
     #lista-reglas {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        gap: 12px;
     }
 }
-/* Teléfonos muy pequeños: 1 columna (opcional) */
-@media (max-width: 480px) {
+@media (max-width: 500px) {
     #lista-reglas {
         grid-template-columns: 1fr;
     }
+}
+
+/* Enlaces dentro de #lista-reglas (tus .botoneschicos) */
+#lista-reglas a.botoneschicos {
+    background: #0f172a;
+    color: #cbd5e1;
+    padding: 12px 16px;
+    border-radius: 16px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: 1px solid #334155;
+    display: block;
+}
+#lista-reglas a.botoneschicos:hover {
+    background: #22c55e;
+    color: white;
+    transform: translateY(-2px);
+    border-color: #22c55e;
+}
+/* ========================================================
+   CORRECCIÓN BOTÓN DESCONECTARSE Y COLORES CLAROS
+   ======================================================== */
+
+/* Forzar que el botón Desconectarse en .user-info se vea exactamente como en empezar.php */
+.user-info .btn-small,
+.user-info .btn-small:link,
+.user-info .btn-small:visited,
+.user-info .btn-small:hover,
+.user-info .btn-small:active {
+    background-color: #22c55e !important;
+    color: white !important;
+    padding: 4px 12px !important;
+    border-radius: 30px !important;
+    font-size: 0.75rem !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    border: none !important;
+    margin-left: 8px !important;
+    transition: background 0.2s ease !important;
+}
+.user-info .btn-small:hover {
+    background-color: #16a34a !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Asegurar que todos los textos en .modern-card sean claros (blancos o grises claros) */
+.modern-card,
+.modern-card p,
+.modern-card label,
+.modern-card .form-group label,
+.modern-card .trofeo-lista {
+    color: #e2e8f0 !important;
+}
+
+/* Mantener los títulos en verde */
+.modern-card h3,
+.modern-card h3 * {
+    color: #22c55e !important;
+}
+
+/* Los enlaces dentro de .modern-card (excepto botones) en verde */
+.modern-card a:not(.btn-small):not(.participante-link) {
+    color: #22c55e !important;
+}
+
+/* Los inputs, textarea, selects dentro de .modern-card deben tener fondo oscuro y texto claro */
+.modern-card input[type="text"],
+.modern-card input[type="email"],
+.modern-card input[type="password"],
+.modern-card textarea,
+.modern-card select {
+    background: #0f172a !important;
+    border: 1px solid #334155 !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 8px 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+.modern-card input:focus,
+.modern-card textarea:focus {
+    outline: none !important;
+    border-color: #22c55e !important;
 }
