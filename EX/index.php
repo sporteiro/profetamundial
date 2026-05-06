@@ -105,12 +105,12 @@ else	{
 			Contrase&ntilde;a <input name="contrasena" type="password" size="13" id="contrasena" value="<?=$pis?>" onchange="borrarcookie()"/>
     			<span class="textfieldRequiredMsg">Escrib&iacute; tu contrase&ntilde;a</span>
             		</span>
-			<input name="enviar" type="submit" class="botoneschicos" id="enviar" value="Ingresá" />
+			<input name="enviar" type="submit" class="botoneschicos" id="enviar" value="Ingresï¿½" />
 			</label>
   			<input type="hidden" value="<?=$enc?>" name="enc" id="enc"/>
 	<p style="text-align:right;"><input name="recordar" type="checkbox" />Recordar</p>
 		</form>
-	<p style="text-align:right;">Si todavia no tenes una cuenta <a href="registrarse.php">Registráte</a>. <a href="contrasena.php">Me olvide la contrase&ntilde;a</a>
+	<p style="text-align:right;">Si todavia no tenes una cuenta <a href="registrarse.php">Registrï¿½te</a>. <a href="contrasena.php">Me olvide la contrase&ntilde;a</a>
 	</p>
 <script type="text/javascript">
 var sprytextfield1 = new Spry.Widget.ValidationTextField("sprytextfield1");
@@ -134,7 +134,7 @@ var sprytextfield2 = new Spry.Widget.ValidationTextField("sprytextfield2");
          
          <div class="tablaresultados">
         	<div class="comentarios" style="text-align:center;">
-   		 <p><strong>¡Pronostique la Eurocopa 2012 de Polonia y Ucrania!</strong></p>
+   		 <p><strong>ï¿½Pronostique la Eurocopa 2012 de Polonia y Ucrania!</strong></p>
   		<span><a href="noingrese.php" class="botoneschicos" target="_blank">Plazo finalizado</a></span>
   		<p></p>
    		 <br />
@@ -231,8 +231,7 @@ wmode="transparent">
   	<a href="noingrese.php" class="botoneschicos">Soluci&oacute;n de Problemas</a>  |
   	<a href="noingrese.php" class="botoneschicos">T&eacute;rminos y condiciones de uso</a>
   </p>
-	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com.ar/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com.ar/favicon.ico" /><br />
-	Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a>    
+	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
 </div>
 <!-- Final -->
 </body>

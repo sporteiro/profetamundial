@@ -320,8 +320,7 @@ return $GLOBALS['HTTP_SERVER_VARS']['REMOTE_ADDR'];
   	<a href="contacto.php" class="botoneschicos">Soluci&oacute;n de Problemas</a>  |
   	<a href="terminos.php" class="botoneschicos">T&eacute;rminos y condiciones de uso</a>
     </p>
-	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com.ar/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com.ar/favicon.ico" /><br />
-	Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a>    
+	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
 </div>
 <!-- Final --> 
 <script type="text/javascript">

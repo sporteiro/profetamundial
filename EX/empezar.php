@@ -127,11 +127,11 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formamerica")) {
 ('".$_SESSION['MM_Username']."', 10,'Holanda','Alemania', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 11,'Portugal','Holanda', 0, 0, 0),	
 ('".$_SESSION['MM_Username']."', 12,'Dinamarca','Alemania', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 13,'España','Italia', 0, 0, 0),
+('".$_SESSION['MM_Username']."', 13,'Espaï¿½a','Italia', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 14,'Irlanda','Croacia', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 15,'Italia','Croacia', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 16,'España','Irlanda', 0, 0, 0),
-('".$_SESSION['MM_Username']."', 17,'Croacia','España', 0, 0, 0),
+('".$_SESSION['MM_Username']."', 16,'Espaï¿½a','Irlanda', 0, 0, 0),
+('".$_SESSION['MM_Username']."', 17,'Croacia','Espaï¿½a', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 18,'Italia','Irlanda', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 19,'Francia','Inglaterra', 0, 0, 0),
 ('".$_SESSION['MM_Username']."', 20,'Ucrania','Suecia', 0, 0, 0),
@@ -165,7 +165,7 @@ $insertSQLamerica2 = "INSERT INTO equipos VALUES
 ('".$_SESSION['MM_Username']."', 6, 'Dinamarca', 'B', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 7, 'Alemania', 'B', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 8, 'Portugal', 'B', '0', '0', '0', '0'),
-('".$_SESSION['MM_Username']."', 9, 'España', 'C', '0', '0', '0', '0'),
+('".$_SESSION['MM_Username']."', 9, 'Espaï¿½a', 'C', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 10, 'Italia', 'C', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 11, 'Irlanda', 'C', '0', '0', '0', '0'),
 ('".$_SESSION['MM_Username']."', 12, 'Croacia', 'C', '0', '0', '0', '0'),
@@ -356,11 +356,11 @@ function recargar()	{
     	<div class="comentarios" style="text-align:center;">
     		
            <p>
-		<strong>¿Quien ganara la Eurocopa?</strong>
+		<strong>ï¿½Quien ganara la Eurocopa?</strong>
         	</p>
   			<?php if (!$row_usutor4['nombreT']) { ?>
             	<form id="formamerica" name="formamerica" method="post" action="<?php echo $editFormAction; ?>">
-                	<input type="submit" class="botoneschicosrojos" value="¡Pronosticar ahora!" />
+                	<input type="submit" class="botoneschicosrojos" value="ï¿½Pronosticar ahora!" />
                     <input type="hidden" name="MM_insert" value="formamerica" />
                 </form>
 			<? } 
@@ -507,8 +507,7 @@ wmode="transparent">
   	<a href="contacto.php" class="botoneschicos">Soluci&oacute;n de Problemas</a>  |
   	<a href="terminos.php" class="botoneschicos">T&eacute;rminos y condiciones de uso</a>
     </p>
-	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com.ar/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com.ar/favicon.ico" /><br />
-	Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a>    
+	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
 </div>
 <!-- Final --> 
 <script type="text/javascript">

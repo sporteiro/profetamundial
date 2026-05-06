@@ -80,7 +80,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 </div>
 </div>
 <div id="final" class="final">
-Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com.ar/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com.ar/favicon.ico"/><br />
+Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico"/><br />
 Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a></div>
 <script type="text/javascript">
 <!--

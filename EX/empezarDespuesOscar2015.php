@@ -415,11 +415,11 @@ if ($_SESSION['MM_Username']=='ProfetaMundial')	{
     	<div class="comentarios" style="text-align:center;">
     		
            	<p>
-	<strong>¿Quien ganara la Copa America 2015?</strong>
+	<strong>ï¿½Quien ganara la Copa America 2015?</strong>
         	</p>
   			<?php if (!$row_usutor4['nombreT']) { ?>
             	<form id="formamerica" name="formamerica" method="post" action="<?php echo $editFormAction; ?>">
-                	<input type="submit" class="botoneschicosrojos" value="¡Pronosticar ahora!" />
+                	<input type="submit" class="botoneschicosrojos" value="ï¿½Pronosticar ahora!" />
                     <input type="hidden" name="MM_insert" value="formamerica" />
                 </form>
 			<? } 
@@ -594,7 +594,6 @@ wmode="transparent">
   	<a href="terminos.php" class="botoneschicos">T&eacute;rminos y condiciones de uso</a>
     </p>
 	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
-	Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a>    
 </div>
 <!-- Final --> 
 <script type="text/javascript">

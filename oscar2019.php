@@ -283,7 +283,6 @@ else { ?>
   	<a href="terminos.php" class="botoneschicos">T&eacute;rminos y condiciones de uso</a>
     </p>
 	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
-	Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a>    
 </div>
 <!-- Final --> 
 </body>

@@ -257,7 +257,7 @@ $totalRows_todorey= mysql_num_rows($todorey);
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Clasicos españoles</title>
+<title>Clasicos espaï¿½oles</title>
 <link href="estilo.css" rel="stylesheet" type="text/css" />
 <link rel="shortcut icon" href="favicon.ico"/>
 <script src="SpryAssets/SpryValidationTextarea.js" type="text/javascript"></script>
@@ -433,8 +433,7 @@ wmode="transparent">
   	<a href="contacto.php" class="botoneschicos">Soluci&oacute;n de Problemas</a>  |
   	<a href="terminos.php" class="botoneschicos">T&eacute;rminos y condiciones de uso</a>
     </p>
-	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com.ar/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com.ar/favicon.ico" /><br />
-	Alojado en: <a href="http://www.000webhost.com/">000webhost.com</a>    
+	Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a> <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
 </div>
 <!-- Final --> 
 </body>
