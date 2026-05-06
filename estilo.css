@@ -875,7 +875,7 @@ body.home-page {
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 .home-logo {
-    width: 220px;
+    width: 300px;
     max-width: 80%;
     margin-bottom: 20px;
 }
@@ -1636,69 +1636,4 @@ body {
     color: white;
     transform: translateY(-2px);
     border-color: #22c55e;
-}
-/* ========================================================
-   CORRECCIÓN BOTÓN DESCONECTARSE Y COLORES CLAROS
-   ======================================================== */
-
-/* Forzar que el botón Desconectarse en .user-info se vea exactamente como en empezar.php */
-.user-info .btn-small,
-.user-info .btn-small:link,
-.user-info .btn-small:visited,
-.user-info .btn-small:hover,
-.user-info .btn-small:active {
-    background-color: #22c55e !important;
-    color: white !important;
-    padding: 4px 12px !important;
-    border-radius: 30px !important;
-    font-size: 0.75rem !important;
-    text-decoration: none !important;
-    display: inline-block !important;
-    border: none !important;
-    margin-left: 8px !important;
-    transition: background 0.2s ease !important;
-}
-.user-info .btn-small:hover {
-    background-color: #16a34a !important;
-    transform: translateY(-1px) !important;
-}
-
-/* Asegurar que todos los textos en .modern-card sean claros (blancos o grises claros) */
-.modern-card,
-.modern-card p,
-.modern-card label,
-.modern-card .form-group label,
-.modern-card .trofeo-lista {
-    color: #e2e8f0 !important;
-}
-
-/* Mantener los títulos en verde */
-.modern-card h3,
-.modern-card h3 * {
-    color: #22c55e !important;
-}
-
-/* Los enlaces dentro de .modern-card (excepto botones) en verde */
-.modern-card a:not(.btn-small):not(.participante-link) {
-    color: #22c55e !important;
-}
-
-/* Los inputs, textarea, selects dentro de .modern-card deben tener fondo oscuro y texto claro */
-.modern-card input[type="text"],
-.modern-card input[type="email"],
-.modern-card input[type="password"],
-.modern-card textarea,
-.modern-card select {
-    background: #0f172a !important;
-    border: 1px solid #334155 !important;
-    color: #ffffff !important;
-    border-radius: 12px !important;
-    padding: 8px 12px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-.modern-card input:focus,
-.modern-card textarea:focus {
-    outline: none !important;
-    border-color: #22c55e !important;
 }
