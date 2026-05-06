@@ -1347,3 +1347,43 @@ body.register-body {
     outline: none;
     border-color: #22c55e;
 }
+/* Estilos para la página de listado de reglas (reglas.php) */
+#lista-reglas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 20px auto;
+    max-width: 900px;
+    padding: 10px;
+}
+#lista-reglas .botoneschicos {
+    display: block;
+    text-align: center;
+    background-color: #1e293b;
+    color: #cbd5e1;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 12px 8px;
+    font-weight: normal;
+    transition: all 0.2s;
+}
+#lista-reglas .botoneschicos:hover {
+    background-color: #22c55e;
+    color: white;
+    border-color: #22c55e;
+    transform: translateY(-2px);
+}
+
+/* Móvil: 2 columnas */
+@media (max-width: 768px) {
+    #lista-reglas {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+/* Teléfonos muy pequeños: 1 columna (opcional) */
+@media (max-width: 480px) {
+    #lista-reglas {
+        grid-template-columns: 1fr;
+    }
+}

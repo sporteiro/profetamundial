@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['MM_update'] ?? '') === 'pu
     $usuario = $u['usuario'];
     $uEsc = mysqli_real_escape_string($conexion, $usuario);
 
+    // --- Partidos (igual que antes) ---
     $qResGrupos = "SELECT COUNT(*) AS puntos
                    FROM partidos_mundial2026 pp
                    JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar
@@ -83,11 +84,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['MM_update'] ?? '') === 'pu
     $partidosGrupos = intval($fResGrupos['puntos'] ?? 0) - intval($fExactGrupos['puntos'] ?? 0);
     $partidosKo = intval($fResKo['puntos'] ?? 0) - intval($fExactKo['puntos'] ?? 0);
     $pPartidosKo = $partidosKo * 2;
-    $total = $pExactos + $partidosGrupos + $pPartidosKo;
+    $puntosPartidos = $pExactos + $partidosGrupos + $pPartidosKo;
 
-    $qUpd = "UPDATE usuarios
-             SET puntos='".intval($total)."'
-             WHERE usuario='".$uEsc."'";
+    // --- Extras: equipos en cada fase (dieciseisavos, octavos, cuartos, semis, final, tercer puesto) ---
+    // Función para obtener equipos únicos de un usuario en un rango de partidos (evitando textos "Ganador", "Perdedor", etc.)
+    function equiposEnRango($conexion, $usuario, $inicio, $fin) {
+      $u = mysqli_real_escape_string($conexion, $usuario);
+      $q = "SELECT local as equipo FROM partidos_mundial2026 WHERE CodUsu='$u' AND CodPar BETWEEN $inicio AND $fin
+            UNION
+            SELECT visitante FROM partidos_mundial2026 WHERE CodUsu='$u' AND CodPar BETWEEN $inicio AND $fin";
+      $r = mysqli_query($conexion, $q);
+      $equipos = [];
+      while ($row = mysqli_fetch_assoc($r)) {
+        $nom = $row['equipo'];
+        if (!empty($nom) && $nom != '3?' && strpos($nom, 'Ganador') === false && strpos($nom, 'Perdedor') === false) {
+          $equipos[] = $nom;
+        }
+      }
+      return array_unique($equipos);
+    }
+
+    $usr16 = equiposEnRango($conexion, $usuario, 73, 88);   // dieciseisavos (32 equipos)
+    $real16 = equiposEnRango($conexion, 'ProfetaMundial', 73, 88);
+    $pts16 = count(array_intersect($usr16, $real16));
+
+    $usrOct = equiposEnRango($conexion, $usuario, 89, 96);   // octavos
+    $realOct = equiposEnRango($conexion, 'ProfetaMundial', 89, 96);
+    $ptsOct = count(array_intersect($usrOct, $realOct));
+
+    $usrCuartos = equiposEnRango($conexion, $usuario, 97, 100);
+    $realCuartos = equiposEnRango($conexion, 'ProfetaMundial', 97, 100);
+    $ptsCuartos = count(array_intersect($usrCuartos, $realCuartos));
+
+    $usrSemis = equiposEnRango($conexion, $usuario, 101, 102);
+    $realSemis = equiposEnRango($conexion, 'ProfetaMundial', 101, 102);
+    $ptsSemis = count(array_intersect($usrSemis, $realSemis));
+
+    $usrFinal = equiposEnRango($conexion, $usuario, 104, 104);
+    $realFinal = equiposEnRango($conexion, 'ProfetaMundial', 104, 104);
+    $ptsFinal = count(array_intersect($usrFinal, $realFinal));
+
+    $usrTercer = equiposEnRango($conexion, $usuario, 103, 103);
+    $realTercer = equiposEnRango($conexion, 'ProfetaMundial', 103, 103);
+    $ptsTercer = count(array_intersect($usrTercer, $realTercer));
+
+    $puntosFases = $pts16 + $ptsOct + $ptsCuartos + $ptsSemis + $ptsFinal + $ptsTercer;
+
+    // --- Extras: campeón, goleador, tercer puesto (partidos 105 y 106) ---
+    $qCampeonReal = "SELECT local FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar=105";
+    $rCampeonReal = mysqli_query($conexion, $qCampeonReal);
+    $campeonReal = mysqli_fetch_assoc($rCampeonReal)['local'] ?? '';
+
+    $qTerceroReal = "SELECT visitante FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar=105";
+    $rTerceroReal = mysqli_query($conexion, $qTerceroReal);
+    $terceroReal = mysqli_fetch_assoc($rTerceroReal)['visitante'] ?? '';
+
+    $qGoleadorReal = "SELECT local FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar=106";
+    $rGoleadorReal = mysqli_query($conexion, $qGoleadorReal);
+    $goleadorReal = mysqli_fetch_assoc($rGoleadorReal)['local'] ?? '';
+
+    $qCampeonUsr = "SELECT local FROM partidos_mundial2026 WHERE CodUsu='$uEsc' AND CodPar=105";
+    $rCampeonUsr = mysqli_query($conexion, $qCampeonUsr);
+    $campeonUsr = mysqli_fetch_assoc($rCampeonUsr)['local'] ?? '';
+
+    $qTerceroUsr = "SELECT visitante FROM partidos_mundial2026 WHERE CodUsu='$uEsc' AND CodPar=105";
+    $rTerceroUsr = mysqli_query($conexion, $qTerceroUsr);
+    $terceroUsr = mysqli_fetch_assoc($rTerceroUsr)['visitante'] ?? '';
+
+    $qGoleadorUsr = "SELECT local FROM partidos_mundial2026 WHERE CodUsu='$uEsc' AND CodPar=106";
+    $rGoleadorUsr = mysqli_query($conexion, $qGoleadorUsr);
+    $goleadorUsr = mysqli_fetch_assoc($rGoleadorUsr)['local'] ?? '';
+
+    $puntosCampeon = ($campeonUsr == $campeonReal && !empty($campeonReal)) ? 15 : 0;
+    $puntosTercero = ($terceroUsr == $terceroReal && !empty($terceroReal)) ? 5 : 0;
+    $puntosGoleador = ($goleadorUsr == $goleadorReal && !empty($goleadorReal)) ? 10 : 0;
+
+    $total = $puntosPartidos + $puntosFases + $puntosCampeon + $puntosTercero + $puntosGoleador;
+
+    // Actualizar en BD
+    $qUpd = "UPDATE usuarios SET puntos='".intval($total)."' WHERE usuario='".$uEsc."'";
     mysqli_query($conexion, $qUpd) or die(mysqli_error($conexion));
 
     $totalUsuarios++;
@@ -95,6 +170,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['MM_update'] ?? '') === 'pu
     $detalles[] = [
       'usuario' => $usuario,
       'puntos' => $total,
+      'partidos' => $puntosPartidos,
+      'fases' => $puntosFases,
+      'campeon' => $puntosCampeon,
+      'tercero' => $puntosTercero,
+      'goleador' => $puntosGoleador
     ];
   }
 
@@ -151,9 +231,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['MM_update'] ?? '') === 'pu
     <div class="tablaclasificacion">
       <div class="comentarios" style="text-align:left;">
         <p><b>Detalle:</b></p>
-        <?php foreach ($detalles as $d) { ?>
-          <div><?php echo htmlspecialchars($d['usuario'], ENT_QUOTES, 'UTF-8'); ?>: <?php echo intval($d['puntos']); ?> puntos</div>
-        <?php } ?>
+        <table style="width:100%; border-collapse:collapse;">
+          <tr style="background:#ccc; color:#000;">
+            <th>Usuario</th><th>Total</th><th>Partidos</th><th>Fases</th><th>Campeón</th><th>3er puesto</th><th>Goleador</th>
+          </tr>
+          <?php foreach ($detalles as $d) { ?>
+            <tr style="background:#eee; color:#000;">
+              <td><?php echo htmlspecialchars($d['usuario'], ENT_QUOTES, 'UTF-8'); ?></td>
+              <td><?php echo intval($d['puntos']); ?></td>
+              <td><?php echo intval($d['partidos']); ?></td>
+              <td><?php echo intval($d['fases']); ?></td>
+              <td><?php echo intval($d['campeon']); ?></td>
+              <td><?php echo intval($d['tercero']); ?></td>
+              <td><?php echo intval($d['goleador']); ?></td>
+            </tr>
+          <?php } ?>
+        </table>
       </div>
     </div>
   <?php } ?>
