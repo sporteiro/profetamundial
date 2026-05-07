@@ -141,12 +141,12 @@ function poblarRoundOf32() {
 }
 
 // -----------------------------------------------------------------
-// 2. RECALCULAR TODO EL BRACKET
+// 2. RECALCULAR TODO EL BRACKET (octavos, cuartos, semis, final)
 // -----------------------------------------------------------------
 function recalcularBracketCompleto() {
   global $conexion, $mundial2026_uEsc;
 
-  $q = "SELECT CodPar, local, visitante, glocal, gvisitante
+  $q = "SELECT CodPar, local, visitante, glocal, gvisitante, desempate
         FROM partidos_mundial2026
         WHERE CodUsu='".$mundial2026_uEsc."'
           AND CodPar BETWEEN 73 AND 106
@@ -166,6 +166,7 @@ function recalcularBracketCompleto() {
       $gv = intval($p['gvisitante']);
       $loc = $p['local'];
       $vis = $p['visitante'];
+      $elegido = $p['desempate'] ?? null;
       if ($gl > $gv) {
         $ganador[$n] = $loc;
         $perdedor[$n] = $vis;
@@ -173,8 +174,8 @@ function recalcularBracketCompleto() {
         $ganador[$n] = $vis;
         $perdedor[$n] = $loc;
       } else {
-        $ganador[$n] = $loc;
-        $perdedor[$n] = $vis;
+        $ganador[$n] = $elegido ?: $loc;
+        $perdedor[$n] = ($ganador[$n] === $loc) ? $vis : $loc;
       }
     }
   }
@@ -196,9 +197,10 @@ function recalcularBracketCompleto() {
       $gv = intval($p['gvisitante']);
       $loc = $p['local'];
       $vis = $p['visitante'];
+      $elegido = $p['desempate'] ?? null;
       if ($gl > $gv) { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
       elseif ($gl < $gv) { $ganador[$n] = $vis; $perdedor[$n] = $loc; }
-      else { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
+      else { $ganador[$n] = $elegido ?: $loc; $perdedor[$n] = ($ganador[$n] === $loc) ? $vis : $loc; }
     }
   }
 
@@ -215,9 +217,10 @@ function recalcularBracketCompleto() {
       $gv = intval($p['gvisitante']);
       $loc = $p['local'];
       $vis = $p['visitante'];
+      $elegido = $p['desempate'] ?? null;
       if ($gl > $gv) { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
       elseif ($gl < $gv) { $ganador[$n] = $vis; $perdedor[$n] = $loc; }
-      else { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
+      else { $ganador[$n] = $elegido ?: $loc; $perdedor[$n] = ($ganador[$n] === $loc) ? $vis : $loc; }
     }
   }
 
@@ -232,9 +235,10 @@ function recalcularBracketCompleto() {
       $gv = intval($p['gvisitante']);
       $loc = $p['local'];
       $vis = $p['visitante'];
+      $elegido = $p['desempate'] ?? null;
       if ($gl > $gv) { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
       elseif ($gl < $gv) { $ganador[$n] = $vis; $perdedor[$n] = $loc; }
-      else { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
+      else { $ganador[$n] = $elegido ?: $loc; $perdedor[$n] = ($ganador[$n] === $loc) ? $vis : $loc; }
     }
   }
 
@@ -245,8 +249,8 @@ function recalcularBracketCompleto() {
   $g104 = $partidos[104] ?? null;
   $g103 = $partidos[103] ?? null;
   if ($g104 && $g103) {
-    $campeon = ganadorDesdeGoles(intval($g104['glocal']), intval($g104['gvisitante']), $g104['local'], $g104['visitante']);
-    $tercero = ganadorDesdeGoles(intval($g103['glocal']), intval($g103['gvisitante']), $g103['local'], $g103['visitante']);
+    $campeon = ganadorDesdeGoles(intval($g104['glocal']), intval($g104['gvisitante']), $g104['local'], $g104['visitante'], $g104['desempate'] ?? null);
+    $tercero = ganadorDesdeGoles(intval($g103['glocal']), intval($g103['gvisitante']), $g103['local'], $g103['visitante'], $g103['desempate'] ?? null);
     if ($campeon && $tercero) updateMatchTeams(105, $campeon, $tercero);
   }
 }
@@ -263,6 +267,11 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
     else $res = 0;
     $upd = "UPDATE partidos_mundial2026 SET glocal='".$gl."', gvisitante='".$gv."', resultado='".$res."' WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar='".$n."'";
     mysqli_query($conexion, $upd) or die(mysqli_error($conexion));
+
+    // Guardar desempate
+    $elegido = isset($_POST['elegir'.$n]) ? $_POST['elegir'.$n] : '';
+    $upd2 = "UPDATE partidos_mundial2026 SET desempate='".mysqli_real_escape_string($conexion, $elegido)."' WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar='".$n."'";
+    mysqli_query($conexion, $upd2) or die(mysqli_error($conexion));
   }
 
   if (isset($_POST['jugador']) && isset($_POST['pais'])) {
@@ -283,7 +292,7 @@ recalcularBracketCompleto();
 // -----------------------------------------------------------------
 // 5. MOSTRAR EL HTML DE LA FASE2
 // -----------------------------------------------------------------
-$qAll = "SELECT CodPar, local, visitante, glocal, gvisitante
+$qAll = "SELECT CodPar, local, visitante, glocal, gvisitante, desempate
          FROM partidos_mundial2026
          WHERE CodUsu='".$mundial2026_uEsc."'
            AND CodPar BETWEEN 73 AND 106
@@ -304,13 +313,13 @@ function mostrarEquipoConBandera($nombre) {
 }
 
 function renderMatch($n, $title, $matches) {
-  $m = $matches[$n] ?? ['local'=>'','visitante'=>'','glocal'=>0,'gvisitante'=>0];
+  $m = $matches[$n] ?? ['local'=>'','visitante'=>'','glocal'=>0,'gvisitante'=>0,'desempate'=>''];
   $localHtml = mostrarEquipoConBandera($m['local']);
   $visHtml = mostrarEquipoConBandera($m['visitante']);
   $gl = intval($m['glocal'] ?? 0);
   $gv = intval($m['gvisitante'] ?? 0);
   $empate = ($gl == $gv);
-  // Añadimos la clase "partido-ko" para los estilos de bordes alternos
+  $desempate = $m['desempate'] ?? '';
   echo "<div class='partido-ko'>";
   echo "<b>".htmlspecialchars($title, ENT_QUOTES)."</b><br />";
   echo "<input type='hidden' name='local".$n."' value='".htmlspecialchars($m['local'], ENT_QUOTES)."' />";
@@ -320,9 +329,10 @@ function renderMatch($n, $title, $matches) {
   echo "<input type='number' min='0' max='99' name='V".$n."' value='".$gv."' class='botoneschicos' /> ";
   echo $visHtml;
   if ($empate) {
-    echo " &nbsp; <select name='elegir".$n."' class='botoneschicos'><option value=''>Si empatan, elegí</option>";
-    echo "<option value='".htmlspecialchars($m['local'], ENT_QUOTES)."'>".htmlspecialchars($m['local'], ENT_QUOTES)."</option>";
-    echo "<option value='".htmlspecialchars($m['visitante'], ENT_QUOTES)."'>".htmlspecialchars($m['visitante'], ENT_QUOTES)."</option>";
+    echo " &nbsp; <select name='elegir".$n."' class='botoneschicos'>";
+    echo "<option value=''>Si empatan, elegí</option>";
+    echo "<option value='".htmlspecialchars($m['local'], ENT_QUOTES)."'".($desempate == $m['local'] ? " selected" : "").">".htmlspecialchars($m['local'], ENT_QUOTES)."</option>";
+    echo "<option value='".htmlspecialchars($m['visitante'], ENT_QUOTES)."'".($desempate == $m['visitante'] ? " selected" : "").">".htmlspecialchars($m['visitante'], ENT_QUOTES)."</option>";
     echo "</select>";
   } else {
     echo "<input type='hidden' name='elegir".$n."' value='' />";
@@ -404,7 +414,7 @@ function renderMatch($n, $title, $matches) {
 
     <!-- Extras unificado -->
     <div class="titulo_grupos">Extras</div>
-    <div class="extras-box" style="background: #0f172a; border-radius: 16px; padding: 15px; margin-top: 20px;">
+    <div class="extras-box">
       <?php
       $final = $matches[104] ?? null;
       $tercer = $matches[103] ?? null;
@@ -418,6 +428,7 @@ function renderMatch($n, $title, $matches) {
       if ($final) {
         $gL = intval($final['glocal']);
         $gV = intval($final['gvisitante']);
+        $elegido = $final['desempate'] ?? null;
         if ($gL > $gV) {
           $campeon = $final['local'];
           $subcampeon = $final['visitante'];
@@ -425,16 +436,17 @@ function renderMatch($n, $title, $matches) {
           $campeon = $final['visitante'];
           $subcampeon = $final['local'];
         } else {
-          $campeon = $final['local'];
-          $subcampeon = $final['visitante'];
+          $campeon = $elegido ?: $final['local'];
+          $subcampeon = ($campeon === $final['local']) ? $final['visitante'] : $final['local'];
         }
       }
       if ($tercer) {
         $gL = intval($tercer['glocal']);
         $gV = intval($tercer['gvisitante']);
+        $elegido = $tercer['desempate'] ?? null;
         if ($gL > $gV) $tercerPuesto = $tercer['local'];
         elseif ($gL < $gV) $tercerPuesto = $tercer['visitante'];
-        else $tercerPuesto = $tercer['local'];
+        else $tercerPuesto = $elegido ?: $tercer['local'];
       }
       if (!$campeon && $especial) {
         $campeon = $especial['local'];
@@ -456,7 +468,7 @@ function renderMatch($n, $title, $matches) {
 
 <script>
 function fase2InitAutosave() {
-  $('#fase2 input[type="number"]').off('change.autosave').on('change.autosave', function() {
+  $('#fase2 input[type="number"], #fase2 select').off('change.autosave').on('change.autosave', function() {
     var $toggle = $('#autosaveToggle');
     if ($toggle.length && $toggle.is(':checked')) {
       var $form = $('#fase2');

@@ -236,15 +236,6 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
     </div>
 </div>
 
-<div class="footer-modern">
-    <p>
-        <a href="reglas.php" class="botoneschicos">Reglas del juego</a> |
-        <a href="contacto.php" class="botoneschicos">Solución de Problemas</a> |
-        <a href="terminos.php" class="botoneschicos">Términos y condiciones</a>
-    </p>
-    Diseño y desarrollo: <a href="https://sebastianporteiro.com">Sebastian Porteiro</a>
-</div>
-
 <script>
 function actualizarConectados() {
     $.getJSON('conectados.php', function(data) {

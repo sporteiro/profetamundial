@@ -918,7 +918,9 @@ body {
         background: #22c55e;
         color: white;
     }
-    /* Modal para móvil (hamburguesa) */
+}
+
+/* ========== MODAL GLOBAL (fuera del media query, oculto por defecto) ========== */
 .modal-grupos {
     display: none;
     position: fixed;
@@ -975,4 +977,115 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
+
+/* ========== CONTACTO ANÓNIMO ========== */
+/* Forzar estilo correcto para textarea en contacto */
+.login-card .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #fff;
+    font-size: 1rem;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+.login-card .form-group textarea:focus {
+    outline: none;
+    border-color: #22c55e;
+}
+
+/* Mensajes flotantes */
+.mensaje-flotante {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+.mensaje-flotante.success {
+    background: #22c55e;
+    color: #fff;
+}
+.mensaje-flotante.error {
+    background: #f87171;
+    color: #fff;
+}
+
+/* ========== MODIFICAR PERFIL ========== */
+/* Forzar texto claro en los labels y párrafos dentro de .modern-card */
+.modern-card .form-group label,
+.modern-card p,
+.modern-card strong {
+    color: #e2e8f0 !important;
+}
+.modern-card hr.modern-hr {
+    border-color: #334155;
+}
+/* Asegurar que el texto del crédito sea claro */
+.modern-card p strong {
+    color: #22c55e !important;
+}
+
+/* ========== MEJORAS RESPONSIVAS PARA empezar.php (móvil) ========== */
+@media (max-width: 800px) {
+    /* Reducir padding de las tarjetas en móvil */
+    .modern-card {
+        padding: 16px !important;
+    }
+    /* Aumentar margen superior para que no tape el header fijo */
+    .main-container {
+        margin-top: 120px !important;
+    }
+    /* Participantes: se apilan verticalmente y centran */
+    .participante-link {
+        display: block !important;
+        width: 100% !important;
+        margin: 6px 0 !important;
+        text-align: center;
+        box-sizing: border-box;
+    }
+    /* El contenedor de participantes (div con text-align:center) debe respetar el ancho */
+    .modern-card div[style*="text-align:center"] {
+        padding: 0 !important;
+    }
+    /* Textarea ocupa todo el ancho disponible */
+    .modern-textarea {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    /* Ajustar listas de comentarios */
+    .comentarios-scroll {
+        padding: 8px !important;
+    }
+    .comentario-item {
+        padding: 8px !important;
+    }
+    /* Títulos más pequeños y con menor padding */
+    .modern-card h3 {
+        font-size: 1.2rem !important;
+        padding-left: 8px !important;
+    }
+    /* Tarjeta de bienvenida */
+    .welcome-card h2 {
+        font-size: 1.3rem !important;
+    }
+}
+
+/* ========== REGLAS MUNDIAL 2026 ========== */
+.reglas-mundial-container .reglas-contenido p,
+.reglas-mundial-container .reglas-contenido li,
+.reglas-mundial-container .reglas-contenido td,
+.reglas-mundial-container .reglas-contenido th {
+    color: #e2e8f0;
+}
+.reglas-mundial-container .reglas-contenido table {
+    background: #0f172a;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.reglas-mundial-container .reglas-contenido th {
+    background: #1e293b;
+    color: #22c55e;
 }
