@@ -130,7 +130,7 @@ if (isset($_POST["MM_insert"]) && $_POST["MM_insert"] == "formregistrarse") {
         $headers_user .= "From: ProfetaMundial <equipo@profetamundial.com>\r\n";
         mail($mail_user, $asunto, $mensaje_html, $headers_user);
 
-        header("Location: index.php");
+        header("Location: regexito.php");
         exit;
     }
 }
