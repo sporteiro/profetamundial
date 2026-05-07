@@ -867,8 +867,8 @@ body {
     .nav-toggle {
         display: block;
         position: fixed;
-        left: 15px;
-        top: 70px;           /* Ajusta según la altura real del header */
+        left: 5px;
+        top: 120px;           /* ← SUBIDO de 70px a 80px para no quedar tapado por el header */
         z-index: 10000;
         background: #1e293b;
         color: #22c55e;
@@ -883,16 +883,16 @@ body {
     .anchor-grupos-container {
         display: none;
         position: fixed;
-        top: 110px;          /* Aparece justo debajo del botón hamburguesa (70px + 40px) */
+        top: 120px;          /* Ajustado acorde (80px del botón + 40px) */
         left: 15px;
         right: 15px;
-        max-height: calc(100vh - 130px);
+        max-height: calc(100vh - 140px);
         overflow-y: auto;
         background: #0f172a;
         border-radius: 16px;
         border: 1px solid #334155;
         padding: 10px;
-        z-index: 9999;       /* Suficientemente alto para estar sobre el header */
+        z-index: 9999;
     }
     .anchor-grupos-container.show {
         display: block;
@@ -979,7 +979,6 @@ body {
 }
 
 /* ========== CONTACTO ANÓNIMO ========== */
-/* Forzar estilo correcto para textarea en contacto */
 .login-card .form-group textarea {
     width: 100%;
     padding: 12px;
@@ -1014,7 +1013,6 @@ body {
 }
 
 /* ========== MODIFICAR PERFIL ========== */
-/* Forzar texto claro en los labels y párrafos dentro de .modern-card */
 .modern-card .form-group label,
 .modern-card p,
 .modern-card strong {
@@ -1023,7 +1021,6 @@ body {
 .modern-card hr.modern-hr {
     border-color: #334155;
 }
-/* Asegurar que el texto del crédito sea claro */
 .modern-card p strong {
     color: #22c55e !important;
 }
@@ -1033,6 +1030,9 @@ body {
     /* Reducir padding de las tarjetas en móvil */
     .modern-card {
         padding: 16px !important;
+        word-break: break-word;          /* ← NUEVO: evita que textos largos desborden */
+        overflow-wrap: break-word;
+        overflow-x: hidden;              /* ← NUEVO: previene scroll horizontal */
     }
     /* Aumentar margen superior para que no tape el header fijo */
     .main-container {
@@ -1046,11 +1046,9 @@ body {
         text-align: center;
         box-sizing: border-box;
     }
-    /* El contenedor de participantes (div con text-align:center) debe respetar el ancho */
     .modern-card div[style*="text-align:center"] {
         padding: 0 !important;
     }
-    /* Textarea ocupa todo el ancho disponible */
     .modern-textarea {
         width: 100% !important;
         box-sizing: border-box;
@@ -1067,7 +1065,6 @@ body {
         font-size: 1.2rem !important;
         padding-left: 8px !important;
     }
-    /* Tarjeta de bienvenida */
     .welcome-card h2 {
         font-size: 1.3rem !important;
     }
@@ -1097,7 +1094,7 @@ body {
 }
 .login-body .login-card .mensaje-error,
 .login-body .login-card p.mensaje-error {
-  color: #f90 !important; /* naranja deseado */
+  color: #f90 !important;
   font-weight: bold;
   text-align: center;
   margin-bottom: 1.5rem;
