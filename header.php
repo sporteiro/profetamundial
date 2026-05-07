@@ -1,6 +1,6 @@
 <?php
 // =====================================================
-// header.php – Cabecera moderna unificada (enlaces de texto)
+// header.php – Cabecera moderna unificada
 // =====================================================
 if (!isset($_SESSION)) {
     session_start();
@@ -32,7 +32,9 @@ if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != "") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="estilo.css" rel="stylesheet" type="text/css">
+    <link href="css/mundial2026.css" rel="stylesheet" type="text/css">
     <script src="jquery.js" type="text/javascript"></script>
+    <?php echo isset($extra_css) ? $extra_css : ''; ?>
 </head>
 <body>
 
@@ -43,7 +45,7 @@ if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != "") {
     <div class="user-info">
         <?php if ($usuario_data): ?>
             USUARIO: <strong><?php echo htmlspecialchars($usuario_data['usuario']); ?></strong> | Crédito: <?php echo $usuario_data['credito']; ?>&phi;<br>
-            <a href="modificar.php" class="header-link">Mi cuenta</a> | 
+            <a href="modificar.php" class="header-link">Mi cuenta</a>
             <a href="<?php echo $logoutAction; ?>" class="header-link">Desconectarse</a>
         <?php else: ?>
             <a href="index.php" class="header-link">Iniciar sesión</a>

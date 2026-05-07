@@ -142,6 +142,7 @@ if (isset($_POST["MM_insert"]) && $_POST["MM_insert"] == "formregistrarse") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrarse - Profeta Mundial</title>
     <link href="estilo.css" rel="stylesheet" type="text/css">
+    <link href="css/mundial2026.css" rel="stylesheet" type="text/css">
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <style>
         input:invalid { border-color: #f87171 !important; }

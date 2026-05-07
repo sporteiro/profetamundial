@@ -1,4 +1,7 @@
 <?php
+// ============================================================
+// grupo_mundial2026.php – Con estilos modernos y autoguardado
+// ============================================================
 require_once('Connections/conexion.php');
 require_once('codlog.php');
 
@@ -37,7 +40,7 @@ $codParFin = $codParInicio + 5;
 $grupo = $GRUPO_LETRA;
 $uEsc = mysqli_real_escape_string($conexion, $_SESSION['MM_Username'] ?? '');
 
-// Guardar partidos (si se envía el formulario)
+// Guardar partidos (POST)
 if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] === "grupo".$grupo)) {
     if (!$inputsDisabled || $esAdmin) {
         for ($n = $codParInicio; $n <= $codParFin; $n++) {
@@ -71,83 +74,83 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] === "grupo".$grupo)) {
         }
     }
 
-    // Si es una petición AJAX, devolvemos SOLO el contenido interior del grupo (sin el div contenedor)
+    // Si es AJAX, devolver solo el contenido interno del grupo
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-        // Re-ejecutamos las consultas para generar el HTML actualizado
         $q = "SELECT * FROM partidos_mundial2026 WHERE CodUsu='".$uEsc."' AND CodPar BETWEEN ".$codParInicio." AND ".$codParFin." ORDER BY CodPar";
         $resultado = mysqli_query($conexion, $q) or die(mysqli_error($conexion));
         $qTabla = "SELECT * FROM equipos_mundial2026 WHERE CodUsu='".$uEsc."' AND grupo='".$grupo."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre";
         $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexion));
         ?>
-        <!-- SOLO EL CONTENIDO INTERNO (sin el div contenedor) -->
-        <div id="partidos_grupo_mundial2026_<?php echo $grupo; ?>">
-            <form name="grupo<?php echo $grupo; ?>" id="grupo<?php echo $grupo; ?>" method="post" action="">
-                <?php while ($fila = mysqli_fetch_assoc($resultado)) {
-                    $codPartido = intval($fila['CodPar']);
-                    $glocal = intval($fila['glocal']);
-                    $gvisitante = intval($fila['gvisitante']);
-                    $local = htmlspecialchars($fila['local'], ENT_QUOTES, 'UTF-8');
-                    $visitante = htmlspecialchars($fila['visitante'], ENT_QUOTES, 'UTF-8');
-                ?>
-                    <div class="comentarios">
-                        <?php
-                        $fechaMostrar = '';
-                        if (!empty($fila['fecha_partido'])) $fechaMostrar = $fila['fecha_partido'];
-                        elseif (!empty($fila['fecha'])) {
-                            $fx = $fila['fecha'];
-                            if ($fx !== '2099-12-31' && $fx !== '0000-00-00') $fechaMostrar = $fx;
-                        }
-                        if ($fechaMostrar !== '') { ?>
-                            <span class="letraschicas"><?php echo htmlspecialchars($fechaMostrar, ENT_QUOTES, 'UTF-8'); ?></span><br />
-                        <?php } ?>
-                        <img src="imagenes/banamerica/<?php echo rawurlencode($local); ?>.gif" width="20" height="10" alt="" />
-                        <?php echo $local; ?>
-                        <input type="number" min="0" max="99" name="L<?php echo $codPartido; ?>" value="<?php echo $glocal; ?>" class="botoneschicos" <?php echo $inputsDisabled ? 'disabled' : ''; ?> />
-                        -
-                        <input type="number" min="0" max="99" name="V<?php echo $codPartido; ?>" value="<?php echo $gvisitante; ?>" class="botoneschicos" <?php echo $inputsDisabled ? 'disabled' : ''; ?> />
-                        <?php echo $visitante; ?>
-                        <img src="imagenes/banamerica/<?php echo rawurlencode($visitante); ?>.gif" width="20" height="10" alt="" />
-                    </div>
-                <?php } ?>
+        <div id="tablaypartidos_mundial2026_<?php echo $grupo; ?>">
+            <div id="partidos_grupo_mundial2026_<?php echo $grupo; ?>">
+                <form name="grupo<?php echo $grupo; ?>" id="grupo<?php echo $grupo; ?>" method="post" action="">
+                    <?php while ($fila = mysqli_fetch_assoc($resultado)) {
+                        $codPartido = intval($fila['CodPar']);
+                        $glocal = intval($fila['glocal']);
+                        $gvisitante = intval($fila['gvisitante']);
+                        $local = htmlspecialchars($fila['local'], ENT_QUOTES, 'UTF-8');
+                        $visitante = htmlspecialchars($fila['visitante'], ENT_QUOTES, 'UTF-8');
+                    ?>
+                        <div class="partido-grupo">
+                            <?php
+                            $fechaMostrar = '';
+                            if (!empty($fila['fecha_partido'])) $fechaMostrar = $fila['fecha_partido'];
+                            elseif (!empty($fila['fecha'])) {
+                                $fx = $fila['fecha'];
+                                if ($fx !== '2099-12-31' && $fx !== '0000-00-00') $fechaMostrar = $fx;
+                            }
+                            if ($fechaMostrar !== '') { ?>
+                                <span class="fecha-partido"><?php echo htmlspecialchars($fechaMostrar, ENT_QUOTES, 'UTF-8'); ?></span><br />
+                            <?php } ?>
+                            <img src="imagenes/banamerica/<?php echo rawurlencode($local); ?>.gif" width="20" height="10" alt="" />
+                            <?php echo $local; ?>
+                            <input type="number" min="0" max="99" name="L<?php echo $codPartido; ?>" value="<?php echo $glocal; ?>" class="botoneschicos" <?php echo $inputsDisabled ? 'disabled' : ''; ?> />
+                            -
+                            <input type="number" min="0" max="99" name="V<?php echo $codPartido; ?>" value="<?php echo $gvisitante; ?>" class="botoneschicos" <?php echo $inputsDisabled ? 'disabled' : ''; ?> />
+                            <?php echo $visitante; ?>
+                            <img src="imagenes/banamerica/<?php echo rawurlencode($visitante); ?>.gif" width="20" height="10" alt="" />
+                        </div>
+                    <?php } ?>
 
-                <div id="tabla_grupo_mundial2026_<?php echo $grupo; ?>">
-                    <table class="tabla_grupo_mundial2026">
-                        <tr class="comentarios">
-                            <th>Grupo <?php echo $grupo; ?></th>
-                            <th>Puntos</th>
-                            <th>GF</th>
-                            <th>GC</th>
-                            <th>Dif gol</th>
-                        </tr>
-                        <?php while ($t = mysqli_fetch_assoc($resultado_tabla)) { ?>
+                    <div class="tabla-grupo-ver" id="tabla_grupo_mundial2026_<?php echo $grupo; ?>">
+                        <table class="tabla-grupo-ver">
                             <tr class="comentarios">
-                                <td class="equipo-nombre">
-                                    <img src="imagenes/banamerica/<?php echo rawurlencode($t['nombre']); ?>.gif" width="30" height="20" alt="" />
-                                    <?php echo htmlspecialchars($t['nombre'], ENT_QUOTES, 'UTF-8'); ?>
-                                </td>
-                                <td class="alignright"><?php echo $t['puntos']; ?></td>
-                                <td class="alignright"><?php echo $t['golfav']; ?></td>
-                                <td class="alignright"><?php echo $t['golcon']; ?></td>
-                                <td class="alignright"><?php echo $t['difgol']; ?></td>
+                                <th>Grupo <?php echo $grupo; ?></th>
+                                <th>Pts</th>
+                                <th>GF</th>
+                                <th>GC</th>
+                                <th>Dif</th>
                             </tr>
-                        <?php } ?>
-                    </table>
-                </div>
+                            <?php while ($t = mysqli_fetch_assoc($resultado_tabla)) { ?>
+                                <tr class="comentarios">
+                                    <td class="equipo-nombre">
+                                        <img src="imagenes/banamerica/<?php echo rawurlencode($t['nombre']); ?>.gif" width="30" height="20" alt="" />
+                                        <?php echo htmlspecialchars($t['nombre'], ENT_QUOTES, 'UTF-8'); ?>
+                                    </td>
+                                    <td class="alignright"><?php echo $t['puntos']; ?></td>
+                                    <td class="alignright"><?php echo $t['golfav']; ?></td>
+                                    <td class="alignright"><?php echo $t['golcon']; ?></td>
+                                    <td class="alignright"><?php echo $t['difgol']; ?></td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    </div>
 
-                <div class="clear"></div>
-                <?php if (!$inputsDisabled) { ?>
-                    <input type="submit" class="botones" id="botonguardar_<?php echo $grupo; ?>" value="Guardar cambios" />
-                <?php } ?>
-                <input type="hidden" name="MM_update" value="<?php echo "grupo".$grupo; ?>" />
-                <input type="hidden" name="grupo" value="<?php echo $grupo; ?>" />
-            </form>
+                    <div class="clear"></div>
+                    <?php if (!$inputsDisabled) { ?>
+                        <input type="submit" class="botones" id="botonguardar_<?php echo $grupo; ?>" value="Guardar cambios" />
+                    <?php } ?>
+                    <input type="hidden" name="MM_update" value="<?php echo "grupo".$grupo; ?>" />
+                    <input type="hidden" name="grupo" value="<?php echo $grupo; ?>" />
+                </form>
+            </div>
         </div>
         <?php
-        exit; // No seguir con el resto del script
+        exit;
     }
 }
 
-// Si no es AJAX o es la primera carga, mostrar el grupo normalmente (con su contenedor exterior)
+// Carga normal (no AJAX)
 $q = "SELECT * FROM partidos_mundial2026 WHERE CodUsu='".$uEsc."' AND CodPar BETWEEN ".$codParInicio." AND ".$codParFin." ORDER BY CodPar";
 $resultado = mysqli_query($conexion, $q) or die(mysqli_error($conexion));
 $qTabla = "SELECT * FROM equipos_mundial2026 WHERE CodUsu='".$uEsc."' AND grupo='".$grupo."' ORDER BY puntos DESC, difgol DESC, golfav DESC, nombre";
@@ -163,7 +166,7 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
                 $local = htmlspecialchars($fila['local'], ENT_QUOTES, 'UTF-8');
                 $visitante = htmlspecialchars($fila['visitante'], ENT_QUOTES, 'UTF-8');
             ?>
-                <div class="comentarios">
+                <div class="partido-grupo">
                     <?php
                     $fechaMostrar = '';
                     if (!empty($fila['fecha_partido'])) $fechaMostrar = $fila['fecha_partido'];
@@ -172,7 +175,7 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
                         if ($fx !== '2099-12-31' && $fx !== '0000-00-00') $fechaMostrar = $fx;
                     }
                     if ($fechaMostrar !== '') { ?>
-                        <span class="letraschicas"><?php echo htmlspecialchars($fechaMostrar, ENT_QUOTES, 'UTF-8'); ?></span><br />
+                        <span class="fecha-partido"><?php echo htmlspecialchars($fechaMostrar, ENT_QUOTES, 'UTF-8'); ?></span><br />
                     <?php } ?>
                     <img src="imagenes/banamerica/<?php echo rawurlencode($local); ?>.gif" width="20" height="10" alt="" />
                     <?php echo $local; ?>
@@ -184,14 +187,14 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
                 </div>
             <?php } ?>
 
-            <div id="tabla_grupo_mundial2026_<?php echo $grupo; ?>">
-                <table class="tabla_grupo_mundial2026">
+            <div class="tabla-grupo-ver" id="tabla_grupo_mundial2026_<?php echo $grupo; ?>">
+                <table class="tabla-grupo-ver">
                     <tr class="comentarios">
                         <th>Grupo <?php echo $grupo; ?></th>
-                        <th>Puntos</th>
+                        <th>Pts</th>
                         <th>GF</th>
                         <th>GC</th>
-                        <th>Dif gol</th>
+                        <th>Dif</th>
                     </tr>
                     <?php while ($t = mysqli_fetch_assoc($resultado_tabla)) { ?>
                         <tr class="comentarios">
@@ -228,15 +231,11 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
         jQuery(document).ready(function($) {
             var grupoLetra = '<?php echo $grupo; ?>';
             var formId = '#grupo' + grupoLetra;
-            // El contenedor padre que envuelve todo el grupo (incluyendo el div exterior)
-            var contenedorPadreId = '#tablaypartidos_mundial2026_' + grupoLetra;
-            // El contenedor interno que se reemplazará (para evitar duplicación)
             var contenedorInternoId = '#partidos_grupo_mundial2026_' + grupoLetra;
             var btnGuardarId = '#botonguardar_' + grupoLetra;
 
             function enviarFormularioGrupo() {
                 var $form = $(formId);
-                // Construir URL con el parámetro ajax_grupo (usando pathname para evitar fragmentos)
                 var url = window.location.pathname + '?ajax_grupo=' + grupoLetra;
                 var formData = $form.serialize();
                 $.ajax({
@@ -245,13 +244,10 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
                     data: formData,
                     dataType: 'html',
                     success: function(htmlContenidoInterno) {
-                        // Reemplazar solo el contenido interno (el div con id="partidos_grupo_mundial2026_...")
                         $(contenedorInternoId).replaceWith(htmlContenidoInterno);
-                        // Actualizar la fase final (eliminatorias)
                         if (typeof window.actualizarFase2 === 'function') {
                             window.actualizarFase2();
                         }
-                        // Feedback visual opcional
                         $(btnGuardarId).val('Guardado');
                         setTimeout(function() { $(btnGuardarId).val('Guardar cambios'); }, 1000);
                     },
@@ -262,7 +258,6 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
                 });
             }
 
-            // Autoguardado: al cambiar un input, si el checkbox está marcado
             $(document).on('change', formId + ' input[type="number"]', function() {
                 var $toggle = $('#autosaveToggle');
                 if ($toggle.length && $toggle.is(':checked')) {
@@ -272,8 +267,7 @@ $resultado_tabla = mysqli_query($conexion, $qTabla) or die(mysqli_error($conexio
                 }
             });
 
-            // Envío manual (botón Guardar cambios)
-            $(document).on('submit', formId, function(e) {
+            $(formId).on('submit', function(e) {
                 e.preventDefault();
                 enviarFormularioGrupo();
             });

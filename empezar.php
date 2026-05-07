@@ -271,6 +271,7 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Usuario - Profeta Mundial</title>
     <link href="estilo.css" rel="stylesheet" type="text/css">
+    <link href="css/mundial2026.css" rel="stylesheet" type="text/css">
     <script src="jquery.js" type="text/javascript"></script>
 </head>
 <body>
