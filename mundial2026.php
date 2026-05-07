@@ -161,57 +161,55 @@ $total = $puntosPartidos + $puntosFases + $puntosCampeon + $puntosTercero + $pun
 $today = date("YmdH");
 $limite = '2026060923';
 $fueraTiempo = ($limite <= $today) ? 1 : 0;
+
+// Añadir CSS moderno específico
+$extra_css = '<link href="css/mundial2026.css" rel="stylesheet" type="text/css">';
+require_once('header.php');
 ?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Mundial de Futbol 2026</title>
-  <link href="estilo.css" rel="stylesheet" type="text/css" />
-  <link rel="shortcut icon" href="favicon.ico"/>
-  <script src="jquery.js" type="text/javascript"></script>
-</head>
-<body>
-<div id="info_mundial"></div>
 
-<!-- Cabecera -->
-<div class="cabecera">
-  <div style="width: 300px; float:left;" class="nada">
-    <a href="empezar.php"><img src="imagenes/profetamundial.png" class="nada" width="171" height="57" alt="Profeta Mundial" /></a>
-  </div>
-  <div class="loginiz">
-    <p>USUARIO: <?php echo $row_recordusuarios['usuario']; ?><br />
-      <a href="modificar.php">Mi cuenta</a>
-    </p>
-    <a href="<?php echo $logoutAction ?>" class="botoneschicos">Desconectarse</a>
-  </div>
-  <div style="clear:both;"></div>
-  <div id="anchor_grupos">
-    <a href="#grupoa">Grupo A</a> <a href="#grupob">Grupo B</a> <a href="#grupoc">Grupo C</a> <a href="#grupod">Grupo D</a>
-    <a href="#grupoe">Grupo E</a> <a href="#grupof">Grupo F</a> <a href="#grupog">Grupo G</a> <a href="#grupoh">Grupo H</a>
-    <a href="#grupoi">Grupo I</a> <a href="#grupoj">Grupo J</a> <a href="#grupok">Grupo K</a> <a href="#grupol">Grupo L</a>
-    <a href="#anchor_fase2">Fixture</a>
-  </div>
-</div>
-
-<br />
-<div id="contenedora" class="contenedora">
-  <p class="letrasmasgrandes">Mundial de Futbol 2026</p>
+<!-- Contenido específico -->
+<div class="contenido-mundial" style="margin-top: 100px;">
 
   <!-- Checkbox de autoguardado -->
   <?php
   $autosaveDisabled = ($fueraTiempo == 1 && strcasecmp($_SESSION['MM_Username'] ?? '', 'ProfetaMundial') !== 0);
   ?>
-  <div class="autosave-toggle">
+  <div class="autosave-toggle" style="margin-bottom: 15px;">
     <label <?php if ($autosaveDisabled) echo 'class="disabled" title="Autoguardado deshabilitado porque el torneo ya comenzó"'; ?>>
       <input type="checkbox" id="autosaveToggle" <?php if ($autosaveDisabled) echo 'disabled'; ?> checked> 
       Autoguardar pronósticos
     </label>
   </div>
 
+  <!-- Navegación desktop (sticky) -->
+  <div class="nav-wrapper">
+    <div class="nav-toggle" id="navToggle">☰ Grupos</div>
+    <div class="anchor-grupos-container" id="anchorGruposContainer">
+      <div id="anchor_grupos">
+        <a href="#grupoa">Grupo A</a> <a href="#grupob">Grupo B</a> <a href="#grupoc">Grupo C</a> <a href="#grupod">Grupo D</a>
+        <a href="#grupoe">Grupo E</a> <a href="#grupof">Grupo F</a> <a href="#grupog">Grupo G</a> <a href="#grupoh">Grupo H</a>
+        <a href="#grupoi">Grupo I</a> <a href="#grupoj">Grupo J</a> <a href="#grupok">Grupo K</a> <a href="#grupol">Grupo L</a>
+        <a href="#anchor_fase2">Fase 2</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para móvil (se abre al hacer clic en el botón hamburguesa) -->
+  <div id="modalGrupos" class="modal-grupos">
+    <div class="contenido-modal">
+      <h3>Navegación</h3>
+      <div class="lista-modal">
+        <a href="#grupoa">Grupo A</a> <a href="#grupob">Grupo B</a> <a href="#grupoc">Grupo C</a> <a href="#grupod">Grupo D</a>
+        <a href="#grupoe">Grupo E</a> <a href="#grupof">Grupo F</a> <a href="#grupog">Grupo G</a> <a href="#grupoh">Grupo H</a>
+        <a href="#grupoi">Grupo I</a> <a href="#grupoj">Grupo J</a> <a href="#grupok">Grupo K</a> <a href="#grupol">Grupo L</a>
+        <a href="#anchor_fase2">Fase 2</a>
+      </div>
+      <button id="cerrarModal">Cerrar</button>
+    </div>
+  </div>
+
   <div class="tablaclasificacion">
-    <div class="comentarios">
+    <div class="comentarios" style="background: #1e293b; color: #e2e8f0;">
       <p>Pronostico de <b><?php echo $_SESSION['MM_Username']?></b></p>
       <p>Resultado del partido (Grupos): <?=$partidos_grupos?> (<?=$partidos_grupos?> puntos)</p>
       <p>Resultado del partido (Eliminatorias): <?=$partidos_ko?> (<?=$puntospartidos_ko?> puntos)</p>
@@ -263,34 +261,22 @@ $fueraTiempo = ($limite <= $today) ? 1 : 0;
 
   <!-- Fixture -->
   <div id="anchor_fase2">
-    <div class="titulo_grupos">Fixture (Eliminatorias)</div>
+    <div class="titulo_grupos">Fase 2 (Eliminatorias)</div>
     <div id="fase2_mundial2026">
       <?php require_once('fase2_mundial2026.php');?>
     </div>
   </div>
 
   <div style="clear: both;"></div>
-</div>
 
-<br />
-<div>
-  <a href="imprimirmundial2026.php" class="botoneschicos" target="_blank">Imprimir</a>
-</div>
-
-<div style="clear:both;"></div>
-<div id="final" class="final">
-  <p>
-    <a href="reglas.php" class="botoneschicos">Reglas del juego</a>  |
-    <a href="contacto.php" class="botoneschicos">Soluci&oacute;n de Problemas</a>  |
-    <a href="terminos.php" class="botoneschicos">T&eacute;rminos y condiciones de uso</a>
-  </p>
-  Dise&ntilde;o y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/">Sebastian Porteiro</a>
-  <img src="http://www.sebastianporteiro.com/favicon.ico" /><br />
+  <div style="text-align: center; margin: 20px 0;">
+    <a href="imprimirmundial2026.php" class="btn-small" target="_blank">Imprimir</a>
+  </div>
 </div>
 
 <script>
-// Persistencia del estado del checkbox
 $(document).ready(function() {
+  // Persistencia del checkbox
   var autosaveKey = 'autosaveMundial2026';
   var $toggle = $('#autosaveToggle');
   var saved = localStorage.getItem(autosaveKey);
@@ -300,6 +286,43 @@ $(document).ready(function() {
   $toggle.change(function() {
     localStorage.setItem(autosaveKey, $(this).is(':checked'));
   });
+
+  // Modal para móvil (hamburguesa)
+  var $modal = $('#modalGrupos');
+  var $navToggle = $('#navToggle');
+  var $cerrarModal = $('#cerrarModal');
+  var $modalLinks = $('#modalGrupos a');
+
+  // Abrir modal
+  $navToggle.click(function() {
+    $modal.fadeIn(300);
+  });
+  // Cerrar modal con botón
+  $cerrarModal.click(function() {
+    $modal.fadeOut(300);
+  });
+  // Cerrar modal al hacer clic en un enlace y desplazar
+  $modalLinks.click(function(e) {
+    e.preventDefault();
+    var target = $(this).attr('href');
+    $modal.fadeOut(300);
+    setTimeout(function() {
+      if (target && target !== '#') {
+        $('html, body').animate({
+          scrollTop: $(target).offset().top - 90  // Compensa el header fijo
+        }, 500);
+      }
+    }, 150);
+  });
+  // Cerrar modal al hacer clic fuera del contenido
+  $(document).mouseup(function(e) {
+    if ($modal.is(':visible') && !$(e.target).closest('.contenido-modal').length) {
+      $modal.fadeOut(300);
+    }
+  });
+
+  // Versión escritorio: el sticky funciona solo para pantallas grandes
+  // No hacemos nada más.
 });
 
 // Función global para recargar la fase final por AJAX
@@ -310,6 +333,11 @@ window.actualizarFase2 = function() {
     }
   });
 };
+
+// Seleccionar automáticamente el contenido de los inputs number
+$(document).on('click', 'input[type="number"]', function(e) {
+  $(this).select();
+});
 </script>
-</body>
-</html>
+
+<?php require_once('footer.php'); ?>

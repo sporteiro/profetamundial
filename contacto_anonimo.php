@@ -9,6 +9,7 @@ require_once('recaptcha_config.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto – Profeta Mundial</title>
     <link href="estilo.css" rel="stylesheet" type="text/css">
+    <link href="css/mundial2026.css" rel="stylesheet" type="text/css">
     <script src='https://www.google.com/recaptcha/api.js' async defer></script>
     <style>
         .contact-card textarea { resize: vertical; }

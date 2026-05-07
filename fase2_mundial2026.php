@@ -93,7 +93,7 @@ function updateMatchTeams($matchNo, $local, $visitante) {
 function ganadorDesdeGoles($golesLocal, $golesVisit, $equipoLocal, $equipoVisit, $elegido = null) {
   if ($golesLocal > $golesVisit) return $equipoLocal;
   if ($golesLocal < $golesVisit) return $equipoVisit;
-  return $elegido ?: $equipoLocal; // si hay empate y no se eligió, por defecto local
+  return $elegido ?: $equipoLocal;
 }
 
 function perdedorDesdeGoles($golesLocal, $golesVisit, $equipoLocal, $equipoVisit, $elegido = null) {
@@ -141,14 +141,11 @@ function poblarRoundOf32() {
 }
 
 // -----------------------------------------------------------------
-// 2. RECALCULAR TODO EL BRACKET (octavos, cuartos, semis, final)
-//    basado en los goles actuales del usuario y en los enfrentamientos
-//    ya actualizados (73-88). No modifica goles, solo equipos.
+// 2. RECALCULAR TODO EL BRACKET
 // -----------------------------------------------------------------
 function recalcularBracketCompleto() {
   global $conexion, $mundial2026_uEsc;
 
-  // Obtener todos los partidos del usuario entre 73 y 106
   $q = "SELECT CodPar, local, visitante, glocal, gvisitante
         FROM partidos_mundial2026
         WHERE CodUsu='".$mundial2026_uEsc."'
@@ -160,29 +157,6 @@ function recalcularBracketCompleto() {
     $partidos[intval($row['CodPar'])] = $row;
   }
 
-  // Función auxiliar para obtener ganador de un partido (usando los datos actuales)
-  function getGanador($n, &$partidos) {
-    $p = $partidos[$n] ?? null;
-    if (!$p) return null;
-    $gl = intval($p['glocal']);
-    $gv = intval($p['gvisitante']);
-    $loc = $p['local'];
-    $vis = $p['visitante'];
-    if ($gl > $gv) return $loc;
-    if ($gl < $gv) return $vis;
-    // Empate: necesitamos el selector de desempate (se guarda en algún lado?)
-    // Por simplicidad, asumimos que el usuario eligió un ganador en el POST original,
-    // pero como aquí no tenemos POST, mantenemos el equipo local como ganador por defecto.
-    // Para una solución completa, deberíamos guardar la elección en la BD (ej. columna `desempate`).
-    // Lo dejamos como está (local) porque el selector ya se aplicó al guardar la fase2.
-    return $loc;
-  }
-
-  // Actualizar rondas sucesivas (89-96, 97-100, 101-102, 103, 104, 105, 106)
-  // Nota: los partidos 89-96 dependen de 73-88, etc.
-  // Para no complicar, reutilizamos la misma lógica que en el POST, pero leyendo de $partidos.
-
-  // Crear array de ganadores y perdedores
   $ganador = [];
   $perdedor = [];
   for ($n = 73; $n <= 104; $n++) {
@@ -199,66 +173,22 @@ function recalcularBracketCompleto() {
         $ganador[$n] = $vis;
         $perdedor[$n] = $loc;
       } else {
-        // Empate: usar selector (si no hay, local)
-        // En este contexto no tenemos el selector, así que dejamos local.
         $ganador[$n] = $loc;
         $perdedor[$n] = $vis;
       }
     }
   }
 
-  // Definir dependencias (octavos)
-  // 89: ganador 74 vs ganador 77
-  if (isset($ganador[74]) && isset($ganador[77])) {
-    updateMatchTeams(89, $ganador[74], $ganador[77]);
-    // también actualizar los datos en $partidos para continuar
-    $partidos[89]['local'] = $ganador[74];
-    $partidos[89]['visitante'] = $ganador[77];
-  }
-  // 90: ganador 73 vs ganador 75
-  if (isset($ganador[73]) && isset($ganador[75])) {
-    updateMatchTeams(90, $ganador[73], $ganador[75]);
-    $partidos[90]['local'] = $ganador[73];
-    $partidos[90]['visitante'] = $ganador[75];
-  }
-  // 91: ganador 76 vs ganador 78
-  if (isset($ganador[76]) && isset($ganador[78])) {
-    updateMatchTeams(91, $ganador[76], $ganador[78]);
-    $partidos[91]['local'] = $ganador[76];
-    $partidos[91]['visitante'] = $ganador[78];
-  }
-  // 92: ganador 79 vs ganador 80
-  if (isset($ganador[79]) && isset($ganador[80])) {
-    updateMatchTeams(92, $ganador[79], $ganador[80]);
-    $partidos[92]['local'] = $ganador[79];
-    $partidos[92]['visitante'] = $ganador[80];
-  }
-  // 93: ganador 83 vs ganador 84
-  if (isset($ganador[83]) && isset($ganador[84])) {
-    updateMatchTeams(93, $ganador[83], $ganador[84]);
-    $partidos[93]['local'] = $ganador[83];
-    $partidos[93]['visitante'] = $ganador[84];
-  }
-  // 94: ganador 81 vs ganador 82
-  if (isset($ganador[81]) && isset($ganador[82])) {
-    updateMatchTeams(94, $ganador[81], $ganador[82]);
-    $partidos[94]['local'] = $ganador[81];
-    $partidos[94]['visitante'] = $ganador[82];
-  }
-  // 95: ganador 86 vs ganador 88
-  if (isset($ganador[86]) && isset($ganador[88])) {
-    updateMatchTeams(95, $ganador[86], $ganador[88]);
-    $partidos[95]['local'] = $ganador[86];
-    $partidos[95]['visitante'] = $ganador[88];
-  }
-  // 96: ganador 85 vs ganador 87
-  if (isset($ganador[85]) && isset($ganador[87])) {
-    updateMatchTeams(96, $ganador[85], $ganador[87]);
-    $partidos[96]['local'] = $ganador[85];
-    $partidos[96]['visitante'] = $ganador[87];
-  }
+  // Octavos
+  if (isset($ganador[74]) && isset($ganador[77])) { updateMatchTeams(89, $ganador[74], $ganador[77]); $partidos[89]['local'] = $ganador[74]; $partidos[89]['visitante'] = $ganador[77]; }
+  if (isset($ganador[73]) && isset($ganador[75])) { updateMatchTeams(90, $ganador[73], $ganador[75]); $partidos[90]['local'] = $ganador[73]; $partidos[90]['visitante'] = $ganador[75]; }
+  if (isset($ganador[76]) && isset($ganador[78])) { updateMatchTeams(91, $ganador[76], $ganador[78]); $partidos[91]['local'] = $ganador[76]; $partidos[91]['visitante'] = $ganador[78]; }
+  if (isset($ganador[79]) && isset($ganador[80])) { updateMatchTeams(92, $ganador[79], $ganador[80]); $partidos[92]['local'] = $ganador[79]; $partidos[92]['visitante'] = $ganador[80]; }
+  if (isset($ganador[83]) && isset($ganador[84])) { updateMatchTeams(93, $ganador[83], $ganador[84]); $partidos[93]['local'] = $ganador[83]; $partidos[93]['visitante'] = $ganador[84]; }
+  if (isset($ganador[81]) && isset($ganador[82])) { updateMatchTeams(94, $ganador[81], $ganador[82]); $partidos[94]['local'] = $ganador[81]; $partidos[94]['visitante'] = $ganador[82]; }
+  if (isset($ganador[86]) && isset($ganador[88])) { updateMatchTeams(95, $ganador[86], $ganador[88]); $partidos[95]['local'] = $ganador[86]; $partidos[95]['visitante'] = $ganador[88]; }
+  if (isset($ganador[85]) && isset($ganador[87])) { updateMatchTeams(96, $ganador[85], $ganador[87]); $partidos[96]['local'] = $ganador[85]; $partidos[96]['visitante'] = $ganador[87]; }
 
-  // Recalcular ganadores de octavos (89-96) después de actualizarlos
   for ($n = 89; $n <= 96; $n++) {
     $p = $partidos[$n] ?? null;
     if ($p) {
@@ -266,46 +196,18 @@ function recalcularBracketCompleto() {
       $gv = intval($p['gvisitante']);
       $loc = $p['local'];
       $vis = $p['visitante'];
-      if ($gl > $gv) {
-        $ganador[$n] = $loc;
-        $perdedor[$n] = $vis;
-      } elseif ($gl < $gv) {
-        $ganador[$n] = $vis;
-        $perdedor[$n] = $loc;
-      } else {
-        $ganador[$n] = $loc;
-        $perdedor[$n] = $vis;
-      }
+      if ($gl > $gv) { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
+      elseif ($gl < $gv) { $ganador[$n] = $vis; $perdedor[$n] = $loc; }
+      else { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
     }
   }
 
-  // Cuartos (97-100)
-  // 97: ganador 89 vs ganador 90
-  if (isset($ganador[89]) && isset($ganador[90])) {
-    updateMatchTeams(97, $ganador[89], $ganador[90]);
-    $partidos[97]['local'] = $ganador[89];
-    $partidos[97]['visitante'] = $ganador[90];
-  }
-  // 98: ganador 93 vs ganador 94
-  if (isset($ganador[93]) && isset($ganador[94])) {
-    updateMatchTeams(98, $ganador[93], $ganador[94]);
-    $partidos[98]['local'] = $ganador[93];
-    $partidos[98]['visitante'] = $ganador[94];
-  }
-  // 99: ganador 91 vs ganador 92
-  if (isset($ganador[91]) && isset($ganador[92])) {
-    updateMatchTeams(99, $ganador[91], $ganador[92]);
-    $partidos[99]['local'] = $ganador[91];
-    $partidos[99]['visitante'] = $ganador[92];
-  }
-  // 100: ganador 95 vs ganador 96
-  if (isset($ganador[95]) && isset($ganador[96])) {
-    updateMatchTeams(100, $ganador[95], $ganador[96]);
-    $partidos[100]['local'] = $ganador[95];
-    $partidos[100]['visitante'] = $ganador[96];
-  }
+  // Cuartos
+  if (isset($ganador[89]) && isset($ganador[90])) { updateMatchTeams(97, $ganador[89], $ganador[90]); $partidos[97]['local'] = $ganador[89]; $partidos[97]['visitante'] = $ganador[90]; }
+  if (isset($ganador[93]) && isset($ganador[94])) { updateMatchTeams(98, $ganador[93], $ganador[94]); $partidos[98]['local'] = $ganador[93]; $partidos[98]['visitante'] = $ganador[94]; }
+  if (isset($ganador[91]) && isset($ganador[92])) { updateMatchTeams(99, $ganador[91], $ganador[92]); $partidos[99]['local'] = $ganador[91]; $partidos[99]['visitante'] = $ganador[92]; }
+  if (isset($ganador[95]) && isset($ganador[96])) { updateMatchTeams(100, $ganador[95], $ganador[96]); $partidos[100]['local'] = $ganador[95]; $partidos[100]['visitante'] = $ganador[96]; }
 
-  // Calcular ganadores de cuartos
   for ($n = 97; $n <= 100; $n++) {
     $p = $partidos[$n] ?? null;
     if ($p) {
@@ -313,32 +215,16 @@ function recalcularBracketCompleto() {
       $gv = intval($p['gvisitante']);
       $loc = $p['local'];
       $vis = $p['visitante'];
-      if ($gl > $gv) {
-        $ganador[$n] = $loc;
-        $perdedor[$n] = $vis;
-      } elseif ($gl < $gv) {
-        $ganador[$n] = $vis;
-        $perdedor[$n] = $loc;
-      } else {
-        $ganador[$n] = $loc;
-        $perdedor[$n] = $vis;
-      }
+      if ($gl > $gv) { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
+      elseif ($gl < $gv) { $ganador[$n] = $vis; $perdedor[$n] = $loc; }
+      else { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
     }
   }
 
-  // Semis (101-102)
-  if (isset($ganador[97]) && isset($ganador[98])) {
-    updateMatchTeams(101, $ganador[97], $ganador[98]);
-    $partidos[101]['local'] = $ganador[97];
-    $partidos[101]['visitante'] = $ganador[98];
-  }
-  if (isset($ganador[99]) && isset($ganador[100])) {
-    updateMatchTeams(102, $ganador[99], $ganador[100]);
-    $partidos[102]['local'] = $ganador[99];
-    $partidos[102]['visitante'] = $ganador[100];
-  }
+  // Semifinales
+  if (isset($ganador[97]) && isset($ganador[98])) { updateMatchTeams(101, $ganador[97], $ganador[98]); $partidos[101]['local'] = $ganador[97]; $partidos[101]['visitante'] = $ganador[98]; }
+  if (isset($ganador[99]) && isset($ganador[100])) { updateMatchTeams(102, $ganador[99], $ganador[100]); $partidos[102]['local'] = $ganador[99]; $partidos[102]['visitante'] = $ganador[100]; }
 
-  // Calcular ganadores de semis
   for ($n = 101; $n <= 102; $n++) {
     $p = $partidos[$n] ?? null;
     if ($p) {
@@ -346,44 +232,23 @@ function recalcularBracketCompleto() {
       $gv = intval($p['gvisitante']);
       $loc = $p['local'];
       $vis = $p['visitante'];
-      if ($gl > $gv) {
-        $ganador[$n] = $loc;
-        $perdedor[$n] = $vis;
-      } elseif ($gl < $gv) {
-        $ganador[$n] = $vis;
-        $perdedor[$n] = $loc;
-      } else {
-        $ganador[$n] = $loc;
-        $perdedor[$n] = $vis;
-      }
+      if ($gl > $gv) { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
+      elseif ($gl < $gv) { $ganador[$n] = $vis; $perdedor[$n] = $loc; }
+      else { $ganador[$n] = $loc; $perdedor[$n] = $vis; }
     }
   }
 
-  // Tercer puesto (103)
-  if (isset($perdedor[101]) && isset($perdedor[102])) {
-    updateMatchTeams(103, $perdedor[101], $perdedor[102]);
-    $partidos[103]['local'] = $perdedor[101];
-    $partidos[103]['visitante'] = $perdedor[102];
-  }
-  // Final (104)
-  if (isset($ganador[101]) && isset($ganador[102])) {
-    updateMatchTeams(104, $ganador[101], $ganador[102]);
-    $partidos[104]['local'] = $ganador[101];
-    $partidos[104]['visitante'] = $ganador[102];
-  }
+  // Tercer puesto y final
+  if (isset($perdedor[101]) && isset($perdedor[102])) updateMatchTeams(103, $perdedor[101], $perdedor[102]);
+  if (isset($ganador[101]) && isset($ganador[102])) updateMatchTeams(104, $ganador[101], $ganador[102]);
 
-  // Partido 105: Campeón vs Tercero
   $g104 = $partidos[104] ?? null;
   $g103 = $partidos[103] ?? null;
   if ($g104 && $g103) {
     $campeon = ganadorDesdeGoles(intval($g104['glocal']), intval($g104['gvisitante']), $g104['local'], $g104['visitante']);
     $tercero = ganadorDesdeGoles(intval($g103['glocal']), intval($g103['gvisitante']), $g103['local'], $g103['visitante']);
-    if ($campeon && $tercero) {
-      updateMatchTeams(105, $campeon, $tercero);
-    }
+    if ($campeon && $tercero) updateMatchTeams(105, $campeon, $tercero);
   }
-
-  // Partido 106 (goleador/pais) – no se modifica automáticamente
 }
 
 // -----------------------------------------------------------------
@@ -393,12 +258,10 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
   for ($n = 73; $n <= 104; $n++) {
     $gl = isset($_POST['L'.$n]) ? intval($_POST['L'.$n]) : 0;
     $gv = isset($_POST['V'.$n]) ? intval($_POST['V'.$n]) : 0;
-    if ($gl > $gv) { $res = 1; }
-    else if ($gl < $gv) { $res = 2; }
-    else { $res = 0; }
-    $upd = "UPDATE partidos_mundial2026
-            SET glocal='".$gl."', gvisitante='".$gv."', resultado='".$res."'
-            WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar='".$n."'";
+    if ($gl > $gv) $res = 1;
+    else if ($gl < $gv) $res = 2;
+    else $res = 0;
+    $upd = "UPDATE partidos_mundial2026 SET glocal='".$gl."', gvisitante='".$gv."', resultado='".$res."' WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar='".$n."'";
     mysqli_query($conexion, $upd) or die(mysqli_error($conexion));
   }
 
@@ -408,20 +271,17 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
     mysqli_query($conexion, "UPDATE partidos_mundial2026 SET local='".$jug."', visitante='".$pais."' WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar=106") or die(mysqli_error($conexion));
   }
 
-  // Después de guardar los goles, recalcular todo el bracket (para propagar ganadores)
   recalcularBracketCompleto();
 }
 
 // -----------------------------------------------------------------
-// 4. CARGA NORMAL (incluyendo AJAX desde grupos)
+// 4. CARGA NORMAL
 // -----------------------------------------------------------------
-// Primero actualizar los enfrentamientos de 73-88 según grupos actuales
 poblarRoundOf32();
-// Luego recalcular todo el bracket para propagar a rondas superiores
 recalcularBracketCompleto();
 
 // -----------------------------------------------------------------
-// 5. MOSTRAR EL HTML DE LA FASE2 (con los datos ya actualizados)
+// 5. MOSTRAR EL HTML DE LA FASE2
 // -----------------------------------------------------------------
 $qAll = "SELECT CodPar, local, visitante, glocal, gvisitante
          FROM partidos_mundial2026
@@ -450,7 +310,8 @@ function renderMatch($n, $title, $matches) {
   $gl = intval($m['glocal'] ?? 0);
   $gv = intval($m['gvisitante'] ?? 0);
   $empate = ($gl == $gv);
-  echo "<div class='comentarios' style='margin-bottom:6px;'>";
+  // Añadimos la clase "partido-ko" para los estilos de bordes alternos
+  echo "<div class='partido-ko'>";
   echo "<b>".htmlspecialchars($title, ENT_QUOTES)."</b><br />";
   echo "<input type='hidden' name='local".$n."' value='".htmlspecialchars($m['local'], ENT_QUOTES)."' />";
   echo "<input type='hidden' name='visitante".$n."' value='".htmlspecialchars($m['visitante'], ENT_QUOTES)."' />";
@@ -474,132 +335,122 @@ function renderMatch($n, $title, $matches) {
     <input type="hidden" name="MM_update" value="fase2" />
 
     <div class="titulo_grupos">Dieciseisavos de final</div>
-    <?php
-      renderMatch(73, "73: 2A vs 2B", $matches);
-      renderMatch(74, "74: 1E vs 3º (A/B/C/D/F)", $matches);
-      renderMatch(75, "75: 1F vs 2C", $matches);
-      renderMatch(76, "76: 1C vs 2F", $matches);
-      renderMatch(77, "77: 1I vs 3º (C/D/F/G/H)", $matches);
-      renderMatch(78, "78: 2E vs 2I", $matches);
-      renderMatch(79, "79: 1A vs 3º (C/E/F/H/I)", $matches);
-      renderMatch(80, "80: 1L vs 3º (E/H/I/J/K)", $matches);
-      renderMatch(81, "81: 1D vs 3º (B/E/F/I/J)", $matches);
-      renderMatch(82, "82: 1G vs 3º (A/E/H/I/J)", $matches);
-      renderMatch(83, "83: 2K vs 2L", $matches);
-      renderMatch(84, "84: 1H vs 2J", $matches);
-      renderMatch(85, "85: 1B vs 3º (E/F/G/I/J)", $matches);
-      renderMatch(86, "86: 1J vs 2H", $matches);
-      renderMatch(87, "87: 1K vs 3º (D/E/I/J/L)", $matches);
-      renderMatch(88, "88: 2D vs 2G", $matches);
-    ?>
+    <div class="ronda">
+      <?php
+        renderMatch(73, "73: 2A vs 2B", $matches);
+        renderMatch(74, "74: 1E vs 3º (A/B/C/D/F)", $matches);
+        renderMatch(75, "75: 1F vs 2C", $matches);
+        renderMatch(76, "76: 1C vs 2F", $matches);
+        renderMatch(77, "77: 1I vs 3º (C/D/F/G/H)", $matches);
+        renderMatch(78, "78: 2E vs 2I", $matches);
+        renderMatch(79, "79: 1A vs 3º (C/E/F/H/I)", $matches);
+        renderMatch(80, "80: 1L vs 3º (E/H/I/J/K)", $matches);
+        renderMatch(81, "81: 1D vs 3º (B/E/F/I/J)", $matches);
+        renderMatch(82, "82: 1G vs 3º (A/E/H/I/J)", $matches);
+        renderMatch(83, "83: 2K vs 2L", $matches);
+        renderMatch(84, "84: 1H vs 2J", $matches);
+        renderMatch(85, "85: 1B vs 3º (E/F/G/I/J)", $matches);
+        renderMatch(86, "86: 1J vs 2H", $matches);
+        renderMatch(87, "87: 1K vs 3º (D/E/I/J/L)", $matches);
+        renderMatch(88, "88: 2D vs 2G", $matches);
+      ?>
+    </div>
 
     <div class="titulo_grupos">Octavos de final</div>
-    <?php
-      renderMatch(89, "89: Ganador 74 vs Ganador 77", $matches);
-      renderMatch(90, "90: Ganador 73 vs Ganador 75", $matches);
-      renderMatch(91, "91: Ganador 76 vs Ganador 78", $matches);
-      renderMatch(92, "92: Ganador 79 vs Ganador 80", $matches);
-      renderMatch(93, "93: Ganador 83 vs Ganador 84", $matches);
-      renderMatch(94, "94: Ganador 81 vs Ganador 82", $matches);
-      renderMatch(95, "95: Ganador 86 vs Ganador 88", $matches);
-      renderMatch(96, "96: Ganador 85 vs Ganador 87", $matches);
-    ?>
+    <div class="ronda">
+      <?php
+        renderMatch(89, "89: Ganador 74 vs Ganador 77", $matches);
+        renderMatch(90, "90: Ganador 73 vs Ganador 75", $matches);
+        renderMatch(91, "91: Ganador 76 vs Ganador 78", $matches);
+        renderMatch(92, "92: Ganador 79 vs Ganador 80", $matches);
+        renderMatch(93, "93: Ganador 83 vs Ganador 84", $matches);
+        renderMatch(94, "94: Ganador 81 vs Ganador 82", $matches);
+        renderMatch(95, "95: Ganador 86 vs Ganador 88", $matches);
+        renderMatch(96, "96: Ganador 85 vs Ganador 87", $matches);
+      ?>
+    </div>
 
     <div class="titulo_grupos">Cuartos de final</div>
-    <?php
-      renderMatch(97, "97: Ganador 89 vs Ganador 90", $matches);
-      renderMatch(98, "98: Ganador 93 vs Ganador 94", $matches);
-      renderMatch(99, "99: Ganador 91 vs Ganador 92", $matches);
-      renderMatch(100, "100: Ganador 95 vs Ganador 96", $matches);
-    ?>
+    <div class="ronda">
+      <?php
+        renderMatch(97, "97: Ganador 89 vs Ganador 90", $matches);
+        renderMatch(98, "98: Ganador 93 vs Ganador 94", $matches);
+        renderMatch(99, "99: Ganador 91 vs Ganador 92", $matches);
+        renderMatch(100, "100: Ganador 95 vs Ganador 96", $matches);
+      ?>
+    </div>
 
-    <div class="titulo_grupos">Semi finales</div>
-    <?php
-      renderMatch(101, "101: Ganador 97 vs Ganador 98", $matches);
-      renderMatch(102, "102: Ganador 99 vs Ganador 100", $matches);
-    ?>
+    <div class="titulo_grupos">Semifinales</div>
+    <div class="ronda">
+      <?php
+        renderMatch(101, "101: Ganador 97 vs Ganador 98", $matches);
+        renderMatch(102, "102: Ganador 99 vs Ganador 100", $matches);
+      ?>
+    </div>
 
     <div class="titulo_grupos">Tercer y cuarto puesto</div>
-    <?php
-      renderMatch(103, "103: Perdedor 101 vs Perdedor 102 (3º puesto)", $matches);
-    ?>
+    <div class="ronda">
+      <?php
+        renderMatch(103, "103: Perdedor 101 vs Perdedor 102 (3º puesto)", $matches);
+      ?>
+    </div>
 
     <div class="titulo_grupos">Final</div>
-    <?php
-      renderMatch(104, "104: Ganador 101 vs Ganador 102 (Final)", $matches);
-    ?>
-
-    <!-- Podio dinámico -->
-    <div style="margin-top: 30px;">
-      <div class="titulo_grupos">Podio</div>
-      <table class="tabla" style="width: 100%; border-collapse: collapse;">
-        <?php
-        $final = $matches[104] ?? null;
-        $tercer = $matches[103] ?? null;
-        $especial = $matches[105] ?? null;
-
-        $campeon = '';
-        $subcampeon = '';
-        $tercerPuesto = '';
-
-        if ($final) {
-          $gL = intval($final['glocal']);
-          $gV = intval($final['gvisitante']);
-          if ($gL > $gV) {
-            $campeon = $final['local'];
-            $subcampeon = $final['visitante'];
-          } elseif ($gL < $gV) {
-            $campeon = $final['visitante'];
-            $subcampeon = $final['local'];
-          } else {
-            // empate, usar selector (no tenemos, se asume local)
-            $campeon = $final['local'];
-            $subcampeon = $final['visitante'];
-          }
-        }
-        if ($tercer) {
-          $gL = intval($tercer['glocal']);
-          $gV = intval($tercer['gvisitante']);
-          if ($gL > $gV) $tercerPuesto = $tercer['local'];
-          elseif ($gL < $gV) $tercerPuesto = $tercer['visitante'];
-          else $tercerPuesto = $tercer['local']; // empate, local por defecto
-        }
-        // Si no hay datos, usar especial 105
-        if (!$campeon && $especial) {
-          $campeon = $especial['local'];
-          $tercerPuesto = $especial['visitante'];
-        }
-        ?>
-        <tr style="background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);">
-          <td style="padding: 15px; text-align: center; font-weight: bold; font-size: 1.2em;">
-            🏆 CAMPEÓN: <?php echo htmlspecialchars($campeon ?: '—', ENT_QUOTES); ?>
-          </td>
-        </tr>
-        <tr style="background: linear-gradient(135deg, #c0c0c0 0%, #a9a9a9 100%);">
-          <td style="padding: 12px; text-align: center; font-weight: bold;">
-            🥈 Subcampeón: <?php echo htmlspecialchars($subcampeon ?: '—', ENT_QUOTES); ?>
-          </td>
-        </tr>
-        <tr style="background: linear-gradient(135deg, #cd7f32 0%, #b86c2a 100%);">
-          <td style="padding: 12px; text-align: center; font-weight: bold;">
-            🥉 3º puesto: <?php echo htmlspecialchars($tercerPuesto ?: '—', ENT_QUOTES); ?>
-          </td>
-        </tr>
-      </table>
+    <div class="ronda">
+      <?php
+        renderMatch(104, "104: Ganador 101 vs Ganador 102 (Final)", $matches);
+      ?>
     </div>
 
+    <!-- Extras unificado -->
     <div class="titulo_grupos">Extras</div>
-    <div class="comentarios">
-      <b>Goleador</b><br />
-      <input type="text" name="jugador" class="letrasgrandes" value="<?php echo htmlspecialchars($matches[106]['local'] ?? '', ENT_QUOTES); ?>" />
-      <br />
-      <b>Pais</b><br />
-      <input type="text" name="pais" class="letrasgrandes" value="<?php echo htmlspecialchars($matches[106]['visitante'] ?? '', ENT_QUOTES); ?>" />
+    <div class="extras-box" style="background: #0f172a; border-radius: 16px; padding: 15px; margin-top: 20px;">
+      <?php
+      $final = $matches[104] ?? null;
+      $tercer = $matches[103] ?? null;
+      $especial = $matches[105] ?? null;
+      $goleador = $matches[106] ?? null;
+
+      $campeon = '';
+      $subcampeon = '';
+      $tercerPuesto = '';
+
+      if ($final) {
+        $gL = intval($final['glocal']);
+        $gV = intval($final['gvisitante']);
+        if ($gL > $gV) {
+          $campeon = $final['local'];
+          $subcampeon = $final['visitante'];
+        } elseif ($gL < $gV) {
+          $campeon = $final['visitante'];
+          $subcampeon = $final['local'];
+        } else {
+          $campeon = $final['local'];
+          $subcampeon = $final['visitante'];
+        }
+      }
+      if ($tercer) {
+        $gL = intval($tercer['glocal']);
+        $gV = intval($tercer['gvisitante']);
+        if ($gL > $gV) $tercerPuesto = $tercer['local'];
+        elseif ($gL < $gV) $tercerPuesto = $tercer['visitante'];
+        else $tercerPuesto = $tercer['local'];
+      }
+      if (!$campeon && $especial) {
+        $campeon = $especial['local'];
+        $tercerPuesto = $especial['visitante'];
+      }
+      ?>
+      <p><strong>🏆 CAMPEÓN:</strong> <?php echo mostrarEquipoConBandera($campeon ?: '—'); ?></p>
+      <p><strong>🥈 SUBCAMPEÓN:</strong> <?php echo mostrarEquipoConBandera($subcampeon ?: '—'); ?></p>
+      <p><strong>🥉 3º PUESTO:</strong> <?php echo mostrarEquipoConBandera($tercerPuesto ?: '—'); ?></p>
+      <p><strong>⚽ GOLEADOR:</strong> <?php echo htmlspecialchars($goleador['local'] ?? '—', ENT_QUOTES); ?>
+        <?php if (!empty($goleador['visitante'])): ?>
+          (<?php echo mostrarEquipoConBandera($goleador['visitante']); ?>)
+        <?php endif; ?>
+      </p>
     </div>
 
-    <?php if (($fueraTiempo==0) || ($_SESSION['MM_Username']=='ProfetaMundial')) { ?>
-      <input type="submit" class="botones" value="Guardar fixture" />
-    <?php } ?>
   </form>
 </div>
 

@@ -93,6 +93,7 @@ $totalRows_recordusuarios = mysqli_num_rows($recordusuarios);
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Reglas</title>
 <link href="estilo.css" rel="stylesheet" type="text/css" />
+<link href="css/mundial2026.css" rel="stylesheet" type="text/css">
 <link rel="shortcut icon" href="favicon.ico"/>
 </head>
 
