@@ -1089,3 +1089,16 @@ body {
     background: #1e293b;
     color: #22c55e;
 }
+.mensaje-error {
+  color: var(--naranja) !important;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.login-body .login-card .mensaje-error,
+.login-body .login-card p.mensaje-error {
+  color: #f90 !important; /* naranja deseado */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
