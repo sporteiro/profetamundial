@@ -114,7 +114,7 @@ if (isset($_POST["MM_insert"]) && $_POST["MM_insert"] == "formregistrarse") {
         <p>Gracias por registrarte en Profeta Mundial</p>
         <p>Tus datos de acceso son:</p>
         usuario: " . htmlspecialchars($usuario) . "<br />
-        contraseña: " . htmlspecialchars($_POST['contrasena']) . "<br />
+        contraseña: ***** <br />
         email: " . htmlspecialchars($email) . "<br />
         IP de registro: " . $ip . "<br />
         <p>Para ingresar, es necesario que actives tu cuenta</p>
