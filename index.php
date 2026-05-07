@@ -65,7 +65,6 @@ if (isset($_COOKIE['pid']) && isset($_COOKIE['pis'])) {
     <title>Profeta Mundial</title>
     <link href="estilo.css" rel="stylesheet" type="text/css">
     <link href="css/mundial2026.css" rel="stylesheet" type="text/css">
-
 </head>
 <body class="home-page">
     <div class="home-card">
@@ -79,6 +78,19 @@ if (isset($_COOKIE['pid']) && isset($_COOKIE['pis'])) {
         
         <div>
             <a href="contacto_anonimo.php" class="btn-contact-home">Contacto</a>
+        </div>
+
+        <!-- Descarga de APK (discreto, al fondo) -->
+        <div class="apk-section" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #334155;">
+            <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 8px;">
+                📱 ¿Querés más comodidad? Instalá nuestra app
+            </p>
+            <a href="profetamundial.apk" class="btn-contact-home" download style="font-size: 0.8rem;">
+                📥 Descargar App para Android
+            </a>
+            <p style="color: #475569; font-size: 0.65rem; margin-top: 6px;">
+                Archivo APK · Instalación manual requerida
+            </p>
         </div>
         
         <div class="home-footer">
