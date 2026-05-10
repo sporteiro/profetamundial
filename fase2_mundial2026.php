@@ -456,11 +456,27 @@ function renderMatch($n, $title, $matches) {
       <p><strong>🏆 CAMPEÓN:</strong> <?php echo mostrarEquipoConBandera($campeon ?: '—'); ?></p>
       <p><strong>🥈 SUBCAMPEÓN:</strong> <?php echo mostrarEquipoConBandera($subcampeon ?: '—'); ?></p>
       <p><strong>🥉 3º PUESTO:</strong> <?php echo mostrarEquipoConBandera($tercerPuesto ?: '—'); ?></p>
-      <p><strong>⚽ GOLEADOR:</strong> <?php echo htmlspecialchars($goleador['local'] ?? '—', ENT_QUOTES); ?>
-        <?php if (!empty($goleador['visitante'])): ?>
-          (<?php echo mostrarEquipoConBandera($goleador['visitante']); ?>)
-        <?php endif; ?>
+
+      <!-- NUEVO: inputs para goleador y país -->
+      <p>
+        <strong>⚽ GOLEADOR:</strong>
+        <input type="text" name="jugador" value="<?php echo htmlspecialchars($goleador['local'] ?? '', ENT_QUOTES); ?>" placeholder="Apellido del jugador" class="botoneschicos" style="width:200px;" />
+        <select name="pais" class="botoneschicos">
+          <option value="">Seleccionar país</option>
+          <?php
+          $equipos = mysqli_query($conexion, "SELECT nombre FROM equipos_mundial2026 WHERE CodUsu='".$mundial2026_uEsc."' ORDER BY nombre");
+          while ($eq = mysqli_fetch_assoc($equipos)) {
+            $selected = (($goleador['visitante'] ?? '') === $eq['nombre']) ? ' selected' : '';
+            echo '<option value="'.htmlspecialchars($eq['nombre'], ENT_QUOTES).'"'.$selected.'>'.htmlspecialchars($eq['nombre'], ENT_QUOTES).'</option>';
+          }
+          ?>
+        </select>
       </p>
+    </div>
+
+    <!-- Botón de guardar manual -->
+    <div style="text-align:center; margin:20px 0;">
+      <button type="submit" class="btn-small">Guardar todos los cambios</button>
     </div>
 
   </form>

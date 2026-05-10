@@ -32,7 +32,7 @@ if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != "") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="estilo.css" rel="stylesheet" type="text/css">
-    <link href="css/mundial2026.css" rel="stylesheet" type="text/css">
+    <link href="css/mundial2026.css?v=2.0" rel="stylesheet" type="text/css">
     <script src="jquery.js" type="text/javascript"></script>
     <?php echo isset($extra_css) ? $extra_css : ''; ?>
 </head>
