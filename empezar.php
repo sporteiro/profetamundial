@@ -56,7 +56,7 @@ if (!(isset($_SESSION['MM_Username']) && isAuthorized("", $MM_authorizedUsers, $
     exit;
 }
 
-// ========== FUNCIONES Y CONSULTAS (igual que antes) ==========
+// ========== FUNCIONES Y CONSULTAS ==========
 if (!function_exists("GetSQLValueString")) {
     function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") {
         if (PHP_VERSION < 6) $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
@@ -76,7 +76,118 @@ if (!function_exists("GetSQLValueString")) {
 $editFormAction = $_SERVER['PHP_SELF'];
 if (isset($_SERVER['QUERY_STRING'])) $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
 
-// (Aquí van tus inserciones de mundial2022, mundial2026 – mantén tu código original)
+// ========== PARTICIPACIÓN MUNDIAL 2026 ==========
+if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formmundial2026")) {
+    $username = $_SESSION['MM_Username'];
+    $safeUsername = mysqli_real_escape_string($conexion, $username);
+
+    // Verificar si ya está inscripto
+    $check = mysqli_query($conexion, "SELECT * FROM Torneos WHERE CodTor='20' AND inscriptos = '$safeUsername'");
+    if (mysqli_num_rows($check) == 0) {
+        // 1. Insertar en Torneos
+        $sqlTorneo = "INSERT INTO Torneos (CodTor, nombreT, inscriptos, descripcion) VALUES ('20', 'mundial2026', '$safeUsername', 'Mundial 2026')";
+        mysqli_query($conexion, $sqlTorneo) or die(mysqli_error($conexion));
+
+        // 2. Preparar fechas (grupo desde seed, eliminatorias con fechas coherentes)
+        $fechas = mundial2026_fecha_por_codpar(); // 1-72
+        // Asigna fechas a partidos KO (73-106) según calendario previsto
+        $fechas[73] = '2026-06-28'; // Round of 32 ini
+        for ($i = 74; $i <= 88; $i++) {
+            $fechas[$i] = date('Y-m-d', strtotime("2026-06-28 +" . ($i - 73) . " days"));
+        }
+        $fechas[89] = '2026-07-04';
+        for ($i = 90; $i <= 96; $i++) {
+            $fechas[$i] = date('Y-m-d', strtotime("2026-07-04 +" . ($i - 89) . " days"));
+        }
+        $fechas[97] = '2026-07-09';
+        for ($i = 98; $i <= 100; $i++) {
+            $fechas[$i] = date('Y-m-d', strtotime("2026-07-09 +" . ($i - 97) . " days"));
+        }
+        $fechas[101] = '2026-07-13';
+        $fechas[102] = '2026-07-13';
+        $fechas[103] = '2026-07-14'; // 3er puesto
+        $fechas[104] = '2026-07-15'; // Final
+        $fechas[105] = '2026-07-16'; // Extra (campeón, tercero)
+        $fechas[106] = '2026-07-16'; // Goleador
+
+        // 3. Insertar partidos iniciales (glocal=0, gvisitante=0, resultado=0)
+        $valores = [];
+        // Fase de grupos (CodPar 1-72)
+        $grupos = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+        $codPar = 1;
+        foreach ($grupos as $g) {
+            $partidos = mundial2026_partidos_grupo($g); // 6 partidos
+            foreach ($partidos as $pj) {
+                $local = $pj[0];
+                $visit = $pj[1];
+                $fecha = $fechas[$codPar];
+                $valores[] = "('$safeUsername', $codPar, '$local', '$visit', 0, 0, 0, '$fecha')";
+                $codPar++;
+            }
+        }
+        // Fase KO (73-106) con placeholders
+        $ko = [
+            73 => ['2A','2B'],
+            74 => ['1E','3?'],
+            75 => ['1F','2C'],
+            76 => ['1C','2F'],
+            77 => ['1I','3?'],
+            78 => ['2E','2I'],
+            79 => ['1A','3?'],
+            80 => ['1L','3?'],
+            81 => ['1D','3?'],
+            82 => ['1G','3?'],
+            83 => ['2K','2L'],
+            84 => ['1H','2J'],
+            85 => ['1B','3?'],
+            86 => ['1J','2H'],
+            87 => ['1K','3?'],
+            88 => ['2D','2G'],
+            89 => ['Ganador 74','Ganador 77'],
+            90 => ['Ganador 73','Ganador 75'],
+            91 => ['Ganador 76','Ganador 78'],
+            92 => ['Ganador 79','Ganador 80'],
+            93 => ['Ganador 83','Ganador 84'],
+            94 => ['Ganador 81','Ganador 82'],
+            95 => ['Ganador 86','Ganador 88'],
+            96 => ['Ganador 85','Ganador 87'],
+            97 => ['Ganador 89','Ganador 90'],
+            98 => ['Ganador 93','Ganador 94'],
+            99 => ['Ganador 91','Ganador 92'],
+            100 => ['Ganador 95','Ganador 96'],
+            101 => ['Ganador 97','Ganador 98'],
+            102 => ['Ganador 99','Ganador 100'],
+            103 => ['Perdedor 101','Perdedor 102'],
+            104 => ['Ganador 101','Ganador 102'],
+            105 => ['Campeon','Tercero'],
+            106 => ['Goleador','Pais']
+        ];
+        foreach ($ko as $cp => $eq) {
+            $fecha = $fechas[$cp];
+            $valores[] = "('$safeUsername', $cp, '{$eq[0]}', '{$eq[1]}', 0, 0, 0, '$fecha')";
+        }
+        $insertSQL = "INSERT INTO partidos_mundial2026 (CodUsu, CodPar, local, visitante, glocal, gvisitante, resultado, fecha) VALUES " . implode(',', $valores);
+        mysqli_query($conexion, $insertSQL) or die(mysqli_error($conexion));
+
+        // 4. Insertar equipos en blanco (CodEqu 1-48)
+        $equiposVals = [];
+        $codEqu = 1;
+        foreach ($grupos as $g) {
+            for ($pos = 1; $pos <= 4; $pos++) {
+                $nombre = $g . $pos;
+                $equiposVals[] = "('$safeUsername', $codEqu, '$nombre', '$g', 0, 0, 0, 0)";
+                $codEqu++;
+            }
+        }
+        $insertEquipos = "INSERT INTO equipos_mundial2026 (CodUsu, CodEqu, nombre, grupo, puntos, golfav, golcon, difgol) VALUES " . implode(',', $equiposVals);
+        mysqli_query($conexion, $insertEquipos) or die(mysqli_error($conexion));
+    }
+
+    // Redirigir al Mundial 2026
+    header("Location: mundial2026.php");
+    exit;
+}
+
 // Procesar comentario
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formcomentar")) {
     $insertSQL = sprintf("INSERT INTO comentarios (comentario, usuario) VALUES (%s, %s)",
@@ -87,7 +198,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formcomentar")) {
     exit;
 }
 
-// CONSULTAS (todas las que necesitas)
+// CONSULTAS
 $maxRows_recordusuarios = 25;
 $pageNum_recordusuarios = 0;
 if (isset($_GET['pageNum_recordusuarios'])) $pageNum_recordusuarios = $_GET['pageNum_recordusuarios'];
@@ -147,7 +258,7 @@ $hoy_usu = mysqli_query($conexion, $query_hoy_usu) or die(mysqli_error($conexion
 $totalRows_hoy_usu = mysqli_num_rows($hoy_usu);
 
 $today = date("YmdH");
-$limiteMundial2026 = '2026061123';
+$limiteMundial2026 = '2026060923';
 $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
 ?>
 <?php require_once('header.php'); ?>
