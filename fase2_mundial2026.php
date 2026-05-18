@@ -59,24 +59,58 @@ function asignarTercerosAMatches($tercerosTop8) {
     85 => ['E','F','G','I','J'],
     87 => ['D','E','I','J','L'],
   ];
+  $matches = array_keys($needs);
   $pool = $tercerosTop8;
-  $used = [];
-  $asignados = [];
-  foreach ($needs as $match => $allowed) {
-    $pickIdx = null;
-    for ($i = 0; $i < count($pool); $i++) {
-      if (isset($used[$pool[$i]['grupo']])) continue;
-      if (in_array($pool[$i]['grupo'], $allowed, true)) {
-        $pickIdx = $i;
-        break;
+
+  // Fallback rápido si no hay 8 terceros
+  if (count($pool) < 8) {
+    $asig = [];
+    $used = [];
+    foreach ($needs as $m => $allowed) {
+      foreach ($pool as $i => $t) {
+        if (!in_array($t['grupo'], $used) && in_array($t['grupo'], $allowed)) {
+          $asig[$m] = $t;
+          $used[] = $t['grupo'];
+          break;
+        }
       }
     }
-    if ($pickIdx !== null) {
-      $asignados[$match] = $pool[$pickIdx];
-      $used[$pool[$pickIdx]['grupo']] = true;
-    }
+    return $asig;
   }
-  return $asignados;
+
+  // Backtracking que prueba todas las combinaciones
+  $assignment = [];
+  $usedGroups = [];
+
+  function backtrack($idx, $matches, $needs, $pool, &$assignment, &$usedGroups) {
+    if ($idx >= count($matches)) {
+      return true; // todos asignados
+    }
+    $match = $matches[$idx];
+    $allowed = $needs[$match];
+    // Probamos los terceros en orden de mérito
+    foreach ($pool as $i => $team) {
+      if (in_array($team['grupo'], $allowed) && !in_array($team['grupo'], $usedGroups)) {
+        // Asignamos provisionalmente
+        $assignment[$match] = $team;
+        $usedGroups[] = $team['grupo'];
+        if (backtrack($idx + 1, $matches, $needs, $pool, $assignment, $usedGroups)) {
+          return true;
+        }
+        // Retroceder
+        array_pop($usedGroups);
+        unset($assignment[$match]);
+      }
+    }
+    return false;
+  }
+
+  if (backtrack(0, $matches, $needs, $pool, $assignment, $usedGroups)) {
+    return $assignment;
+  }
+
+  // Si falla (no debería), devolver asignación vacía con '3?' para cada partido
+  return [];
 }
 
 function updateMatchTeams($matchNo, $local, $visitante) {
