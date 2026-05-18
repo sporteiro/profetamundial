@@ -76,7 +76,7 @@ if (!function_exists("GetSQLValueString")) {
 $editFormAction = $_SERVER['PHP_SELF'];
 if (isset($_SERVER['QUERY_STRING'])) $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
 
-// ========== PARTICIPACIÓN MUNDIAL 2026 ==========
+// ========== PARTICIPACIÓN MUNDIAL 2026 (CORREGIDO) ==========
 if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formmundial2026")) {
     $username = $_SESSION['MM_Username'];
     $safeUsername = mysqli_real_escape_string($conexion, $username);
@@ -88,10 +88,12 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formmundial2026")) 
         $sqlTorneo = "INSERT INTO Torneos (CodTor, nombreT, inscriptos, descripcion) VALUES ('20', 'mundial2026', '$safeUsername', 'Mundial 2026')";
         mysqli_query($conexion, $sqlTorneo) or die(mysqli_error($conexion));
 
-        // 2. Preparar fechas (grupo desde seed, eliminatorias con fechas coherentes)
-        $fechas = mundial2026_fecha_por_codpar(); // 1-72
-        // Asigna fechas a partidos KO (73-106) según calendario previsto
-        $fechas[73] = '2026-06-28'; // Round of 32 ini
+        // 2. Obtener equipos y partidos del seed
+        $equiposPorGrupo = mundial2026_equipos_por_grupo();  // e.g., 'A' => ['México','Sudáfrica',...], etc.
+        $fechas = mundial2026_fecha_por_codpar();            // 1-72 con fechas reales
+
+        // Fechas de eliminatorias (calendario coherente)
+        $fechas[73] = '2026-06-28';
         for ($i = 74; $i <= 88; $i++) {
             $fechas[$i] = date('Y-m-d', strtotime("2026-06-28 +" . ($i - 73) . " days"));
         }
@@ -107,25 +109,24 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formmundial2026")) 
         $fechas[102] = '2026-07-13';
         $fechas[103] = '2026-07-14'; // 3er puesto
         $fechas[104] = '2026-07-15'; // Final
-        $fechas[105] = '2026-07-16'; // Extra (campeón, tercero)
-        $fechas[106] = '2026-07-16'; // Goleador
+        $fechas[105] = '2026-07-16';
+        $fechas[106] = '2026-07-16';
 
-        // 3. Insertar partidos iniciales (glocal=0, gvisitante=0, resultado=0)
+        // 3. Insertar partidos de fase de grupos (1-72) con nombres REALES
         $valores = [];
-        // Fase de grupos (CodPar 1-72)
-        $grupos = ['A','B','C','D','E','F','G','H','I','J','K','L'];
         $codPar = 1;
-        foreach ($grupos as $g) {
-            $partidos = mundial2026_partidos_grupo($g); // 6 partidos
+        foreach ($equiposPorGrupo as $letra => $equipos) {
+            $partidos = mundial2026_partidos_grupo($letra); // 6 partidos por grupo
             foreach ($partidos as $pj) {
                 $local = $pj[0];
-                $visit = $pj[1];
+                $visitante = $pj[1];
                 $fecha = $fechas[$codPar];
-                $valores[] = "('$safeUsername', $codPar, '$local', '$visit', 0, 0, 0, '$fecha')";
+                $valores[] = "('$safeUsername', $codPar, '$local', '$visitante', 0, 0, 0, '$fecha')";
                 $codPar++;
             }
         }
-        // Fase KO (73-106) con placeholders
+
+        // 4. Partidos de eliminatorias (73-106) con placeholders (se actualizan automáticamente)
         $ko = [
             73 => ['2A','2B'],
             74 => ['1E','3?'],
@@ -166,16 +167,16 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "formmundial2026")) 
             $fecha = $fechas[$cp];
             $valores[] = "('$safeUsername', $cp, '{$eq[0]}', '{$eq[1]}', 0, 0, 0, '$fecha')";
         }
+
         $insertSQL = "INSERT INTO partidos_mundial2026 (CodUsu, CodPar, local, visitante, glocal, gvisitante, resultado, fecha) VALUES " . implode(',', $valores);
         mysqli_query($conexion, $insertSQL) or die(mysqli_error($conexion));
 
-        // 4. Insertar equipos en blanco (CodEqu 1-48)
+        // 5. Insertar equipos con nombres reales y estadísticas iniciales en 0
         $equiposVals = [];
         $codEqu = 1;
-        foreach ($grupos as $g) {
-            for ($pos = 1; $pos <= 4; $pos++) {
-                $nombre = $g . $pos;
-                $equiposVals[] = "('$safeUsername', $codEqu, '$nombre', '$g', 0, 0, 0, 0)";
+        foreach ($equiposPorGrupo as $letra => $equipos) {
+            foreach ($equipos as $nombre) {
+                $equiposVals[] = "('$safeUsername', $codEqu, '$nombre', '$letra', 0, 0, 0, 0)";
                 $codEqu++;
             }
         }
@@ -258,7 +259,7 @@ $hoy_usu = mysqli_query($conexion, $query_hoy_usu) or die(mysqli_error($conexion
 $totalRows_hoy_usu = mysqli_num_rows($hoy_usu);
 
 $today = date("YmdH");
-$limiteMundial2026 = '2026060923';
+$limiteMundial2026 = '2026060923';   // 9 de junio de 2026, 23:00 (cierre de inscripciones)
 $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
 ?>
 <?php require_once('header.php'); ?>
