@@ -21,11 +21,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'El email ingresado no es válido.';
     } else {
         $asunto = "Mensaje de Profeta Mundial";
-        $cabeceras = "From: equipo@profetamundial.com\r\n";
-        $cabeceras .= "Reply-To: equipo@profetamundial.com\r\n";
-        $cabeceras .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
-        if (mail($destinatario, $asunto, $mensaje, $cabeceras)) {
+        // Cabeceras para correo HTML
+        $cabeceras  = "MIME-Version: 1.0\r\n";
+        $cabeceras .= "Content-type: text/html; charset=UTF-8\r\n";
+        $cabeceras .= "From: equipo@profetamundial.com\r\n";
+        $cabeceras .= "Reply-To: equipo@profetamundial.com\r\n";
+
+        // Escapamos el mensaje para HTML
+        $mensajeEsc = nl2br(htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'));
+
+        // Plantilla HTML con estilo moderno (fondo oscuro, contenedor, logo)
+        $htmlMensaje = <<<EOD
+        <div style="background-color:#0a0e17; padding:30px 20px; text-align:center; font-family:Arial, Helvetica, sans-serif;">
+            <a href="http://www.profetamundial.com">
+                <img src="http://www.profetamundial.com/imagenes/profetamundial.png" alt="Profeta Mundial" style="width:250px; margin-bottom:20px;">
+            </a>
+            <div style="background-color:#1e293b; color:#e2e8f0; border:1px solid #334155; border-radius:12px; max-width:500px; margin:0 auto; padding:25px; text-align:left;">
+                <h2 style="color:#22c55e; margin-top:0;">Hola,</h2>
+                <p style="line-height:1.5;">{$mensajeEsc}</p>
+                <p style="font-size:0.9rem; color:#94a3b8; margin-top:25px; border-top:1px solid #334155; padding-top:15px;">
+                    <strong>IMPORTANTE:</strong> No respondas a este correo. Hacelo desde tu cuenta de usuario o escribiendo a 
+                    <a href="mailto:equipo@profetamundial.com" style="color:#3b82f6;">equipo@profetamundial.com</a>.
+                </p>
+            </div>
+            <p style="color:#475569; font-size:0.75rem; margin-top:20px;">
+                Diseño y desarrollo del sitio: <a href="http://www.sebastianporteiro.com/" style="color:#64748b;">Sebastian Porteiro</a> 
+                <img src="http://www.sebastianporteiro.com/favicon.ico" style="vertical-align:middle;" />
+            </p>
+        </div>
+        EOD;
+
+        if (mail($destinatario, $asunto, $htmlMensaje, $cabeceras)) {
             $enviado = true;
         } else {
             $error = 'Error al enviar el correo. Intentalo de nuevo.';
