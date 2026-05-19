@@ -10,6 +10,33 @@ if (strcasecmp($uActual, 'ProfetaMundial') !== 0) {
 $resultadoProceso = null;
 $detalles = [];
 
+// Funciones auxiliares (definidas una sola vez, fuera de cualquier bloque)
+function equiposEnRango($conexion, $usuario, $inicio, $fin) {
+  $u = mysqli_real_escape_string($conexion, $usuario);
+  $q = "SELECT local as equipo FROM partidos_mundial2026 WHERE CodUsu='$u' AND CodPar BETWEEN $inicio AND $fin
+        UNION
+        SELECT visitante FROM partidos_mundial2026 WHERE CodUsu='$u' AND CodPar BETWEEN $inicio AND $fin";
+  $r = mysqli_query($conexion, $q);
+  $equipos = [];
+  while ($row = mysqli_fetch_assoc($r)) {
+    $nom = $row['equipo'];
+    if (!empty($nom) && $nom != '3?' && strpos($nom, 'Ganador') === false && strpos($nom, 'Perdedor') === false) {
+      $equipos[] = $nom;
+    }
+  }
+  return array_unique($equipos);
+}
+
+function faseCompleta($conexion, $inicio, $fin) {
+  $q = "SELECT COUNT(*) AS total FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar BETWEEN $inicio AND $fin AND glocal=99";
+  $r = mysqli_query($conexion, $q);
+  if ($r) {
+    $row = mysqli_fetch_assoc($r);
+    return intval($row['total'] ?? 1) === 0;
+  }
+  return false;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['MM_update'] ?? '') === 'puntuar2026') {
   $qUsuarios = "SELECT U.usuario
                 FROM Torneos T
@@ -21,17 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['MM_update'] ?? '') === 'pu
 
   $totalUsuarios = 0;
   $actualizados = 0;
-
-  // Función para verificar si una fase está completa (todos los partidos sin glocal=99 en ProfetaMundial)
-  function faseCompleta($conexion, $inicio, $fin) {
-    $q = "SELECT COUNT(*) AS total FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar BETWEEN $inicio AND $fin AND glocal=99";
-    $r = mysqli_query($conexion, $q);
-    if ($r) {
-      $row = mysqli_fetch_assoc($r);
-      return intval($row['total'] ?? 1) === 0;
-    }
-    return false;
-  }
 
   while ($u = mysqli_fetch_assoc($rsUsuarios)) {
     $usuario = $u['usuario'];
@@ -98,22 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['MM_update'] ?? '') === 'pu
     $puntosPartidos = $pExactos + $partidosGrupos + $pPartidosKo;
 
     // --- Extras: equipos en cada fase (con condiciones de fase completa) ---
-    function equiposEnRango($conexion, $usuario, $inicio, $fin) {
-      $u = mysqli_real_escape_string($conexion, $usuario);
-      $q = "SELECT local as equipo FROM partidos_mundial2026 WHERE CodUsu='$u' AND CodPar BETWEEN $inicio AND $fin
-            UNION
-            SELECT visitante FROM partidos_mundial2026 WHERE CodUsu='$u' AND CodPar BETWEEN $inicio AND $fin";
-      $r = mysqli_query($conexion, $q);
-      $equipos = [];
-      while ($row = mysqli_fetch_assoc($r)) {
-        $nom = $row['equipo'];
-        if (!empty($nom) && $nom != '3?' && strpos($nom, 'Ganador') === false && strpos($nom, 'Perdedor') === false) {
-          $equipos[] = $nom;
-        }
-      }
-      return array_unique($equipos);
-    }
-
     $usr16 = equiposEnRango($conexion, $usuario, 73, 88);
     $real16 = faseCompleta($conexion, 1, 72) ? equiposEnRango($conexion, 'ProfetaMundial', 73, 88) : [];
     $pts16 = count(array_intersect($usr16, $real16));
