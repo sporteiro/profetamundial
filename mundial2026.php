@@ -76,6 +76,16 @@ function equiposEnRango($conexion, $usuario, $inicio, $fin) {
   return array_unique($equipos);
 }
 
+function faseCompleta($conexion, $inicio, $fin) {
+  $q = "SELECT COUNT(*) AS total FROM partidos_mundial2026 WHERE CodUsu='ProfetaMundial' AND CodPar BETWEEN $inicio AND $fin AND glocal=99";
+  $r = mysqli_query($conexion, $q);
+  if ($r) {
+    $row = mysqli_fetch_assoc($r);
+    return intval($row['total'] ?? 1) === 0;
+  }
+  return false;
+}
+
 // Partidos
 $qResGrupos = "SELECT COUNT(*) AS puntos FROM partidos_mundial2026 pp JOIN partidos_mundial2026 ps ON pp.CodPar=ps.CodPar WHERE ps.CodUsu='".$uEsc."' AND pp.CodUsu='".$codUsuPlantilla."' AND pp.resultado=ps.resultado AND pp.CodPar BETWEEN 1 AND 72 AND pp.glocal!=99";
 $rResGrupos = mysqli_query($conexion, $qResGrupos) or die(mysqli_error($conexion));
@@ -100,29 +110,29 @@ $partidos_ko = intval($fResKo['puntos'] ?? 0) - intval($fExactKo['puntos'] ?? 0)
 $puntospartidos_ko = $partidos_ko * 2;
 $puntosPartidos = $pexactos + $partidos_grupos + $puntospartidos_ko;
 
-// Extras: fases
+// Extras: fases (con condiciones de fase completa)
 $usr16 = equiposEnRango($conexion, $_SESSION['MM_Username'], 73, 88);
-$real16 = equiposEnRango($conexion, 'ProfetaMundial', 73, 88);
+$real16 = faseCompleta($conexion, 1, 72) ? equiposEnRango($conexion, 'ProfetaMundial', 73, 88) : [];
 $pts16 = count(array_intersect($usr16, $real16));
 
 $usrOct = equiposEnRango($conexion, $_SESSION['MM_Username'], 89, 96);
-$realOct = equiposEnRango($conexion, 'ProfetaMundial', 89, 96);
+$realOct = faseCompleta($conexion, 73, 88) ? equiposEnRango($conexion, 'ProfetaMundial', 89, 96) : [];
 $ptsOct = count(array_intersect($usrOct, $realOct));
 
 $usrCuartos = equiposEnRango($conexion, $_SESSION['MM_Username'], 97, 100);
-$realCuartos = equiposEnRango($conexion, 'ProfetaMundial', 97, 100);
+$realCuartos = faseCompleta($conexion, 89, 96) ? equiposEnRango($conexion, 'ProfetaMundial', 97, 100) : [];
 $ptsCuartos = count(array_intersect($usrCuartos, $realCuartos));
 
 $usrSemis = equiposEnRango($conexion, $_SESSION['MM_Username'], 101, 102);
-$realSemis = equiposEnRango($conexion, 'ProfetaMundial', 101, 102);
+$realSemis = faseCompleta($conexion, 97, 100) ? equiposEnRango($conexion, 'ProfetaMundial', 101, 102) : [];
 $ptsSemis = count(array_intersect($usrSemis, $realSemis));
 
 $usrFinal = equiposEnRango($conexion, $_SESSION['MM_Username'], 104, 104);
-$realFinal = equiposEnRango($conexion, 'ProfetaMundial', 104, 104);
+$realFinal = faseCompleta($conexion, 101, 102) ? equiposEnRango($conexion, 'ProfetaMundial', 104, 104) : [];
 $ptsFinal = count(array_intersect($usrFinal, $realFinal));
 
 $usrTercer = equiposEnRango($conexion, $_SESSION['MM_Username'], 103, 103);
-$realTercer = equiposEnRango($conexion, 'ProfetaMundial', 103, 103);
+$realTercer = faseCompleta($conexion, 101, 102) ? equiposEnRango($conexion, 'ProfetaMundial', 103, 103) : [];
 $ptsTercer = count(array_intersect($usrTercer, $realTercer));
 
 $puntosFases = $pts16 + $ptsOct + $ptsCuartos + $ptsSemis + $ptsFinal + $ptsTercer;

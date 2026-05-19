@@ -131,6 +131,15 @@ $row_recordusuarios = mysqli_fetch_assoc($recordusuarios);
         </table>
         <p>Los puntos por equipos en fases se otorgan automáticamente según los equipos que hayas pronosticado en cada cruce (no es necesario seleccionarlos manualmente más allá de los partidos).</p>
         
+        <p><strong>IMPORTANTE: PUNTUACIÓN POR FASES</strong></p>
+        <p>Los puntos por equipos que avanzan a cada fase se calculan únicamente cuando <strong>todos los partidos de la fase anterior han sido jugados</strong>. Esto evita que se otorguen puntos por equipos que aún no han confirmado su clasificación en la realidad.</p>
+        <ul>
+            <li><strong>Dieciseisavos:</strong> se puntúan solo cuando <strong>todos</strong> los partidos de la fase de grupos (1-72) están completos.</li>
+            <li><strong>Octavos:</strong> se puntúan cuando <strong>todos</strong> los dieciseisavos (73-88) están completos.</li>
+            <li><strong>Cuartos:</strong> cuando todos los octavos (89-96) están completos.</li>
+            <li><strong>Semifinales:</strong> cuando todos los cuartos (97-100) están completos.</li>
+            <li><strong>Final y tercer puesto:</strong> cuando las semifinales (101-102) están completas.</li>
+        </ul>
         <p><strong>ACTUALIZACIÓN EN CASCADA</strong></p>
         <p>Cada vez que modifiques un resultado de fase de grupos, el sistema actualizará automáticamente los enfrentamientos de la fase final para reflejar los nuevos clasificados, manteniendo tus pronósticos de goles donde sea posible. Si el cambio afecta a qué equipo avanza, se recalcularán los cruces posteriores.</p>
         
