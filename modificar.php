@@ -185,6 +185,12 @@ require_once('header.php');
                 <?php echo $row_recordusuarios['trofeos'] ?: 'Todavía no has ganado trofeos.'; ?>
             </div>
         </div>
+        <?php if (isset($_SESSION['MM_Username']) && $_SESSION['MM_Username'] === 'ProfetaMundial'): ?>
+        <div class="modern-card">
+            <h3>🛠️ Administración</h3>
+            <p><a href="contacto_administrador.php" class="btn-small">Enviar emails</a></p>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 
