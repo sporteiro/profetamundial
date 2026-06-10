@@ -5,6 +5,8 @@ $today = date("YmdH");
 $limite = '2026060923';
 $fueraTiempo = ($limite <= $today) ? 1 : 0;
 $mundial2026_uEsc = mysqli_real_escape_string($conexion, $_SESSION['MM_Username'] ?? '');
+$esAdmin = (isset($_SESSION['MM_Username']) && strcasecmp($_SESSION['MM_Username'], 'ProfetaMundial') === 0);
+$inputsDisabled = ($fueraTiempo == 1 && !$esAdmin);
 
 // -----------------------------------------------------------------
 // FUNCIONES AUXILIARES (grupoPosicion, terceros, etc.)
@@ -292,7 +294,7 @@ function recalcularBracketCompleto() {
 // -----------------------------------------------------------------
 // 3. PROCESAR POST (cuando se guarda la fase2)
 // -----------------------------------------------------------------
-if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2")) {
+if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "fase2") && !$inputsDisabled) {
   for ($n = 73; $n <= 104; $n++) {
     $gl = isset($_POST['L'.$n]) ? intval($_POST['L'.$n]) : 0;
     $gv = isset($_POST['V'.$n]) ? intval($_POST['V'.$n]) : 0;
@@ -347,6 +349,7 @@ function mostrarEquipoConBandera($nombre) {
 }
 
 function renderMatch($n, $title, $matches) {
+  global $inputsDisabled;
   $m = $matches[$n] ?? ['local'=>'','visitante'=>'','glocal'=>0,'gvisitante'=>0,'desempate'=>''];
   $localHtml = mostrarEquipoConBandera($m['local']);
   $visHtml = mostrarEquipoConBandera($m['visitante']);
@@ -359,11 +362,11 @@ function renderMatch($n, $title, $matches) {
   echo "<input type='hidden' name='local".$n."' value='".htmlspecialchars($m['local'], ENT_QUOTES)."' />";
   echo "<input type='hidden' name='visitante".$n."' value='".htmlspecialchars($m['visitante'], ENT_QUOTES)."' />";
   echo $localHtml." ";
-  echo "<input type='number' min='0' max='99' name='L".$n."' value='".$gl."' class='botoneschicos' /> - ";
-  echo "<input type='number' min='0' max='99' name='V".$n."' value='".$gv."' class='botoneschicos' /> ";
+  echo "<input type='number' min='0' max='99' name='L".$n."' value='".$gl."' class='botoneschicos' ".($inputsDisabled ? 'disabled' : '')." /> - ";
+  echo "<input type='number' min='0' max='99' name='V".$n."' value='".$gv."' class='botoneschicos' ".($inputsDisabled ? 'disabled' : '')." /> ";
   echo $visHtml;
   if ($empate) {
-    echo " &nbsp; <select name='elegir".$n."' class='botoneschicos'>";
+    echo " &nbsp; <select name='elegir".$n."' class='botoneschicos' ".($inputsDisabled ? 'disabled' : '').">";
     echo "<option value=''>Si empatan, elegí</option>";
     echo "<option value='".htmlspecialchars($m['local'], ENT_QUOTES)."'".($desempate == $m['local'] ? " selected" : "").">".htmlspecialchars($m['local'], ENT_QUOTES)."</option>";
     echo "<option value='".htmlspecialchars($m['visitante'], ENT_QUOTES)."'".($desempate == $m['visitante'] ? " selected" : "").">".htmlspecialchars($m['visitante'], ENT_QUOTES)."</option>";
@@ -494,8 +497,8 @@ function renderMatch($n, $title, $matches) {
       <!-- NUEVO: inputs para goleador y país -->
       <p>
         <strong>⚽ GOLEADOR:</strong>
-        <input type="text" name="jugador" value="<?php echo htmlspecialchars($goleador['local'] ?? '', ENT_QUOTES); ?>" placeholder="Apellido del jugador" class="botoneschicos" style="width:200px;" />
-        <select name="pais" class="botoneschicos">
+        <input type="text" name="jugador" value="<?php echo htmlspecialchars($goleador['local'] ?? '', ENT_QUOTES); ?>" placeholder="Apellido del jugador" class="botoneschicos" style="width:200px;" <?php echo $inputsDisabled ? 'disabled' : ''; ?> />
+        <select name="pais" class="botoneschicos" <?php echo $inputsDisabled ? 'disabled' : ''; ?>>
           <option value="">Seleccionar país</option>
           <?php
           $equipos = mysqli_query($conexion, "SELECT nombre FROM equipos_mundial2026 WHERE CodUsu='".$mundial2026_uEsc."' ORDER BY nombre");
@@ -509,10 +512,11 @@ function renderMatch($n, $title, $matches) {
     </div>
 
     <!-- Botón de guardar manual -->
-    <div style="text-align:center; margin:20px 0;">
-      <button type="submit" class="btn-small">Guardar todos los cambios</button>
-    </div>
-
+    <?php if (!$inputsDisabled) { ?>
+      <div style="text-align:center; margin:20px 0;">
+        <button type="submit" class="btn-small" >Guardar todos los cambios</button>
+      </div>
+    <?php } ?>
   </form>
 </div>
 
