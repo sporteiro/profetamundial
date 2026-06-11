@@ -307,6 +307,85 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
                 </div>
             </div>
 
+            <?php
+            // ... (código anterior sin cambios)
+
+            // --- NUEVA SECCIÓN: Próximos 4 partidos y pronósticos de los usuarios ---
+            $ventana_inicio = date('Y-m-d', strtotime('-1 day'));
+            $ventana_fin    = date('Y-m-d', strtotime('+1 day'));
+
+            // Obtener los próximos 4 partidos (de ProfetaMundial) dentro del rango de fechas
+            $sqlProximos = "
+                SELECT CodPar, local, visitante, fecha
+                FROM partidos_mundial2026
+                WHERE CodUsu = 'ProfetaMundial'
+                AND fecha BETWEEN '$ventana_inicio' AND '$ventana_fin'
+                ORDER BY fecha ASC
+                LIMIT 4
+            ";
+            $resProximos = mysqli_query($conexion, $sqlProximos) or die(mysqli_error($conexion));
+            $partidosProximos = [];
+            while ($p = mysqli_fetch_assoc($resProximos)) {
+                $partidosProximos[] = $p;
+            }
+
+            // Solo mostramos la tarjeta si hay al menos un partido próximo
+            if (count($partidosProximos) > 0):
+            ?>
+            <br />
+            <div class="modern-card">
+                <h3>⚽ Próximos partidos y pronósticos</h3>
+                <?php foreach ($partidosProximos as $partido):
+                    $codPar = (int)$partido['CodPar'];
+                    $local  = htmlspecialchars($partido['local']);
+                    $visitante = htmlspecialchars($partido['visitante']);
+                    $fechaPartido = htmlspecialchars($partido['fecha']);
+                    
+                    // Obtener pronósticos de todos los usuarios participantes excepto ProfetaMundial
+                    $sqlPronosticos = "
+                        SELECT p.CodUsu, p.glocal, p.gvisitante
+                        FROM partidos_mundial2026 p
+                        JOIN Torneos t ON p.CodUsu = t.inscriptos
+                        WHERE t.CodTor = '20'
+                        AND p.CodPar = $codPar
+                        AND p.CodUsu != 'ProfetaMundial'
+                        ORDER BY p.CodUsu
+                    ";
+                    $resPronosticos = mysqli_query($conexion, $sqlPronosticos) or die(mysqli_error($conexion));
+                    $pronosticos = [];
+                    while ($pr = mysqli_fetch_assoc($resPronosticos)) {
+                        $pronosticos[] = $pr;
+                    }
+                ?>
+                    <div style="margin-bottom: 20px; padding: 15px; background: #0f172a; border-radius: 12px; border: 1px solid #334155;">
+                        <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 5px;"><?php echo $fechaPartido; ?></p>
+                        <p style="margin: 0 0 10px 0;">
+                            <img src="imagenes/banamerica/<?php echo rawurlencode($local); ?>.gif" width="20" height="10" alt="" style="vertical-align: middle;" />
+                            <?php echo $local; ?>
+                            vs
+                            <?php echo $visitante; ?>
+                            <img src="imagenes/banamerica/<?php echo rawurlencode($visitante); ?>.gif" width="20" height="10" alt="" style="vertical-align: middle;" />
+                        </p>
+                        <?php if (count($pronosticos) > 0): ?>
+                            <ul style="list-style: none; padding-left: 0; margin: 0; color: #cbd5e1; font-size: 0.85rem;">
+                                <?php foreach ($pronosticos as $pron): ?>
+                                    <li style="padding: 2px 0;">
+                                        <strong><?php echo htmlspecialchars($pron['CodUsu']); ?>:</strong>
+                                        <?php echo (int)$pron['glocal']; ?> - <?php echo (int)$pron['gvisitante']; ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <p style="color: #64748b; margin: 0;">Nadie ha pronosticado aún este partido.</p>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+            <?php
+            // --- FIN NUEVA SECCIÓN ---
+            ?>
+
             <div class="modern-card">
                 <h3>🏆 Trofeos de todos los usuarios</h3>
                 <div class="trofeos-wrapper">
