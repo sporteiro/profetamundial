@@ -293,7 +293,7 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
                     <?php endif; ?>
                 </div>
                 <hr class="modern-hr">
-                <div style="text-align:center;">
+                <div class="participantes-columna">
                     <p><strong>Participantes Mundial 2026</strong> (<?php echo (int)($totalRows_otrousuario_mundial2026 ?? 0); ?>)</p>
                     <?php if (isset($totalRows_otrousuario_mundial2026) && $totalRows_otrousuario_mundial2026 > 0): ?>
                         <?php do { ?>
@@ -367,16 +367,16 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
                             <img src="imagenes/banamerica/<?php echo rawurlencode($visitante); ?>.gif" width="20" height="10" alt="" style="vertical-align: middle;" />
                         </p>
                         <?php if (count($pronosticos) > 0): ?>
-                            <ul style="list-style: none; padding-left: 0; margin: 0; color: #cbd5e1; font-size: 0.85rem;">
+                            <ul class="pronostico-lista">
                                 <?php foreach ($pronosticos as $pron): ?>
-                                    <li style="padding: 2px 0;">
-                                        <strong><?php echo htmlspecialchars($pron['CodUsu']); ?>:</strong>
-                                        <?php echo (int)$pron['glocal']; ?> - <?php echo (int)$pron['gvisitante']; ?>
-                                    </li>
+                                <li class="pronostico-item">
+                                    <span class="usuario"><?php echo htmlspecialchars($pron['CodUsu']); ?>:</span>
+                                    <span class="resultado"><?php echo (int)$pron['glocal']; ?> - <?php echo (int)$pron['gvisitante']; ?></span>
+                                </li>
                                 <?php endforeach; ?>
                             </ul>
                         <?php else: ?>
-                            <p style="color: #64748b; margin: 0;">Nadie ha pronosticado aún este partido.</p>
+                            <p>Nadie ha pronosticado aún este partido.</p>
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
