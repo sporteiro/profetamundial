@@ -63,8 +63,8 @@ if (isset($_COOKIE['pid']) && isset($_COOKIE['pis'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profeta Mundial</title>
-    <link href="estilo.css" rel="stylesheet" type="text/css">
-    <link href="css/mundial2026.css" rel="stylesheet" type="text/css">
+    <link href="estilo.css?v=2.0" rel="stylesheet" type="text/css">
+    <link href="css/mundial2026.css?v=2.0" rel="stylesheet" type="text/css">
 </head>
 <body class="home-page">
     <div class="home-card">
