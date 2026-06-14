@@ -321,7 +321,7 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
                 WHERE CodUsu = 'ProfetaMundial'
                 AND fecha BETWEEN '$ventana_inicio' AND '$ventana_fin'
                 ORDER BY fecha ASC
-                LIMIT 4
+                LIMIT 6
             ";
             $resProximos = mysqli_query($conexion, $sqlProximos) or die(mysqli_error($conexion));
             $partidosProximos = [];
@@ -367,11 +367,11 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
                             <img src="imagenes/banamerica/<?php echo rawurlencode($visitante); ?>.gif" width="20" height="10" alt="" style="vertical-align: middle;" />
                         </p>
                         <?php if (count($pronosticos) > 0): ?>
-                            <ul class="pronostico-lista">
+                            <ul class="pronostico-lista" style="list-style: none; color:#FFF">
                                 <?php foreach ($pronosticos as $pron): ?>
                                 <li class="pronostico-item">
-                                    <span class="usuario"><?php echo htmlspecialchars($pron['CodUsu']); ?>:</span>
-                                    <span class="resultado"><?php echo (int)$pron['glocal']; ?> - <?php echo (int)$pron['gvisitante']; ?></span>
+                                    <span class="usuario" style="text-align: left;"><?php echo htmlspecialchars($pron['CodUsu']); ?>:</span>
+                                    <span class="resultado" style="text-align: right; min-width: 40px;"><?php echo (int)$pron['glocal']; ?> - <?php echo (int)$pron['gvisitante']; ?></span>
                                 </li>
                                 <?php endforeach; ?>
                             </ul>
