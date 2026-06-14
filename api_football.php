@@ -4,6 +4,14 @@
  * 
  * Uso: php api_football_pro.php
  * 
+ * Correcciones:
+ * - No normaliza partidos con goles nulos (evita 0‑0 falsos)
+ * - El desempate siempre es nombre de equipo o vacío (nunca un número)
+ * - Nombres de equipos limpios (trim) para búsqueda exacta
+ * - Solo actualiza partidos con glocal=99
+ * - Muestra en el log cuándo un partido ya tenía resultado
+ * - **Corregido bug en batchUpdateMatches que causaba error con múltiples partidos**
+ * 
  * Estructura:
  * - Config:      Carga variables desde Connections/conexion_script.php
  * - Logger:      Registro de actividad en api_football.log
@@ -156,7 +164,7 @@ class Database {
      * Actualiza en lote los partidos de una fase.
      * Solo modifica registros con glocal=99.
      *
-     * @param array $updates  [CodPar => ['glocal' => int, 'gvisitante' => int, 'resultado' => int, 'desempate' => string|null], ...]
+     * @param array $updates  [CodPar => ['glocal' => int, 'gvisitante' => int, 'resultado' => int, 'desempate' => string], ...]
      */
     public function batchUpdateMatches(array $updates): int {
         if (empty($updates)) return 0;
@@ -165,38 +173,51 @@ class Database {
         $params = [];
         $types = '';
         
-        // Construir cláusulas CASE WHEN
+        // Construir placeholders por columna
         $glocalCase = "glocal = CASE CodPar ";
         $gvisitanteCase = "gvisitante = CASE CodPar ";
         $resultadoCase = "resultado = CASE CodPar ";
         $desempateCase = "desempate = CASE CodPar ";
         
-        foreach ($updates as $codPar => $data) {
+        // Añadir parámetros por cada columna en orden
+        foreach ($codPars as $codPar) {
             $glocalCase .= "WHEN ? THEN ? ";
-            $gvisitanteCase .= "WHEN ? THEN ? ";
-            $resultadoCase .= "WHEN ? THEN ? ";
-            $desempateCase .= "WHEN ? THEN ? ";
-            
             $params[] = (int)$codPar;
-            $params[] = (int)$data['glocal'];
-            $params[] = (int)$codPar;
-            $params[] = (int)$data['gvisitante'];
-            $params[] = (int)$codPar;
-            $params[] = (int)$data['resultado'];
-            $params[] = (int)$codPar;
-            $params[] = $data['desempate'] ?? '';  // string, puede ser vacío
-            
-            $types .= 'iiiiiiis';  // i=integer, s=string
+            $params[] = (int)$updates[$codPar]['glocal'];
+            $types .= 'ii';
         }
-        
         $glocalCase .= "END, ";
+        
+        foreach ($codPars as $codPar) {
+            $gvisitanteCase .= "WHEN ? THEN ? ";
+            $params[] = (int)$codPar;
+            $params[] = (int)$updates[$codPar]['gvisitante'];
+            $types .= 'ii';
+        }
         $gvisitanteCase .= "END, ";
+        
+        foreach ($codPars as $codPar) {
+            $resultadoCase .= "WHEN ? THEN ? ";
+            $params[] = (int)$codPar;
+            $params[] = (int)$updates[$codPar]['resultado'];
+            $types .= 'ii';
+        }
         $resultadoCase .= "END, ";
+        
+        foreach ($codPars as $codPar) {
+            $desempateCase .= "WHEN ? THEN ? ";
+            $params[] = (int)$codPar;
+            $params[] = (string)$updates[$codPar]['desempate'];  // string (nombre de equipo o vacío)
+            $types .= 'is';
+        }
         $desempateCase .= "END";
         
+        // Lista de CodPar para el WHERE
         $codParList = implode(',', array_fill(0, count($codPars), '?'));
-        $params = array_merge($params, $codPars);
-        $types .= str_repeat('i', count($codPars));
+        foreach ($codPars as $codPar) {
+            $params[] = (int)$codPar;
+            $types .= 'i';
+        }
         
         $sql = "UPDATE partidos_mundial2026 SET {$glocalCase} {$gvisitanteCase} {$resultadoCase} {$desempateCase}
                 WHERE CodUsu = 'ProfetaMundial'
@@ -297,6 +318,14 @@ class DataExtractor {
             // Normalizar partidos (igual que con la API real)
             $matches = [];
             foreach ($data['matches'] as $m) {
+                // Solo partidos finalizados, con goles no nulos
+                if (($m['status'] ?? '') !== 'FINISHED') continue;
+                $gh = $m['score']['fullTime']['home'] ?? null;
+                $ga = $m['score']['fullTime']['away'] ?? null;
+                if ($gh === null || $ga === null) {
+                    $logger->warning("Partido mock con goles nulos ignorado: {$m['homeTeam']['name']} vs {$m['awayTeam']['name']}");
+                    continue;
+                }
                 $penalties = null;
                 if (isset($m['score']['penalties'])) {
                     $penalties = [
@@ -306,12 +335,12 @@ class DataExtractor {
                 }
                 $matches[] = [
                     'stage'      => $m['stage'],
-                    'status'     => ($m['status'] === 'FINISHED') ? 'Match Finished' : 'Not Started',
-                    'home'       => $m['homeTeam']['name'] ?? null,
-                    'away'       => $m['awayTeam']['name'] ?? null,
-                    'goals_home' => $m['score']['fullTime']['home'] ?? 0,
-                    'goals_away' => $m['score']['fullTime']['away'] ?? 0,
-                    'penalties'  => $penalties,   // añadimos penales
+                    'status'     => 'Match Finished',
+                    'home'       => trim($m['homeTeam']['name']),
+                    'away'       => trim($m['awayTeam']['name']),
+                    'goals_home' => (int)$gh,
+                    'goals_away' => (int)$ga,
+                    'penalties'  => $penalties,
                     'fecha'      => substr($m['utcDate'], 0, 10),
                     'fecha_iso'  => $m['utcDate'],
                 ];
@@ -342,6 +371,16 @@ class DataExtractor {
             }
             
             foreach ($data['matches'] as $match) {
+                // Solo procesamos partidos finalizados
+                if (($match['status'] ?? '') !== 'FINISHED') continue;
+                
+                $gh = $match['score']['fullTime']['home'] ?? null;
+                $ga = $match['score']['fullTime']['away'] ?? null;
+                if ($gh === null || $ga === null) {
+                    $logger->warning("Partido API con goles nulos ignorado: {$match['homeTeam']['name']} vs {$match['awayTeam']['name']}");
+                    continue;
+                }
+                
                 $penalties = null;
                 if (isset($match['score']['penalties'])) {
                     $penalties = [
@@ -349,14 +388,20 @@ class DataExtractor {
                         'away' => $match['score']['penalties']['away'] ?? 0,
                     ];
                 }
+                
+                $home = trim($match['homeTeam']['name'] ?? '');
+                $away = trim($match['awayTeam']['name'] ?? '');
+                
+                $logger->info("Partido API: $home vs $away | Fecha: " . substr($match['utcDate'],0,10) . " | Fase: {$match['stage']} | Resultado: $gh-$ga | Estado: Match Finished");
+                
                 $allMatches[] = [
                     'stage'      => $match['stage'],
-                    'status'     => ($match['status'] === 'FINISHED') ? 'Match Finished' : 'Not Started',
-                    'home'       => $match['homeTeam']['name'] ?? null,
-                    'away'       => $match['awayTeam']['name'] ?? null,
-                    'goals_home' => $match['score']['fullTime']['home'] ?? 0,
-                    'goals_away' => $match['score']['fullTime']['away'] ?? 0,
-                    'penalties'  => $penalties,   // añadimos penales
+                    'status'     => 'Match Finished',
+                    'home'       => $home,
+                    'away'       => $away,
+                    'goals_home' => (int)$gh,
+                    'goals_away' => (int)$ga,
+                    'penalties'  => $penalties,
                     'fecha'      => substr($match['utcDate'], 0, 10),
                     'fecha_iso'  => $match['utcDate'],
                 ];
@@ -626,9 +671,10 @@ class DataLoader {
                     }
                 }
                 
+                // Buscar CodPar
                 $conn = $this->db->getConnection();
                 $stmt = $conn->prepare(
-                    "SELECT CodPar FROM partidos_mundial2026
+                    "SELECT CodPar, glocal FROM partidos_mundial2026
                      WHERE CodUsu='ProfetaMundial'
                        AND local = ? AND visitante = ?
                        AND CodPar BETWEEN ? AND ?
@@ -646,6 +692,14 @@ class DataLoader {
                 }
                 
                 $codPar = (int)$row['CodPar'];
+                $glocalActual = (int)$row['glocal'];
+                
+                // Solo actualizar si glocal=99 (sin resultado previo)
+                if ($glocalActual !== 99) {
+                    $logger->info("CodPar={$codPar} ({$localEsp} vs {$visitEsp}) ya tiene resultado ({$glocalActual}), se omite.");
+                    continue;
+                }
+                
                 $updates[$codPar] = [
                     'glocal'    => $gh,
                     'gvisitante'=> $ga,
@@ -699,7 +753,7 @@ class DataLoader {
 class Orchestrator {
     public function run(): void {
         $logger = Logger::getInstance();
-        $logger->info("========== INICIO DEL SCRIPT ==========");
+        $logger->info("========== INICIO DEL SCRIPT V3 ==========");
         
         try {
             $config = new Config();
