@@ -314,14 +314,14 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
             $ventana_inicio = date('Y-m-d', strtotime('-1 day'));
             $ventana_fin    = date('Y-m-d', strtotime('+1 day'));
 
-            // Obtener los próximos 4 partidos (de ProfetaMundial) dentro del rango de fechas
+            // Obtener los próximos partidos (de ProfetaMundial) dentro del rango de fechas
             $sqlProximos = "
                 SELECT CodPar, local, visitante, fecha
                 FROM partidos_mundial2026
                 WHERE CodUsu = 'ProfetaMundial'
                 AND fecha BETWEEN '$ventana_inicio' AND '$ventana_fin'
                 ORDER BY fecha ASC
-                LIMIT 6
+                LIMIT 8
             ";
             $resProximos = mysqli_query($conexion, $sqlProximos) or die(mysqli_error($conexion));
             $partidosProximos = [];
