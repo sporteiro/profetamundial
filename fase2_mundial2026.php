@@ -50,69 +50,80 @@ function tercerosClasificados() {
   return array_slice($terceros, 0, 8);
 }
 
+// ---------------------------------------------------------------
+// TABLA OFICIAL DE LA FIFA (495 combinaciones) – desde archivo externo
+// ---------------------------------------------------------------
+function cargarTablaFIFA() {
+  $archivo = __DIR__ . '/third_combinations.php';
+  if (!file_exists($archivo)) {
+    file_put_contents(__DIR__ . '/fase2_debug.log', date('Y-m-d H:i:s') . " - ERROR: Archivo no encontrado: $archivo\n", FILE_APPEND);
+    return [];
+  }
+  $tabla = require $archivo;
+  if (!is_array($tabla)) {
+    file_put_contents(__DIR__ . '/fase2_debug.log', date('Y-m-d H:i:s') . " - ERROR: El archivo de combinaciones no devolvió un array.\n", FILE_APPEND);
+    return [];
+  }
+  file_put_contents(__DIR__ . '/fase2_debug.log', date('Y-m-d H:i:s') . " - INFO: Tabla FIFA cargada correctamente con " . count($tabla) . " combinaciones.\n", FILE_APPEND);
+  return $tabla;
+}
+
 function asignarTercerosAMatches($tercerosTop8) {
-  $needs = [
-    74 => ['A','B','C','D','F'],
-    77 => ['C','D','F','G','H'],
-    79 => ['C','E','F','H','I'],
-    80 => ['E','H','I','J','K'],
-    81 => ['B','E','F','I','J'],
-    82 => ['A','E','H','I','J'],
-    85 => ['E','F','G','I','J'],
-    87 => ['D','E','I','J','L'],
+  $log = '';
+  // Mapeo de slots FIFA a números de partido
+  $slotToMatch = [
+    '1E' => 74,
+    '1I' => 77,
+    '1A' => 79,
+    '1L' => 80,
+    '1D' => 81,
+    '1G' => 82,
+    '1B' => 85,
+    '1K' => 87,
   ];
-  $matches = array_keys($needs);
-  $pool = $tercerosTop8;
 
-  // Fallback rápido si no hay 8 terceros
-  if (count($pool) < 8) {
-    $asig = [];
-    $used = [];
-    foreach ($needs as $m => $allowed) {
-      foreach ($pool as $i => $t) {
-        if (!in_array($t['grupo'], $used) && in_array($t['grupo'], $allowed)) {
-          $asig[$m] = $t;
-          $used[] = $t['grupo'];
-          break;
-        }
+  // Ordenar terceros por grupo alfabéticamente para generar clave
+  // La tabla FIFA usa claves alfabéticas (ej: BDEFIJKL, EFGHIJKL)
+  $grupos = array_column($tercerosTop8, 'grupo');
+  sort($grupos);
+  $clave = implode('', $grupos);
+
+  $log .= "Terceros clasificados: " . implode(', ', $grupos) . "\n";
+  $log .= "Clave generada: $clave\n";
+
+  // Buscar en la tabla FIFA
+  $tabla = cargarTablaFIFA();
+  $asignacion = $tabla[$clave] ?? null;
+
+  if (!$asignacion) {
+    $log .= "ERROR: Combinación no encontrada en tabla FIFA.\n";
+    file_put_contents(__DIR__ . '/fase2_debug.log', date('Y-m-d H:i:s') . " - " . $log, FILE_APPEND);
+    return []; // Devolver vacío, se usarán placeholders '3?'
+  }
+
+  $log .= "Asignación encontrada: " . json_encode($asignacion) . "\n";
+
+  // Construir resultado final: partido => datos del tercero
+  $resultado = [];
+  foreach ($slotToMatch as $slot => $matchNo) {
+    $grupoTercero = $asignacion[$slot] ?? null;
+    if (!$grupoTercero) continue;
+
+    // Extraer solo la letra del grupo (quitar el '3' de '3E', '3J', etc.)
+    $grupoLetra = substr($grupoTercero, -1);
+
+    // Buscar los datos completos del tercero
+    foreach ($tercerosTop8 as $tercero) {
+      if ($tercero['grupo'] === $grupoLetra) {
+        $resultado[$matchNo] = $tercero;
+        $log .= "Partido $matchNo ($slot): tercero del grupo {$tercero['grupo']} ({$tercero['nombre']})\n";
+        break;
       }
     }
-    return $asig;
   }
 
-  // Backtracking que prueba todas las combinaciones
-  $assignment = [];
-  $usedGroups = [];
-
-  function backtrack($idx, $matches, $needs, $pool, &$assignment, &$usedGroups) {
-    if ($idx >= count($matches)) {
-      return true; // todos asignados
-    }
-    $match = $matches[$idx];
-    $allowed = $needs[$match];
-    // Probamos los terceros en orden de mérito
-    foreach ($pool as $i => $team) {
-      if (in_array($team['grupo'], $allowed) && !in_array($team['grupo'], $usedGroups)) {
-        // Asignamos provisionalmente
-        $assignment[$match] = $team;
-        $usedGroups[] = $team['grupo'];
-        if (backtrack($idx + 1, $matches, $needs, $pool, $assignment, $usedGroups)) {
-          return true;
-        }
-        // Retroceder
-        array_pop($usedGroups);
-        unset($assignment[$match]);
-      }
-    }
-    return false;
-  }
-
-  if (backtrack(0, $matches, $needs, $pool, $assignment, $usedGroups)) {
-    return $assignment;
-  }
-
-  // Si falla (no debería), devolver asignación vacía con '3?' para cada partido
-  return [];
+  file_put_contents(__DIR__ . '/fase2_debug.log', date('Y-m-d H:i:s') . " - " . $log, FILE_APPEND);
+  return $resultado;
 }
 
 function updateMatchTeams($matchNo, $local, $visitante) {
@@ -142,6 +153,15 @@ function perdedorDesdeGoles($golesLocal, $golesVisit, $equipoLocal, $equipoVisit
 // 1. POBLAR LOS 32AVOS (73-88) SEGÚN GRUPOS ACTUALES
 // -----------------------------------------------------------------
 function poblarRoundOf32() {
+  global $conexion, $mundial2026_uEsc;
+  $q = "SELECT CodPar, local, visitante FROM partidos_mundial2026
+        WHERE CodUsu='".$mundial2026_uEsc."' AND CodPar BETWEEN 73 AND 88";
+  $rs = mysqli_query($conexion, $q);
+  $partidosActuales = [];
+  while ($row = mysqli_fetch_assoc($rs)) {
+    $partidosActuales[intval($row['CodPar'])] = $row;
+  }
+
   $wA = grupoPosicion('A', 1); $rA = grupoPosicion('A', 2);
   $wB = grupoPosicion('B', 1); $rB = grupoPosicion('B', 2);
   $wC = grupoPosicion('C', 1); $rC = grupoPosicion('C', 2);
@@ -158,22 +178,26 @@ function poblarRoundOf32() {
   $terceros = tercerosClasificados();
   $asig = asignarTercerosAMatches($terceros);
 
-  if ($rA && $rB) updateMatchTeams(73, $rA['nombre'], $rB['nombre']);
-  if ($wE) updateMatchTeams(74, $wE['nombre'], $asig[74]['nombre'] ?? '3?');
-  if ($wF && $rC) updateMatchTeams(75, $wF['nombre'], $rC['nombre']);
-  if ($wC && $rF) updateMatchTeams(76, $wC['nombre'], $rF['nombre']);
-  if ($wI) updateMatchTeams(77, $wI['nombre'], $asig[77]['nombre'] ?? '3?');
-  if ($rE && $rI) updateMatchTeams(78, $rE['nombre'], $rI['nombre']);
-  if ($wA) updateMatchTeams(79, $wA['nombre'], $asig[79]['nombre'] ?? '3?');
-  if ($wL) updateMatchTeams(80, $wL['nombre'], $asig[80]['nombre'] ?? '3?');
-  if ($wD) updateMatchTeams(81, $wD['nombre'], $asig[81]['nombre'] ?? '3?');
-  if ($wG) updateMatchTeams(82, $wG['nombre'], $asig[82]['nombre'] ?? '3?');
-  if ($rK && $rL) updateMatchTeams(83, $rK['nombre'], $rL['nombre']);
-  if ($wH && $rJ) updateMatchTeams(84, $wH['nombre'], $rJ['nombre']);
-  if ($wB) updateMatchTeams(85, $wB['nombre'], $asig[85]['nombre'] ?? '3?');
-  if ($wJ && $rH) updateMatchTeams(86, $wJ['nombre'], $rH['nombre']);
-  if ($wK) updateMatchTeams(87, $wK['nombre'], $asig[87]['nombre'] ?? '3?');
-  if ($rD && $rG) updateMatchTeams(88, $rD['nombre'], $rG['nombre']);
+  $log = '';
+  // SIEMPRE actualizar todos los cruces según el estado actual de los grupos
+  if ($rA && $rB) { updateMatchTeams(73, $rA['nombre'], $rB['nombre']); $log .= "Actualizado partido 73: {$rA['nombre']} vs {$rB['nombre']}\n"; }
+  if ($wE) { $tercero = $asig[74]['nombre'] ?? '3?'; updateMatchTeams(74, $wE['nombre'], $tercero); $log .= "Actualizado partido 74: {$wE['nombre']} vs $tercero\n"; }
+  if ($wF && $rC) { updateMatchTeams(75, $wF['nombre'], $rC['nombre']); $log .= "Actualizado partido 75: {$wF['nombre']} vs {$rC['nombre']}\n"; }
+  if ($wC && $rF) { updateMatchTeams(76, $wC['nombre'], $rF['nombre']); $log .= "Actualizado partido 76: {$wC['nombre']} vs {$rF['nombre']}\n"; }
+  if ($wI) { $tercero = $asig[77]['nombre'] ?? '3?'; updateMatchTeams(77, $wI['nombre'], $tercero); $log .= "Actualizado partido 77: {$wI['nombre']} vs $tercero\n"; }
+  if ($rE && $rI) { updateMatchTeams(78, $rE['nombre'], $rI['nombre']); $log .= "Actualizado partido 78: {$rE['nombre']} vs {$rI['nombre']}\n"; }
+  if ($wA) { $tercero = $asig[79]['nombre'] ?? '3?'; updateMatchTeams(79, $wA['nombre'], $tercero); $log .= "Actualizado partido 79: {$wA['nombre']} vs $tercero\n"; }
+  if ($wL) { $tercero = $asig[80]['nombre'] ?? '3?'; updateMatchTeams(80, $wL['nombre'], $tercero); $log .= "Actualizado partido 80: {$wL['nombre']} vs $tercero\n"; }
+  if ($wD) { $tercero = $asig[81]['nombre'] ?? '3?'; updateMatchTeams(81, $wD['nombre'], $tercero); $log .= "Actualizado partido 81: {$wD['nombre']} vs $tercero\n"; }
+  if ($wG) { $tercero = $asig[82]['nombre'] ?? '3?'; updateMatchTeams(82, $wG['nombre'], $tercero); $log .= "Actualizado partido 82: {$wG['nombre']} vs $tercero\n"; }
+  if ($rK && $rL) { updateMatchTeams(83, $rK['nombre'], $rL['nombre']); $log .= "Actualizado partido 83: {$rK['nombre']} vs {$rL['nombre']}\n"; }
+  if ($wH && $rJ) { updateMatchTeams(84, $wH['nombre'], $rJ['nombre']); $log .= "Actualizado partido 84: {$wH['nombre']} vs {$rJ['nombre']}\n"; }
+  if ($wB) { $tercero = $asig[85]['nombre'] ?? '3?'; updateMatchTeams(85, $wB['nombre'], $tercero); $log .= "Actualizado partido 85: {$wB['nombre']} vs $tercero\n"; }
+  if ($wJ && $rH) { updateMatchTeams(86, $wJ['nombre'], $rH['nombre']); $log .= "Actualizado partido 86: {$wJ['nombre']} vs {$rH['nombre']}\n"; }
+  if ($wK) { $tercero = $asig[87]['nombre'] ?? '3?'; updateMatchTeams(87, $wK['nombre'], $tercero); $log .= "Actualizado partido 87: {$wK['nombre']} vs $tercero\n"; }
+  if ($rD && $rG) { updateMatchTeams(88, $rD['nombre'], $rG['nombre']); $log .= "Actualizado partido 88: {$rD['nombre']} vs {$rG['nombre']}\n"; }
+
+  file_put_contents(__DIR__ . '/fase2_debug.log', date('Y-m-d H:i:s') . " - INFO: Resultados de poblarRoundOf32:\n$log", FILE_APPEND);
 }
 
 // -----------------------------------------------------------------
