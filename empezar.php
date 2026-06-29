@@ -310,7 +310,7 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
             <?php
             // ... (código anterior sin cambios)
 
-            // --- NUEVA SECCIÓN: Próximos 4 partidos y pronósticos de los usuarios ---
+            // --- NUEVA SECCIÓN: Próximos partidos y pronósticos de los usuarios ---
             $ventana_inicio = date('Y-m-d', strtotime('-1 day'));
             $ventana_fin    = date('Y-m-d', strtotime('+1 day'));
 
@@ -321,7 +321,7 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
                 WHERE CodUsu = 'ProfetaMundial'
                 AND fecha BETWEEN '$ventana_inicio' AND '$ventana_fin'
                 ORDER BY fecha ASC
-                LIMIT 8
+                LIMIT 10
             ";
             $resProximos = mysqli_query($conexion, $sqlProximos) or die(mysqli_error($conexion));
             $partidosProximos = [];
@@ -329,33 +329,52 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
                 $partidosProximos[] = $p;
             }
 
-            // Solo mostramos la tarjeta si hay al menos un partido próximo
-            if (count($partidosProximos) > 0):
+            // Solo mostramos la tarjeta si hay al menos un partido próximo con coincidencias
+            $partidosConCoincidencias = [];
+            foreach ($partidosProximos as $partido) {
+                $codPar = (int)$partido['CodPar'];
+                $localProfeta = $partido['local'];
+                $visitanteProfeta = $partido['visitante'];
+                
+                // Obtener pronósticos de usuarios que coinciden EXACTAMENTE con ProfetaMundial
+                $sqlPronosticos = "
+                    SELECT p.CodUsu, p.glocal, p.gvisitante
+                    FROM partidos_mundial2026 p
+                    JOIN Torneos t ON p.CodUsu = t.inscriptos
+                    WHERE t.CodTor = '20'
+                    AND p.CodPar = $codPar
+                    AND p.CodUsu != 'ProfetaMundial'
+                    AND p.local = '" . mysqli_real_escape_string($conexion, $localProfeta) . "'
+                    AND p.visitante = '" . mysqli_real_escape_string($conexion, $visitanteProfeta) . "'
+                    ORDER BY p.CodUsu
+                ";
+                $resPronosticos = mysqli_query($conexion, $sqlPronosticos) or die(mysqli_error($conexion));
+                $pronosticos = [];
+                while ($pr = mysqli_fetch_assoc($resPronosticos)) {
+                    $pronosticos[] = $pr;
+                }
+                
+                // Solo agregar si hay al menos una coincidencia exacta
+                if (count($pronosticos) > 0) {
+                    $partidosConCoincidencias[] = [
+                        'partido' => $partido,
+                        'pronosticos' => $pronosticos
+                    ];
+                }
+            }
+
+            if (count($partidosConCoincidencias) > 0):
             ?>
             <br />
             <div class="modern-card">
                 <h3>⚽ Próximos partidos y pronósticos</h3>
-                <?php foreach ($partidosProximos as $partido):
+                <?php foreach ($partidosConCoincidencias as $item):
+                    $partido = $item['partido'];
+                    $pronosticos = $item['pronosticos'];
                     $codPar = (int)$partido['CodPar'];
                     $local  = htmlspecialchars($partido['local']);
                     $visitante = htmlspecialchars($partido['visitante']);
                     $fechaPartido = htmlspecialchars($partido['fecha']);
-                    
-                    // Obtener pronósticos de todos los usuarios participantes excepto ProfetaMundial
-                    $sqlPronosticos = "
-                        SELECT p.CodUsu, p.glocal, p.gvisitante
-                        FROM partidos_mundial2026 p
-                        JOIN Torneos t ON p.CodUsu = t.inscriptos
-                        WHERE t.CodTor = '20'
-                        AND p.CodPar = $codPar
-                        AND p.CodUsu != 'ProfetaMundial'
-                        ORDER BY p.CodUsu
-                    ";
-                    $resPronosticos = mysqli_query($conexion, $sqlPronosticos) or die(mysqli_error($conexion));
-                    $pronosticos = [];
-                    while ($pr = mysqli_fetch_assoc($resPronosticos)) {
-                        $pronosticos[] = $pr;
-                    }
                 ?>
                     <div style="margin-bottom: 20px; padding: 15px; background: #0f172a; border-radius: 12px; border: 1px solid #334155;">
                         <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 5px;"><?php echo $fechaPartido; ?></p>
@@ -366,18 +385,14 @@ $fueraTiempo2026 = ($limiteMundial2026 <= $today) ? 1 : 0;
                             <?php echo $visitante; ?>
                             <img src="imagenes/banamerica/<?php echo rawurlencode($visitante); ?>.gif" width="20" height="10" alt="" style="vertical-align: middle;" />
                         </p>
-                        <?php if (count($pronosticos) > 0): ?>
-                            <ul class="pronostico-lista" style="list-style: none; color:#FFF">
-                                <?php foreach ($pronosticos as $pron): ?>
-                                <li class="pronostico-item">
-                                    <span class="usuario" style="text-align: left;"><?php echo htmlspecialchars($pron['CodUsu']); ?>:</span>
-                                    <span class="resultado" style="text-align: right; min-width: 40px;"><?php echo (int)$pron['glocal']; ?> - <?php echo (int)$pron['gvisitante']; ?></span>
-                                </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php else: ?>
-                            <p>Nadie ha pronosticado aún este partido.</p>
-                        <?php endif; ?>
+                        <ul class="pronostico-lista" style="list-style: none; color:#FFF">
+                            <?php foreach ($pronosticos as $pron): ?>
+                            <li class="pronostico-item">
+                                <span class="usuario" style="text-align: left;"><?php echo htmlspecialchars($pron['CodUsu']); ?>:</span>
+                                <span class="resultado" style="text-align: right; min-width: 40px;"><?php echo (int)$pron['glocal']; ?> - <?php echo (int)$pron['gvisitante']; ?></span>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                 <?php endforeach; ?>
             </div>
